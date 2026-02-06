@@ -25,7 +25,7 @@ jobs:
     - name: Check formatting (STRICT)
       run: |
         echo "Checking code formatting..."
-        flutter format --set-exit-if-changed .
+        dart format . --set-exit-if-changed .
         if [ $? -ne 0 ]; then
           echo "❌ Code is not properly formatted!"
           exit 1
