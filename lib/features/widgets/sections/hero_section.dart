@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:codepriest_portfolio/widget/app_texts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/responsive.dart';
 import 'dart:async';
@@ -345,29 +346,37 @@ class _HeroSectionState extends State<HeroSection>
               ? WrapAlignment.center
               : WrapAlignment.start,
           children: [
-            _buildToolItem(Icons.apps, 'Figma'),
-            _buildToolItem(Icons.note, 'Notion'),
-            _buildToolItem(Icons.brush, 'illustrator'),
-            _buildToolItem(Icons.code, 'Google'),
+            _buildToolItem('/svg/vscode.svg', 'VSCode'),
+            _buildToolItem('/svg/figma.svg', 'Figma'),
+            _buildToolItem('/svg/claude.svg', 'Claude'),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildToolItem(IconData icon, String name) {
+  Widget _buildToolItem(String svgPath, String name) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          color: AppColors.accentPurple,
-          size: Responsive.getResponsiveValue(
+        SvgPicture.asset(
+          svgPath,
+          width: Responsive.getResponsiveValue(
             context,
             mobile: 20,
             tablet: 22,
             web: 24,
           ),
+          height: Responsive.getResponsiveValue(
+            context,
+            mobile: 20,
+            tablet: 22,
+            web: 24,
+          ),
+          // colorFilter: const ColorFilter.mode(
+          //   AppColors.accentPurple,
+          //   BlendMode.srcIn,
+          // ),
         ),
         const SizedBox(width: 8),
         AppTextRegular(
