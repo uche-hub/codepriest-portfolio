@@ -42,6 +42,8 @@ dependencies:
   flutter_svg: ^2.2.3
   url_launcher: ^6.3.2
   flutter_animate: ^4.5.2
+  html: ^0.15.6
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -66,10 +68,10 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
   #   - assets/images/
   #   - assets/svg/
-  #   - assets/files/
+    - assets/files/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -68,12 +68,27 @@ class _HeroSectionState extends State<HeroSection>
     final isMobile = Responsive.isMobile(context);
     final isTablet = Responsive.isTablet(context);
 
-    return ResponsiveWrapper(
-      child: ResponsivePadding(
-        child: Container(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height - 80,
-          ),
+    return Container(
+      constraints: BoxConstraints(
+        minHeight: MediaQuery.of(context).size.height - 80,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.getResponsiveValue(
+          context,
+          mobile: 20,
+          tablet: 40,
+          web: 80,
+        ),
+        vertical: Responsive.getResponsiveValue(
+          context,
+          mobile: 40,
+          tablet: 60,
+          web: 80,
+        ),
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1400),
           child: isMobile || isTablet
               ? _buildMobileLayout()
               : _buildWebLayout(),
@@ -84,10 +99,17 @@ class _HeroSectionState extends State<HeroSection>
 
   Widget _buildWebLayout() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(flex: 6, child: _buildContent()),
-        const SizedBox(width: 60),
-        Expanded(flex: 6, child: _buildIllustration()),
+        Expanded(
+          flex: 5,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 650),
+            child: _buildContent(),
+          ),
+        ),
+        const SizedBox(width: 80),
+        Expanded(flex: 5, child: _buildIllustration()),
       ],
     );
   }
@@ -133,6 +155,12 @@ class _HeroSectionState extends State<HeroSection>
           // Greeting
           AppTextMedium(
             'Hello, I\' am',
+            fontSize: Responsive.getResponsiveValue(
+              context,
+              mobile: 20,
+              tablet: 28,
+              web: 32,
+            ),
             textAlign: Responsive.isMobile(context)
                 ? TextAlign.center
                 : TextAlign.start,
@@ -141,35 +169,44 @@ class _HeroSectionState extends State<HeroSection>
           const SizedBox(height: 8),
 
           // Name with typing effect
-          Row(
-            mainAxisAlignment: Responsive.isMobile(context)
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.start,
-            children: [
-              Flexible(
-                child: AppTextBold(
-                  displayedName,
-                  textAlign: Responsive.isMobile(context)
-                      ? TextAlign.center
-                      : TextAlign.start,
-                ),
-              ),
-              if (currentIndex < fullName.length)
-                Container(
-                  width: 4,
-                  height: Responsive.getResponsiveValue(
-                    context,
-                    mobile: 40,
-                    tablet: 52,
-                    web: 64,
-                  ),
-                  margin: const EdgeInsets.only(left: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentPurple,
-                    borderRadius: BorderRadius.circular(2),
+          SizedBox(
+            width: double.infinity,
+            child: Row(
+              mainAxisAlignment: Responsive.isMobile(context)
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: AppTextBold(
+                    displayedName,
+                    fontSize: Responsive.getResponsiveValue(
+                      context,
+                      mobile: 36,
+                      tablet: 48,
+                      web: 56,
+                    ),
+                    textAlign: Responsive.isMobile(context)
+                        ? TextAlign.center
+                        : TextAlign.start,
                   ),
                 ),
-            ],
+                if (currentIndex < fullName.length)
+                  Container(
+                    width: 4,
+                    height: Responsive.getResponsiveValue(
+                      context,
+                      mobile: 36,
+                      tablet: 48,
+                      web: 56,
+                    ),
+                    margin: const EdgeInsets.only(left: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentPurple,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 16),
@@ -185,6 +222,12 @@ class _HeroSectionState extends State<HeroSection>
                       AppColors.purpleGradient.createShader(bounds),
                   child: AppTextMedium(
                     'Flutter Developer',
+                    fontSize: Responsive.getResponsiveValue(
+                      context,
+                      mobile: 20,
+                      tablet: 28,
+                      web: 32,
+                    ),
                     color: AppColors.white,
                     textAlign: Responsive.isMobile(context)
                         ? TextAlign.center
@@ -198,30 +241,39 @@ class _HeroSectionState extends State<HeroSection>
           const SizedBox(height: 24),
 
           // Description
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: Column(
-              crossAxisAlignment: Responsive.isMobile(context)
-                  ? CrossAxisAlignment.center
-                  : CrossAxisAlignment.start,
-              children: [
-                AppTextRegular(
-                  'I craft thoughtful digital experiences that blend clarity, beauty',
-                  textAlign: Responsive.isMobile(context)
-                      ? TextAlign.center
-                      : TextAlign.start,
-                  color: AppColors.textSecondary,
+          Column(
+            crossAxisAlignment: Responsive.isMobile(context)
+                ? CrossAxisAlignment.center
+                : CrossAxisAlignment.start,
+            children: [
+              AppTextRegular(
+                'I craft thoughtful digital experiences that blend clarity, beauty',
+                fontSize: Responsive.getResponsiveValue(
+                  context,
+                  mobile: 14,
+                  tablet: 16,
+                  web: 18,
                 ),
-                const SizedBox(height: 8),
-                AppTextRegular(
-                  'I turn ideas into intuitive interfaces that feel effortless to explore.',
-                  textAlign: Responsive.isMobile(context)
-                      ? TextAlign.center
-                      : TextAlign.start,
-                  color: AppColors.textSecondary,
+                textAlign: Responsive.isMobile(context)
+                    ? TextAlign.center
+                    : TextAlign.start,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(height: 8),
+              AppTextRegular(
+                'I turn ideas into intuitive interfaces that feel effortless to explore.',
+                fontSize: Responsive.getResponsiveValue(
+                  context,
+                  mobile: 14,
+                  tablet: 16,
+                  web: 18,
                 ),
-              ],
-            ),
+                textAlign: Responsive.isMobile(context)
+                    ? TextAlign.center
+                    : TextAlign.start,
+                color: AppColors.textSecondary,
+              ),
+            ],
           ),
 
           const SizedBox(height: 40),
@@ -247,9 +299,14 @@ class _HeroSectionState extends State<HeroSection>
                     ),
                   ],
                 ),
-                child: const AppTextRegular(
+                child: AppTextRegular(
                   'Explore My Portfolio',
-                  fontSize: 18,
+                  fontSize: Responsive.getResponsiveValue(
+                    context,
+                    mobile: 14,
+                    tablet: 16,
+                    web: 18,
+                  ),
                 ),
               ),
             ),
@@ -270,9 +327,14 @@ class _HeroSectionState extends State<HeroSection>
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
-        const AppTextRegular(
+        AppTextRegular(
           'Tools I use to bring ideas to life',
-          fontSize: 18,
+          fontSize: Responsive.getResponsiveValue(
+            context,
+            mobile: 14,
+            tablet: 16,
+            web: 18,
+          ),
           color: AppColors.textSecondary,
         ),
         const SizedBox(height: 20),
@@ -297,9 +359,26 @@ class _HeroSectionState extends State<HeroSection>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: AppColors.accentPurple, size: 24),
+        Icon(
+          icon,
+          color: AppColors.accentPurple,
+          size: Responsive.getResponsiveValue(
+            context,
+            mobile: 20,
+            tablet: 22,
+            web: 24,
+          ),
+        ),
         const SizedBox(width: 8),
-        AppTextRegular(name, fontSize: 16),
+        AppTextRegular(
+          name,
+          fontSize: Responsive.getResponsiveValue(
+            context,
+            mobile: 14,
+            tablet: 15,
+            web: 16,
+          ),
+        ),
       ],
     );
   }
@@ -315,15 +394,15 @@ class _HeroSectionState extends State<HeroSection>
               constraints: BoxConstraints(
                 maxWidth: Responsive.getResponsiveValue(
                   context,
-                  mobile: 300,
-                  tablet: 400,
-                  web: 500,
+                  mobile: 280,
+                  tablet: 350,
+                  web: 450,
                 ),
                 maxHeight: Responsive.getResponsiveValue(
                   context,
-                  mobile: 300,
-                  tablet: 400,
-                  web: 500,
+                  mobile: 280,
+                  tablet: 350,
+                  web: 450,
                 ),
               ),
               child: Stack(
@@ -343,7 +422,7 @@ class _HeroSectionState extends State<HeroSection>
                       ),
                     ),
                   ),
-                  // Illustration placeholder
+                  // Illustration placeholder - replace with your actual illustration/image
                   Container(
                     width: double.infinity,
                     height: double.infinity,
@@ -351,9 +430,14 @@ class _HeroSectionState extends State<HeroSection>
                       gradient: AppColors.purpleGradient,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person,
-                      size: 200,
+                      size: Responsive.getResponsiveValue(
+                        context,
+                        mobile: 140,
+                        tablet: 180,
+                        web: 220,
+                      ),
                       color: AppColors.white,
                     ),
                   ),
