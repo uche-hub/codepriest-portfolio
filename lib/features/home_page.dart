@@ -1,3 +1,4 @@
+import 'package:codepriest_portfolio/features/presentation/controllers/navigation_controllers.dart';
 import 'package:codepriest_portfolio/features/presentation/providers/download_provider.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/hero_section.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/skill_section.dart';
@@ -16,26 +17,35 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ScrollController _scrollController = ScrollController();
   int _currentNavIndex = 0;
 
   @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    // Add scroll listener after the frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final navController = context.read<NavigationController>();
+      navController.scrollController.addListener(() {
+        navController.updateActiveSection();
+      });
+    });
   }
 
   void _handleNavTap(String section) {
-    // Handle navigation to different sections
-    // For now, just log it
-    debugPrint('Navigating to: $section');
+    // Navigation is now handled in the navbar itself via NavigationController
   }
 
   void _handleBottomNavTap(int index) {
     setState(() {
       _currentNavIndex = index;
     });
-    // Handle navigation based on index
+
+    // Map index to section name
+    final sections = ['home', 'skills', 'works', 'faq', 'review'];
+    if (index < sections.length) {
+      final navController = context.read<NavigationController>();
+      navController.scrollToSection(sections[index]);
+    }
   }
 
   void _handleDownloadCV() {
@@ -47,6 +57,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
     final isTablet = Responsive.isTablet(context);
+    final navController = context.watch<NavigationController>();
 
     return Scaffold(
       backgroundColor: AppColors.primaryDark,
@@ -62,16 +73,35 @@ class _HomePageState extends State<HomePage> {
             // Main Content
             Expanded(
               child: SingleChildScrollView(
-                controller: _scrollController,
+                controller: navController.scrollController,
                 physics: const BouncingScrollPhysics(),
-                child: const Column(
+                child: Column(
                   children: [
-                    HeroSection(),
-                    SkillsSection(),
-                    // WorksSection(),
-                    // FAQSection(),
-                    // ReviewSection(),
-                    // FooterSection(),
+                    // Hero Section with key
+                    Container(
+                      key: navController.homeKey,
+                      child: const HeroSection(),
+                    ),
+
+                    // Skills Section with key
+                    Container(
+                      key: navController.skillsKey,
+                      child: const SkillsSection(),
+                    ),
+
+                    // Placeholder for other sections
+                    // Container(
+                    //   key: navController.worksKey,
+                    //   child: const WorksSection(),
+                    // ),
+                    // Container(
+                    //   key: navController.faqKey,
+                    //   child: const FAQSection(),
+                    // ),
+                    // Container(
+                    //   key: navController.reviewKey,
+                    //   child: const ReviewSection(),
+                    // ),
                   ],
                 ),
               ),

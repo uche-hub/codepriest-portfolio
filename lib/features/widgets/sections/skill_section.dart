@@ -1,8 +1,8 @@
-import 'package:codepriest_portfolio/features/widgets/skill%20widgets/curved_line.dart';
-import 'package:codepriest_portfolio/features/widgets/skill%20widgets/floating_service.dart';
-import 'package:codepriest_portfolio/features/widgets/skill%20widgets/section_header.dart';
-import 'package:codepriest_portfolio/features/widgets/skill%20widgets/skill_card.dart';
-import 'package:codepriest_portfolio/features/widgets/skill%20widgets/skill_category.dart';
+import 'package:codepriest_portfolio/features/widgets/skill_widgets/curved_line.dart';
+import 'package:codepriest_portfolio/features/widgets/skill_widgets/floating_service.dart';
+import 'package:codepriest_portfolio/features/widgets/skill_widgets/section_header.dart';
+import 'package:codepriest_portfolio/features/widgets/skill_widgets/skill_card.dart';
+import 'package:codepriest_portfolio/features/widgets/skill_widgets/skill_category.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/responsive.dart';

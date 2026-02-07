@@ -1,3 +1,4 @@
+import 'package:codepriest_portfolio/features/presentation/controllers/navigation_controllers.dart';
 import 'package:codepriest_portfolio/features/presentation/providers/download_provider.dart';
 import 'package:codepriest_portfolio/widget/app_texts.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +98,7 @@ class _AppNavBarState extends State<AppNavBar> {
           ),
           child: const Center(
             child: Text(
-              'CP',
+              'S',
               style: TextStyle(
                 color: AppColors.white,
                 fontSize: 28,
@@ -111,37 +112,53 @@ class _AppNavBarState extends State<AppNavBar> {
   }
 
   Widget _buildNavItems() {
-    final items = ['Home', 'Service', 'Works', 'FAQ', 'Review'];
+    final items = ['Home', 'Skills', 'Works', 'FAQ', 'Review'];
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: items.map((item) => _buildNavItem(item)).toList(),
+    return Consumer<NavigationController>(
+      builder: (context, navController, child) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: items
+              .map((item) => _buildNavItem(item, navController))
+              .toList(),
+        );
+      },
     );
   }
 
-  Widget _buildNavItem(String title) {
+  Widget _buildNavItem(String title, NavigationController navController) {
     final isHovered = hoveredItem == title;
+    final isActive = navController.activeSection == title.toLowerCase();
 
     return MouseRegion(
       onEnter: (_) => setState(() => hoveredItem = title),
       onExit: (_) => setState(() => hoveredItem = null),
       child: GestureDetector(
-        onTap: () => widget.onNavItemTap?.call(title.toLowerCase()),
+        onTap: () {
+          widget.onNavItemTap?.call(title.toLowerCase());
+          navController.scrollToSection(title.toLowerCase());
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isHovered ? AppColors.purple20 : Colors.transparent,
+            color: (isHovered || isActive)
+                ? AppColors.purple20
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isHovered ? AppColors.accentPurple : Colors.transparent,
+              color: (isHovered || isActive)
+                  ? AppColors.accentPurple
+                  : Colors.transparent,
               width: 1,
             ),
           ),
           child: AppTextRegular(
             title,
-            color: isHovered ? AppColors.white : AppColors.textSecondary,
+            color: (isHovered || isActive)
+                ? AppColors.white
+                : AppColors.textSecondary,
             fontSize: 16,
           ),
         ),

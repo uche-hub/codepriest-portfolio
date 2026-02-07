@@ -1,3 +1,4 @@
+import 'package:codepriest_portfolio/features/presentation/controllers/navigation_controllers.dart';
 import 'package:codepriest_portfolio/features/presentation/providers/download_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +20,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => DownloadProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => DownloadProvider()),
+        ChangeNotifierProvider(create: (_) => NavigationController()),
+      ],
       child: MaterialApp.router(
         title: 'Uchenna Ndukwe - Flutter Developer',
         debugShowCheckedModeBanner: false,
