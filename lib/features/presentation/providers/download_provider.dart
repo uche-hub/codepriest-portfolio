@@ -46,7 +46,7 @@ class DownloadProvider extends ChangeNotifier {
 
         await _updateProgress(0.8, 'Creating download link...');
 
-        // Use the static URL class from package:web
+        // Create object URL using the web package
         final url = web.URL.createObjectURL(blob);
 
         // Create anchor and trigger click

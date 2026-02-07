@@ -1,5 +1,6 @@
 import 'package:codepriest_portfolio/features/presentation/providers/download_provider.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/hero_section.dart';
+import 'package:codepriest_portfolio/features/widgets/sections/skill_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
@@ -65,11 +66,8 @@ class _HomePageState extends State<HomePage> {
                 physics: const BouncingScrollPhysics(),
                 child: const Column(
                   children: [
-                    // Hero Section (now handles its own padding)
                     HeroSection(),
-
-                    // Add more sections here as needed
-                    // ServicesSection(),
+                    SkillsSection(),
                     // WorksSection(),
                     // FAQSection(),
                     // ReviewSection(),
