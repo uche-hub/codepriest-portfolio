@@ -2,6 +2,7 @@ import 'package:codepriest_portfolio/features/presentation/controllers/navigatio
 import 'package:codepriest_portfolio/features/presentation/providers/download_provider.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/hero_section.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/skill_section.dart';
+import 'package:codepriest_portfolio/features/widgets/sections/work_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
@@ -89,11 +90,11 @@ class _HomePageState extends State<HomePage> {
                       child: const SkillsSection(),
                     ),
 
-                    // Placeholder for other sections
-                    // Container(
-                    //   key: navController.worksKey,
-                    //   child: const WorksSection(),
-                    // ),
+                    // Works Section with key
+                    Container(
+                      key: navController.worksKey,
+                      child: const WorksSection(),
+                    ),
                     // Container(
                     //   key: navController.faqKey,
                     //   child: const FAQSection(),
