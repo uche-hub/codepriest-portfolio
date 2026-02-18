@@ -1,5 +1,6 @@
 import 'package:codepriest_portfolio/features/presentation/controllers/navigation_controllers.dart';
 import 'package:codepriest_portfolio/features/presentation/providers/download_provider.dart';
+import 'package:codepriest_portfolio/features/widgets/sections/experience_section.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/hero_section.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/skill_section.dart';
 import 'package:codepriest_portfolio/features/widgets/sections/work_section.dart';
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     // Map index to section name
-    final sections = ['home', 'skills', 'works', 'faq', 'review'];
+    final sections = ['home', 'skills', 'works', 'faq', 'experience'];
     if (index < sections.length) {
       final navController = context.read<NavigationController>();
       navController.scrollToSection(sections[index]);
@@ -94,6 +95,12 @@ class _HomePageState extends State<HomePage> {
                     Container(
                       key: navController.worksKey,
                       child: const WorksSection(),
+                    ),
+                    
+                    // Experience Section with key
+                    Container(
+                      key: navController.reviewKey,
+                      child: const ExperienceSection(),
                     ),
                     // Container(
                     //   key: navController.faqKey,

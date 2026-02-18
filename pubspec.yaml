@@ -44,6 +44,7 @@ dependencies:
   flutter_animate: ^4.5.2
   html: ^0.15.6
   web: ^1.1.1
+  button_loading_fx: ^0.0.1
 
 dev_dependencies:
   flutter_test:

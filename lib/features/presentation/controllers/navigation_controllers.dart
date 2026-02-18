@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class NavigationController extends ChangeNotifier {
   final ScrollController scrollController = ScrollController();
   String _activeSection = 'home';
-
+  
   // Section keys for scrolling
   final GlobalKey homeKey = GlobalKey();
   final GlobalKey skillsKey = GlobalKey();
@@ -22,7 +22,7 @@ class NavigationController extends ChangeNotifier {
 
   void scrollToSection(String section) {
     GlobalKey? targetKey;
-
+    
     switch (section.toLowerCase()) {
       case 'home':
         targetKey = homeKey;
@@ -38,6 +38,7 @@ class NavigationController extends ChangeNotifier {
         targetKey = faqKey;
         break;
       case 'review':
+      case 'experience':
         targetKey = reviewKey;
         break;
     }
@@ -46,14 +47,14 @@ class NavigationController extends ChangeNotifier {
       final context = targetKey.currentContext!;
       final renderBox = context.findRenderObject() as RenderBox;
       final position = renderBox.localToGlobal(Offset.zero);
-
+      
       // Smooth scroll to section with offset for navbar
       scrollController.animateTo(
         scrollController.offset + position.dy - 80, // 80px offset for navbar
         duration: const Duration(milliseconds: 800),
         curve: Curves.easeInOut,
       );
-
+      
       setActiveSection(section.toLowerCase());
     }
   }
@@ -63,7 +64,7 @@ class NavigationController extends ChangeNotifier {
     if (!scrollController.hasClients) return;
 
     final scrollOffset = scrollController.offset;
-
+    
     // Check each section's position
     final sections = [
       {'key': homeKey, 'name': 'home'},
@@ -76,11 +77,11 @@ class NavigationController extends ChangeNotifier {
     for (var i = sections.length - 1; i >= 0; i--) {
       final section = sections[i];
       final key = section['key'] as GlobalKey;
-
+      
       if (key.currentContext != null) {
         final renderBox = key.currentContext!.findRenderObject() as RenderBox;
         final position = renderBox.localToGlobal(Offset.zero);
-
+        
         // If we've scrolled past this section's top (with some offset)
         if (scrollOffset >= position.dy - 100) {
           setActiveSection(section['name'] as String);

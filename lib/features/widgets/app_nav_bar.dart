@@ -10,7 +10,11 @@ class AppNavBar extends StatefulWidget {
   final Function(String)? onNavItemTap;
   final VoidCallback? onDownloadCV;
 
-  const AppNavBar({super.key, this.onNavItemTap, this.onDownloadCV});
+  const AppNavBar({
+    super.key,
+    this.onNavItemTap,
+    this.onDownloadCV,
+  });
 
   @override
   State<AppNavBar> createState() => _AppNavBarState();
@@ -32,12 +36,19 @@ class _AppNavBarState extends State<AppNavBar> {
     return Container(
       height: 80,
       decoration: BoxDecoration(
-        color: AppColors.primaryDark.withValues(alpha: 0.95),
-        border: Border(bottom: BorderSide(color: AppColors.white10, width: 1)),
+        color: AppColors.primaryDark.withOpacity(0.95),
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.white10,
+            width: 1,
+          ),
+        ),
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1400),
+          constraints: const BoxConstraints(
+            maxWidth: 1400,
+          ),
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: Responsive.getResponsiveValue(
@@ -66,8 +77,13 @@ class _AppNavBarState extends State<AppNavBar> {
     return Container(
       height: 70,
       decoration: BoxDecoration(
-        color: AppColors.primaryDark.withValues(alpha: 0.95),
-        border: Border(bottom: BorderSide(color: AppColors.white10, width: 1)),
+        color: AppColors.primaryDark.withOpacity(0.95),
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.white10,
+            width: 1,
+          ),
+        ),
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -80,7 +96,10 @@ class _AppNavBarState extends State<AppNavBar> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [_buildLogo(), _buildDownloadButton()],
+          children: [
+            _buildLogo(),
+            _buildDownloadButton(),
+          ],
         ),
       ),
     );
@@ -112,15 +131,13 @@ class _AppNavBarState extends State<AppNavBar> {
   }
 
   Widget _buildNavItems() {
-    final items = ['Home', 'Skills', 'Works', 'FAQ', 'Review'];
+    final items = ['Home', 'Skills', 'Works', 'FAQ', 'Experience'];
 
     return Consumer<NavigationController>(
       builder: (context, navController, child) {
         return Row(
           mainAxisSize: MainAxisSize.min,
-          children: items
-              .map((item) => _buildNavItem(item, navController))
-              .toList(),
+          children: items.map((item) => _buildNavItem(item, navController)).toList(),
         );
       },
     );
@@ -143,22 +160,16 @@ class _AppNavBarState extends State<AppNavBar> {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: (isHovered || isActive)
-                ? AppColors.purple20
-                : Colors.transparent,
+            color: (isHovered || isActive) ? AppColors.purple20 : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: (isHovered || isActive)
-                  ? AppColors.accentPurple
-                  : Colors.transparent,
+              color: (isHovered || isActive) ? AppColors.accentPurple : Colors.transparent,
               width: 1,
             ),
           ),
           child: AppTextRegular(
             title,
-            color: (isHovered || isActive)
-                ? AppColors.white
-                : AppColors.textSecondary,
+            color: (isHovered || isActive) ? AppColors.white : AppColors.textSecondary,
             fontSize: 16,
           ),
         ),
@@ -171,7 +182,7 @@ class _AppNavBarState extends State<AppNavBar> {
       builder: (context, downloadProvider, child) {
         final isDownloading = downloadProvider.isDownloading;
         final progress = downloadProvider.downloadProgress;
-
+        
         return MouseRegion(
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
@@ -179,20 +190,20 @@ class _AppNavBarState extends State<AppNavBar> {
             child: Stack(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.accentPurple, width: 2),
+                    border: Border.all(
+                      color: AppColors.accentPurple,
+                      width: 2,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       AppTextRegular(
-                        isDownloading
+                        isDownloading 
                             ? '${(progress * 100).toInt()}%'
                             : 'Download CV',
                         fontSize: 16,
@@ -234,7 +245,7 @@ class _AppNavBarState extends State<AppNavBar> {
                         value: progress,
                         backgroundColor: Colors.transparent,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.accentPurple.withValues(alpha: 0.5),
+                          AppColors.accentPurple.withOpacity(0.5),
                         ),
                         minHeight: 3,
                       ),
@@ -253,7 +264,11 @@ class MobileBottomNav extends StatefulWidget {
   final int currentIndex;
   final Function(int)? onTap;
 
-  const MobileBottomNav({super.key, this.currentIndex = 0, this.onTap});
+  const MobileBottomNav({
+    super.key,
+    this.currentIndex = 0,
+    this.onTap,
+  });
 
   @override
   State<MobileBottomNav> createState() => _MobileBottomNavState();
@@ -265,11 +280,16 @@ class _MobileBottomNavState extends State<MobileBottomNav> {
     return Container(
       height: 70,
       decoration: BoxDecoration(
-        color: AppColors.primaryDark.withValues(alpha: 0.95),
-        border: Border(top: BorderSide(color: AppColors.white10, width: 1)),
+        color: AppColors.primaryDark.withOpacity(0.95),
+        border: Border(
+          top: BorderSide(
+            color: AppColors.white10,
+            width: 1,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.accentPurple.withValues(alpha: 0.1),
+            color: AppColors.accentPurple.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -279,10 +299,10 @@ class _MobileBottomNavState extends State<MobileBottomNav> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildBottomNavItem(Icons.home, 'Home', 0),
-          _buildBottomNavItem(Icons.design_services, 'Service', 1),
+          _buildBottomNavItem(Icons.design_services, 'Skills', 1),
           _buildBottomNavItem(Icons.work, 'Works', 2),
           _buildBottomNavItem(Icons.help, 'FAQ', 3),
-          _buildBottomNavItem(Icons.rate_review, 'Review', 4),
+          _buildBottomNavItem(Icons.star, 'Experience', 4),
         ],
       ),
     );
@@ -301,9 +321,7 @@ class _MobileBottomNavState extends State<MobileBottomNav> {
           children: [
             Icon(
               icon,
-              color: isActive
-                  ? AppColors.accentPurple
-                  : AppColors.textSecondary,
+              color: isActive ? AppColors.accentPurple : AppColors.textSecondary,
               size: 24,
             ),
             const SizedBox(height: 4),
