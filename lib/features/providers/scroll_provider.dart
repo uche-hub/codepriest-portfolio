@@ -8,14 +8,14 @@ class ScrollProvider extends ChangeNotifier {
   bool _isNavScrolled = false;
 
   // Section keys for navigation
-  final GlobalKey heroKey = GlobalKey();
-  final GlobalKey skillKey = GlobalKey();
-  final GlobalKey projectsKey = GlobalKey();
+  final GlobalKey heroKey       = GlobalKey();
+  final GlobalKey skillKey      = GlobalKey();
+  final GlobalKey projectsKey   = GlobalKey();
   final GlobalKey experienceKey = GlobalKey();
-  final GlobalKey contactKey = GlobalKey();
+  final GlobalKey contactKey    = GlobalKey();
 
-  double get scrollOffset => _scrollOffset;
-  bool get isNavScrolled => _isNavScrolled;
+  double get scrollOffset  => _scrollOffset;
+  bool   get isNavScrolled => _isNavScrolled;
 
   ScrollProvider() {
     scrollController.addListener(_onScroll);
@@ -27,7 +27,7 @@ class ScrollProvider extends ChangeNotifier {
     if (newScrolled != _isNavScrolled) {
       _isNavScrolled = newScrolled;
     }
-    notifyListeners(); // always notify so navbar can animate smoothly
+    notifyListeners();
   }
 
   void scrollToSection(String section) {
@@ -46,7 +46,15 @@ class ScrollProvider extends ChangeNotifier {
         key = contactKey;
         break;
       default:
-        key = heroKey;
+      // Scroll to top — clamped at 0, never goes negative
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOutCubic,
+          );
+        }
+        return;
     }
 
     final context = key.currentContext;

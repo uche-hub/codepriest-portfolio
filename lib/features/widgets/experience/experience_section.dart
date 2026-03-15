@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../../../core/constants/responsive_helper.dart';
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -127,31 +128,36 @@ class ExperienceSectionWidget extends StatefulWidget {
 }
 
 class _ExperienceSectionWidgetState extends State<ExperienceSectionWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   bool _showMore = false;
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
+  bool _isVisible = false;
+  late AnimationController _expandCtrl;
+  late AnimationController _entranceCtrl;
+  late Animation<double> _expandAnim;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
+    _expandCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
-    _anim = CurvedAnimation(
-        parent: _ctrl,
+    _entranceCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200));
+    _expandAnim = CurvedAnimation(
+        parent: _expandCtrl,
         curve: Curves.easeOutCubic,
         reverseCurve: Curves.easeInCubic);
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    _expandCtrl.dispose();
+    _entranceCtrl.dispose();
     super.dispose();
   }
 
   void _toggleMore() {
     setState(() => _showMore = !_showMore);
-    _showMore ? _ctrl.forward() : _ctrl.reverse();
+    _showMore ? _expandCtrl.forward() : _expandCtrl.reverse();
   }
 
   void _openModal(_Experience exp) {
@@ -177,51 +183,101 @@ class _ExperienceSectionWidgetState extends State<ExperienceSectionWidget>
     final hPad = ResponsiveHelper.getHorizontalPadding(context);
     final isMobile = ResponsiveHelper.isMobile(context);
 
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.fromLTRB(hPad, 80, hPad, 80),
-      child: Column(
-        children: [
-          _SectionHeader(isMobile: isMobile),
-          const SizedBox(height: 56),
-
-          ..._mainExperiences.asMap().entries.map((e) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _ExperienceRow(
-              exp: e.value,
-              isFirst: e.key == 0,
-              isMobile: isMobile,
-              onTap: () => _openModal(e.value),
+    return VisibilityDetector(
+      key: const Key('experience-section'),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction > 0.1 && !_isVisible) {
+          setState(() => _isVisible = true);
+          _entranceCtrl.forward();
+        }
+      },
+      child: Container(
+        color: Colors.white,
+        padding: EdgeInsets.fromLTRB(hPad, 80, hPad, 80),
+        child: Column(
+          children: [
+            _AnimatedEntrance(
+              controller: _entranceCtrl,
+              delay: 0.0,
+              child: _SectionHeader(isMobile: isMobile),
             ),
-          )),
-
-          AnimatedBuilder(
-            animation: _anim,
-            builder: (_, child) => ClipRect(
-              child: Align(
-                  heightFactor: _anim.value,
-                  alignment: Alignment.topCenter,
-                  child: child),
-            ),
-            child: Column(
-              children: _extraExperiences
-                  .map((exp) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _ExperienceRow(
-                  exp: exp,
-                  isFirst: false,
-                  isMobile: isMobile,
-                  onTap: () => _openModal(exp),
-                  slideAnim: _anim,
+            const SizedBox(height: 56),
+            ..._mainExperiences.asMap().entries.map((e) {
+              final index = e.key;
+              return _AnimatedEntrance(
+                controller: _entranceCtrl,
+                delay: 0.2 + (index * 0.1),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _ExperienceRow(
+                    exp: e.value,
+                    isFirst: index == 0,
+                    isMobile: isMobile,
+                    onTap: () => _openModal(e.value),
+                  ),
                 ),
-              ))
-                  .toList(),
+              );
+            }),
+            AnimatedBuilder(
+              animation: _expandAnim,
+              builder: (_, child) => ClipRect(
+                child: Align(
+                    heightFactor: _expandAnim.value,
+                    alignment: Alignment.topCenter,
+                    child: child),
+              ),
+              child: Column(
+                children: _extraExperiences
+                    .map((exp) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _ExperienceRow(
+                    exp: exp,
+                    isFirst: false,
+                    isMobile: isMobile,
+                    onTap: () => _openModal(exp),
+                    slideAnim: _expandAnim,
+                  ),
+                ))
+                    .toList(),
+              ),
             ),
-          ),
+            const SizedBox(height: 32),
+            _AnimatedEntrance(
+              controller: _entranceCtrl,
+              delay: 0.6,
+              child: _ViewMoreButton(expanded: _showMore, onTap: _toggleMore),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-          const SizedBox(height: 32),
-          _ViewMoreButton(expanded: _showMore, onTap: _toggleMore),
-        ],
+// ─── Animation Helper ─────────────────────────────────────────────────────────
+
+class _AnimatedEntrance extends StatelessWidget {
+  final Widget child;
+  final AnimationController controller;
+  final double delay;
+
+  const _AnimatedEntrance(
+      {required this.child, required this.controller, required this.delay});
+
+  @override
+  Widget build(BuildContext context) {
+    final anim = CurvedAnimation(
+      parent: controller,
+      curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0),
+          curve: Curves.easeOutCubic),
+    );
+
+    return FadeTransition(
+      opacity: anim,
+      child: SlideTransition(
+        position: Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero)
+            .animate(anim),
+        child: child,
       ),
     );
   }
@@ -262,7 +318,7 @@ class _SectionHeader extends StatelessWidget {
             SizedBox(
               width: isMobile ? double.infinity : 420,
               child: Text(
-                'There are many variations of passages of Lorem Ipsum available,\nbut the majority have suffered alteration in some form.',
+                'A journey through my professional milestones, building production-grade mobile solutions across diverse industries.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                     fontSize: 13.5, color: Colors.black54, height: 1.7),
@@ -277,13 +333,37 @@ class _SectionHeader extends StatelessWidget {
 
 // ─── Sun Icon ─────────────────────────────────────────────────────────────────
 
-class _SunIcon extends StatelessWidget {
+class _SunIcon extends StatefulWidget {
   final double size;
-  const _SunIcon({required this.size});
+  const _SunIcon({required this.size, super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      CustomPaint(size: Size(size, size), painter: _SunPainter());
+  State<_SunIcon> createState() => _SunIconState();
+}
+
+class _SunIconState extends State<_SunIcon> with SingleTickerProviderStateMixin {
+  late AnimationController _rotateCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotateCtrl =
+    AnimationController(vsync: this, duration: const Duration(seconds: 12))
+      ..repeat();
+  }
+
+  @override
+  void dispose() {
+    _rotateCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => RotationTransition(
+    turns: _rotateCtrl,
+    child: CustomPaint(
+        size: Size(widget.size, widget.size), painter: _SunPainter()),
+  );
 }
 
 class _SunPainter extends CustomPainter {
@@ -319,12 +399,41 @@ class _SunPainter extends CustomPainter {
 
 // ─── Scratch Lines ────────────────────────────────────────────────────────────
 
-class _ScratchLines extends StatelessWidget {
-  const _ScratchLines();
+class _ScratchLines extends StatefulWidget {
+  const _ScratchLines({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      CustomPaint(size: const Size(90, 90), painter: _ScratchPainter());
+  State<_ScratchLines> createState() => _ScratchLinesState();
+}
+
+class _ScratchLinesState extends State<_ScratchLines>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseCtrl =
+    AnimationController(vsync: this, duration: const Duration(seconds: 4))
+      ..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: _pulseCtrl,
+    builder: (context, child) => Opacity(
+      opacity: 0.6 + (_pulseCtrl.value * 0.4),
+      child: child,
+    ),
+    child: CustomPaint(
+        size: const Size(90, 90), painter: _ScratchPainter()),
+  );
 }
 
 class _ScratchPainter extends CustomPainter {
@@ -375,6 +484,7 @@ class _ExperienceRowState extends State<_ExperienceRow>
     with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _anim;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -394,8 +504,12 @@ class _ExperienceRowState extends State<_ExperienceRow>
   @override
   Widget build(BuildContext context) {
     Widget row = MouseRegion(
-      onEnter: (_) => _ctrl.forward(),
+      onEnter: (_) {
+        setState(() => _isHovered = true);
+        _ctrl.forward();
+      },
       onExit: (_) {
+        setState(() => _isHovered = false);
         if (!widget.isFirst) _ctrl.reverse();
       },
       cursor: SystemMouseCursors.click,
@@ -404,17 +518,28 @@ class _ExperienceRowState extends State<_ExperienceRow>
         child: AnimatedBuilder(
           animation: _anim,
           builder: (_, __) {
-            final v    = _anim.value;
-            final bg   = Color.lerp(Colors.white, Colors.black, v)!;
-            final fg   = Color.lerp(Colors.black, Colors.white, v)!;
-            final fgs  = Color.lerp(Colors.black54, Colors.white60, v)!;
+            final v = _anim.value;
+            final bg = Color.lerp(Colors.white, Colors.black, v)!;
+            final fg = Color.lerp(Colors.black, Colors.white, v)!;
+            final fgs = Color.lerp(Colors.black54, Colors.white60, v)!;
             final bord = Color.lerp(const Color(0xFFD0D0D0), Colors.black, v)!;
             final divC = Color.lerp(Colors.black26, Colors.white30, v)!;
 
-            return Container(
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               width: double.infinity,
+              transform: Matrix4.translationValues(_isHovered ? 8 : 0, 0, 0),
               decoration: BoxDecoration(
-                  color: bg, border: Border.all(color: bord, width: 1.2)),
+                  color: bg,
+                  border: Border.all(color: bord, width: 1.2),
+                  boxShadow: _isHovered
+                      ? [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4))
+                  ]
+                      : []),
               padding: widget.isMobile
                   ? const EdgeInsets.all(20)
                   : const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
@@ -449,7 +574,10 @@ class _ExperienceRowState extends State<_ExperienceRow>
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(widget.exp.role,
               style: GoogleFonts.dmSans(
-                  fontSize: 17, fontWeight: FontWeight.w700, color: fg, height: 1.2)),
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: fg,
+                  height: 1.2)),
           const SizedBox(height: 4),
           Text(widget.exp.company,
               style: GoogleFonts.dmSans(fontSize: 13, color: fgs, height: 1.3)),
@@ -460,7 +588,10 @@ class _ExperienceRowState extends State<_ExperienceRow>
       Text(
         'JOB DURATION -  ${widget.exp.duration}',
         style: GoogleFonts.dmSans(
-            fontSize: 12, fontWeight: FontWeight.w700, color: fgs, letterSpacing: 0.8),
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: fgs,
+            letterSpacing: 0.8),
       ),
       const SizedBox(width: 8),
     ]);
@@ -472,14 +603,16 @@ class _ExperienceRowState extends State<_ExperienceRow>
         _NumberBadge(number: widget.exp.number, fg: fg),
         const SizedBox(width: 14),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(widget.exp.role,
-                style: GoogleFonts.dmSans(
-                    fontSize: 15, fontWeight: FontWeight.w700, color: fg)),
-            const SizedBox(height: 3),
-            Text(widget.exp.company,
-                style: GoogleFonts.dmSans(fontSize: 12, color: fgs)),
-          ]),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.exp.role,
+                    style: GoogleFonts.dmSans(
+                        fontSize: 15, fontWeight: FontWeight.w700, color: fg)),
+                const SizedBox(height: 3),
+                Text(widget.exp.company,
+                    style: GoogleFonts.dmSans(fontSize: 12, color: fgs)),
+              ]),
         ),
       ]),
       const SizedBox(height: 14),
@@ -488,7 +621,10 @@ class _ExperienceRowState extends State<_ExperienceRow>
       Text(
         'JOB DURATION -  ${widget.exp.duration}',
         style: GoogleFonts.dmSans(
-            fontSize: 11, fontWeight: FontWeight.w700, color: fgs, letterSpacing: 0.8),
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: fgs,
+            letterSpacing: 0.8),
       ),
     ]);
   }
@@ -499,7 +635,7 @@ class _ExperienceRowState extends State<_ExperienceRow>
 class _NumberBadge extends StatelessWidget {
   final int number;
   final Color fg;
-  const _NumberBadge({required this.number, required this.fg});
+  const _NumberBadge({required this.number, required this.fg, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -525,7 +661,7 @@ class _NumberBadge extends StatelessWidget {
 class _ViewMoreButton extends StatefulWidget {
   final bool expanded;
   final VoidCallback onTap;
-  const _ViewMoreButton({required this.expanded, required this.onTap});
+  const _ViewMoreButton({required this.expanded, required this.onTap, super.key});
 
   @override
   State<_ViewMoreButton> createState() => _ViewMoreButtonState();
@@ -577,12 +713,11 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
 }
 
 // ─── Experience Modal ─────────────────────────────────────────────────────────
-// Deep black liquid glass — dark bg, subtle shimmer border, crisp white text
 
 class _ExperienceModal extends StatelessWidget {
   final _Experience experience;
   final Animation<double> animation;
-  const _ExperienceModal({required this.experience, required this.animation});
+  const _ExperienceModal({required this.experience, required this.animation, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -590,7 +725,6 @@ class _ExperienceModal extends StatelessWidget {
     final isMobile = sz.width < 600;
 
     return Stack(children: [
-      // ── Backdrop: soft dark blur ──────────────────────────────────────
       Positioned.fill(
         child: GestureDetector(
           onTap: () => Navigator.of(context).pop(),
@@ -604,13 +738,11 @@ class _ExperienceModal extends StatelessWidget {
           ),
         ),
       ),
-
-      // ── Modal card ────────────────────────────────────────────────────
       Center(
         child: ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
           child: GestureDetector(
-            onTap: () {}, // Absorb taps so backdrop doesn't close
+            onTap: () {},
             child: Container(
               width: isMobile
                   ? sz.width * 0.92
@@ -618,35 +750,24 @@ class _ExperienceModal extends StatelessWidget {
               constraints: BoxConstraints(maxHeight: sz.height * 0.86),
               margin: const EdgeInsets.symmetric(vertical: 40),
               decoration: BoxDecoration(
-                // Deep black base
                 color: const Color(0xFF0D0D0D).withOpacity(0.95),
                 borderRadius: BorderRadius.circular(24),
-                // Shimmer border: top-left bright, bottom-right dim
                 border: Border.all(
                   color: Colors.white.withOpacity(0.12),
                   width: 1.0,
                 ),
                 boxShadow: [
-                  // Outer glow — deep dark lift
                   BoxShadow(
                     color: Colors.black.withOpacity(0.70),
                     blurRadius: 80,
                     spreadRadius: -4,
                     offset: const Offset(0, 32),
                   ),
-                  // Inner subtle highlight along top edge
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.04),
-                    blurRadius: 0,
-                    spreadRadius: -1,
-                    offset: const Offset(0, 1),
-                  ),
                 ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
                 child: Stack(children: [
-                  // Faint radial noise texture painted in the corner
                   Positioned(
                     top: -60,
                     right: -60,
@@ -655,7 +776,6 @@ class _ExperienceModal extends StatelessWidget {
                       painter: _GlowCirclePainter(),
                     ),
                   ),
-                  // Content scrollable
                   _ModalContent(experience: experience, isMobile: isMobile),
                 ]),
               ),
@@ -667,7 +787,6 @@ class _ExperienceModal extends StatelessWidget {
   }
 }
 
-// Faint radial glow in corner for liquid depth
 class _GlowCirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -678,7 +797,6 @@ class _GlowCirclePainter extends CustomPainter {
           Colors.white.withOpacity(0.06),
           Colors.white.withOpacity(0.0),
         ],
-        stops: const [0.0, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: size.width / 2));
     canvas.drawCircle(center, size.width / 2, paint);
   }
@@ -687,12 +805,10 @@ class _GlowCirclePainter extends CustomPainter {
   bool shouldRepaint(_) => false;
 }
 
-// ─── Modal Content ────────────────────────────────────────────────────────────
-
 class _ModalContent extends StatelessWidget {
   final _Experience experience;
   final bool isMobile;
-  const _ModalContent({required this.experience, required this.isMobile});
+  const _ModalContent({required this.experience, required this.isMobile, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -704,26 +820,24 @@ class _ModalContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-
-          // ── Header row: badge + close ──────────────────────────────────
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            // Number badge — glassy dark tile
             Container(
               width: 52,
               height: 52,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.07),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white.withOpacity(0.14), width: 1),
+                border:
+                Border.all(color: Colors.white.withOpacity(0.14), width: 1),
               ),
               child: Center(
                 child: Text('${experience.number}',
                     style: GoogleFonts.dmSans(
-                        fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white)),
               ),
             ),
-
-            // Close button
             GestureDetector(
               onTap: () => Navigator.of(context).pop(),
               child: MouseRegion(
@@ -734,17 +848,16 @@ class _ModalContent extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.08),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.16), width: 1),
+                    border: Border.all(
+                        color: Colors.white.withOpacity(0.16), width: 1),
                   ),
-                  child: const Icon(Icons.close_rounded, size: 16, color: Colors.white70),
+                  child: const Icon(Icons.close_rounded,
+                      size: 16, color: Colors.white70),
                 ),
               ),
             ),
           ]),
-
           SizedBox(height: isMobile ? 22 : 28),
-
-          // ── Role ──────────────────────────────────────────────────────
           Text(experience.role,
               style: GoogleFonts.dmSans(
                   fontSize: isMobile ? 20 : 26,
@@ -752,19 +865,19 @@ class _ModalContent extends StatelessWidget {
                   color: Colors.white,
                   height: 1.2,
                   letterSpacing: -0.4)),
-
           const SizedBox(height: 8),
-
-          // ── Company + duration ────────────────────────────────────────
           Row(children: [
             Flexible(
               child: Text(experience.company,
                   style: GoogleFonts.dmSans(
-                      fontSize: 13, color: Colors.white.withOpacity(0.5), fontWeight: FontWeight.w500)),
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.5),
+                      fontWeight: FontWeight.w500)),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Container(width: 1, height: 13, color: Colors.white.withOpacity(0.2)),
+              child: Container(
+                  width: 1, height: 13, color: Colors.white.withOpacity(0.2)),
             ),
             Text(experience.duration,
                 style: GoogleFonts.dmSans(
@@ -773,10 +886,7 @@ class _ModalContent extends StatelessWidget {
                     color: Colors.white.withOpacity(0.4),
                     letterSpacing: 0.6)),
           ]),
-
           const SizedBox(height: 22),
-
-          // Divider — thin glowing line
           Container(
             height: 1,
             decoration: BoxDecoration(
@@ -789,21 +899,17 @@ class _ModalContent extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 22),
-
-          // ── Description ───────────────────────────────────────────────
           Text(experience.description,
               style: GoogleFonts.dmSans(
                   fontSize: isMobile ? 13.5 : 14.5,
                   color: Colors.white.withOpacity(0.75),
                   height: 1.75)),
-
           const SizedBox(height: 24),
-
-          // ── Highlights label ──────────────────────────────────────────
           Row(children: [
-            Container(width: 3, height: 12,
+            Container(
+                width: 3,
+                height: 12,
                 decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(2))),
@@ -815,46 +921,43 @@ class _ModalContent extends StatelessWidget {
                     color: Colors.white.withOpacity(0.45),
                     letterSpacing: 1.8)),
           ]),
-
           const SizedBox(height: 14),
-
-          // ── Highlights list ───────────────────────────────────────────
           ...experience.highlights.map((h) => Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 7, right: 12),
-                child: Container(
-                  width: 4, height: 4,
-                  decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.55),
-                      shape: BoxShape.circle),
-                ),
-              ),
-              Expanded(
-                child: Text(h,
-                    style: GoogleFonts.dmSans(
-                        fontSize: isMobile ? 13 : 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white.withOpacity(0.82),
-                        height: 1.55)),
-              ),
-            ]),
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 7, right: 12),
+                    child: Container(
+                      width: 4,
+                      height: 4,
+                      decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.55),
+                          shape: BoxShape.circle),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(h,
+                        style: GoogleFonts.dmSans(
+                            fontSize: isMobile ? 13 : 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white.withOpacity(0.82),
+                            height: 1.55)),
+                  ),
+                ]),
           )),
-
           const SizedBox(height: 28),
-
-          // ── Close button ──────────────────────────────────────────────
-          _ModalCloseButton(),
+          const _ModalCloseButton(),
         ],
       ),
     );
   }
 }
 
-// ─── Modal Close Button ───────────────────────────────────────────────────────
-
 class _ModalCloseButton extends StatefulWidget {
+  const _ModalCloseButton({super.key});
+
   @override
   State<_ModalCloseButton> createState() => _ModalCloseButtonState();
 }
@@ -874,7 +977,6 @@ class _ModalCloseButtonState extends State<_ModalCloseButton> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          // Hover: slightly lighter dark glass
           color: _hov
               ? Colors.white.withOpacity(0.12)
               : Colors.white.withOpacity(0.05),

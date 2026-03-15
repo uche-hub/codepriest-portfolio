@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/scroll_provider.dart';
@@ -33,6 +35,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final scrollProvider = context.watch<ScrollProvider>();
+    final width = MediaQuery.of(context).size.width;
+    final isMobileOrTablet = width < 1100;
+
+    // Mobile/tablet: ClampingScrollPhysics = native smooth touch,
+    //   hard-stops at both ends — no endless scroll above navbar or below footer
+    // Desktop: custom spring for nice mouse-wheel feel
+    final ScrollPhysics physics = isMobileOrTablet
+        ? const ClampingScrollPhysics()
+        : const _DesktopSmoothPhysics();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -40,10 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Main scrollable content
           ScrollConfiguration(
-            behavior: _SmoothScrollBehavior(),
+            behavior: _PortfolioScrollBehavior(isMobileOrTablet: isMobileOrTablet),
             child: CustomScrollView(
               controller: scrollProvider.scrollController,
-              physics: const _SmoothScrollPhysics(),
+              physics: physics,
               slivers: [
                 // Transparent space for navbar overlap
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -97,6 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SliverToBoxAdapter(
                   child: FooterWidget(),
                 ),
+
+                // Hard bottom boundary — footer stays flush, nothing to scroll into
+                const SliverToBoxAdapter(child: SizedBox.shrink()),
               ],
             ),
           ),
@@ -114,35 +128,50 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ─── Custom Smooth Scroll Physics ─────────────────────────────────────────────
+// ─── Desktop smooth scroll physics (mouse wheel) ──────────────────────────────
 
-class _SmoothScrollPhysics extends ScrollPhysics {
-  const _SmoothScrollPhysics({super.parent});
+class _DesktopSmoothPhysics extends ScrollPhysics {
+  const _DesktopSmoothPhysics({super.parent});
 
   @override
-  _SmoothScrollPhysics applyTo(ScrollPhysics? ancestor) {
-    return _SmoothScrollPhysics(parent: buildParent(ancestor));
+  _DesktopSmoothPhysics applyTo(ScrollPhysics? ancestor) {
+    return _DesktopSmoothPhysics(parent: buildParent(ancestor));
   }
 
   @override
   double get minFlingVelocity => 200;
 
   @override
-  double get maxFlingVelocity => 8000;
+  double get maxFlingVelocity => 6000;
 
   @override
   SpringDescription get spring => const SpringDescription(
-    mass: 80,
-    stiffness: 100,
+    mass: 30,
+    stiffness: 120,
     damping: 1,
   );
 }
 
-class _SmoothScrollBehavior extends ScrollBehavior {
+// ─── Scroll behavior ──────────────────────────────────────────────────────────
+
+class _PortfolioScrollBehavior extends ScrollBehavior {
+  final bool isMobileOrTablet;
+  const _PortfolioScrollBehavior({required this.isMobileOrTablet});
+
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {
-    return const _SmoothScrollPhysics();
+    return isMobileOrTablet
+        ? const ClampingScrollPhysics()
+        : const _DesktopSmoothPhysics();
   }
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.stylus,
+  };
 
   @override
   Widget buildScrollbar(

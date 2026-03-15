@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../../../core/constants/responsive_helper.dart';
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -47,7 +48,8 @@ const _mainStudies = [
     scope: ['Google Book API', 'Zen API', 'Flutter', 'Firebase'],
     year: '2025',
     client: 'Apptalic Lab',
-    url: 'https://play.google.com/store/apps/details?id=com.apptalic.novella&pcampaignid=web_share',
+    url:
+    'https://play.google.com/store/apps/details?id=com.apptalic.novella&pcampaignid=web_share',
   ),
   _CaseStudy(
     tag: 'Mobile App',
@@ -60,7 +62,8 @@ const _mainStudies = [
     scope: ['Flutter', 'LinkedIn API', 'Firebase', 'Google GEOLocation'],
     year: '2025',
     client: 'Apptalic Lab',
-    url: 'https://play.google.com/store/apps/details?id=com.apptalic.internda.app&pcampaignid=web_share',
+    url:
+    'https://play.google.com/store/apps/details?id=com.apptalic.internda.app&pcampaignid=web_share',
   ),
 ];
 
@@ -73,10 +76,18 @@ const _extraStudies = [
     imageColor: Color(0xFFDEEBFF),
     description:
     'MAAL Tracker - Walk, Share, and Get Rewarded! Ready to turn your everyday steps into exciting rewards and boost your earnings by sharing your valuable opinions? Welcome to MAAL Tracker, the innovative app that motivates you to stay active and engaged while putting valuable in-app coins right in your pocket!',
-    scope: ['Flutter', 'Firebase', 'Firestore', 'GEOLocation', 'Google Maps API', 'Health Connect'],
+    scope: [
+      'Flutter',
+      'Firebase',
+      'Firestore',
+      'GEOLocation',
+      'Google Maps API',
+      'Health Connect'
+    ],
     year: '2025',
     client: 'Marketing Analytics Africa',
-    url: 'https://play.google.com/store/apps/details?id=com.maa.maal_tracker&pcampaignid=web_share',
+    url:
+    'https://play.google.com/store/apps/details?id=com.maa.maal_tracker&pcampaignid=web_share',
   ),
   _CaseStudy(
     tag: 'Mobile App',
@@ -89,12 +100,14 @@ const _extraStudies = [
     scope: ['Flutter', 'just_audio', 'bLoc'],
     year: '2026',
     client: 'Credes Technologies',
-    url: 'https://play.google.com/store/apps/details?id=org.credes.shelf&pcampaignid=web_share',
+    url:
+    'https://play.google.com/store/apps/details?id=org.credes.shelf&pcampaignid=web_share',
   ),
   _CaseStudy(
     tag: 'pub.dev package',
     title: 'Button Loading FX',
-    subtitle: 'A Flutter package that provides beautiful, customizable loading animations for buttons.',
+    subtitle:
+    'A Flutter package that provides beautiful, customizable loading animations for buttons.',
     imagePath: 'assets/images/button_fx.gif',
     imageColor: Color(0xFFF5E6D3),
     description:
@@ -116,31 +129,34 @@ class CaseStudySectionWidget extends StatefulWidget {
 }
 
 class _CaseStudySectionState extends State<CaseStudySectionWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   bool _showMore = false;
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
+  bool _isVisible = false;
+  late AnimationController _expandCtrl;
+  late AnimationController _entranceCtrl;
+  late Animation<double> _expandAnim;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 520));
-    _anim = CurvedAnimation(
-        parent: _ctrl,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic);
+    _expandCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600));
+    _entranceCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1000));
+    _expandAnim =
+        CurvedAnimation(parent: _expandCtrl, curve: Curves.easeInOutQuart);
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    _expandCtrl.dispose();
+    _entranceCtrl.dispose();
     super.dispose();
   }
 
   void _toggle() {
     setState(() => _showMore = !_showMore);
-    _showMore ? _ctrl.forward() : _ctrl.reverse();
+    _showMore ? _expandCtrl.forward() : _expandCtrl.reverse();
   }
 
   void _openModal(_CaseStudy cs) {
@@ -166,50 +182,49 @@ class _CaseStudySectionState extends State<CaseStudySectionWidget>
     final hPad = ResponsiveHelper.getHorizontalPadding(context);
     final isMobile = ResponsiveHelper.isMobile(context);
 
-    // Alternate: even index = image left, odd = image right
-    final allMain = _mainStudies.toList();
-    final allExtra = _extraStudies.toList();
-
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.fromLTRB(hPad, 80, hPad, 80),
-      child: Column(
-        children: [
-          // Header
-          _CaseHeader(isMobile: isMobile),
-          const SizedBox(height: 64),
-
-          // Main studies
-          ...allMain.asMap().entries.map((e) => Padding(
-            padding: const EdgeInsets.only(bottom: 60),
-            child: _CaseStudyItem(
-              study: e.value,
-              imageLeft: e.key % 2 == 0,
-              isMobile: isMobile,
-              onTap: () => _openModal(e.value),
+    return VisibilityDetector(
+      key: const Key('case-study-section'),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction > 0.1 && !_isVisible) {
+          setState(() => _isVisible = true);
+          _entranceCtrl.forward();
+        }
+      },
+      child: Container(
+        color: Colors.white,
+        padding: EdgeInsets.fromLTRB(hPad, 80, hPad, 80),
+        child: Column(
+          children: [
+            _AnimatedEntrance(
+              controller: _entranceCtrl,
+              delay: 0.0,
+              child: _CaseHeader(isMobile: isMobile),
             ),
-          )),
+            const SizedBox(height: 64),
 
-          // Extra studies — animated
-          AnimatedBuilder(
-            animation: _anim,
-            builder: (_, child) => ClipRect(
-              child: Align(
-                  heightFactor: _anim.value,
-                  alignment: Alignment.topCenter,
-                  child: child),
-            ),
-            child: Column(
-              children: allExtra.asMap().entries.map((e) {
-                // Continue alternating from where main left off
-                final idx = allMain.length + e.key;
-                return AnimatedBuilder(
-                  animation: _anim,
-                  builder: (_, child) => Transform.translate(
-                    offset: Offset(0, 32 * (1 - _anim.value)),
-                    child: child,
-                  ),
-                  child: Padding(
+            // Main studies
+            ..._mainStudies.asMap().entries.map((e) => _AnimatedEntrance(
+              controller: _entranceCtrl,
+              delay: 0.2 + (e.key * 0.15),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 60),
+                child: _CaseStudyItem(
+                  study: e.value,
+                  imageLeft: e.key % 2 == 0,
+                  isMobile: isMobile,
+                  onTap: () => _openModal(e.value),
+                ),
+              ),
+            )),
+
+            // Extra studies
+            SizeTransition(
+              sizeFactor: _expandAnim,
+              axisAlignment: -1,
+              child: Column(
+                children: _extraStudies.asMap().entries.map((e) {
+                  final idx = _mainStudies.length + e.key;
+                  return Padding(
                     padding: const EdgeInsets.only(bottom: 60),
                     child: _CaseStudyItem(
                       study: e.value,
@@ -217,15 +232,47 @@ class _CaseStudySectionState extends State<CaseStudySectionWidget>
                       isMobile: isMobile,
                       onTap: () => _openModal(e.value),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             ),
-          ),
 
-          // View More button
-          _ViewMoreButton(expanded: _showMore, onTap: _toggle),
-        ],
+            _AnimatedEntrance(
+              controller: _entranceCtrl,
+              delay: 0.5,
+              child: _ViewMoreButton(expanded: _showMore, onTap: _toggle),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Entrance Helper ──────────────────────────────────────────────────────────
+
+class _AnimatedEntrance extends StatelessWidget {
+  final Widget child;
+  final AnimationController controller;
+  final double delay;
+
+  const _AnimatedEntrance(
+      {required this.child, required this.controller, required this.delay});
+
+  @override
+  Widget build(BuildContext context) {
+    final anim = CurvedAnimation(
+      parent: controller,
+      curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0),
+          curve: Curves.easeOutCubic),
+    );
+
+    return FadeTransition(
+      opacity: anim,
+      child: SlideTransition(
+        position: Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
+            .animate(anim),
+        child: child,
       ),
     );
   }
@@ -243,14 +290,11 @@ class _CaseHeader extends StatelessWidget {
       alignment: Alignment.center,
       clipBehavior: Clip.none,
       children: [
-        // Dot grid — top left
         Positioned(
           left: isMobile ? -16 : 0,
           top: -8,
           child: const _DotGrid(),
         ),
-
-        // Center content
         Column(children: [
           const _SunIcon(size: 34),
           const SizedBox(height: 14),
@@ -268,7 +312,7 @@ class _CaseHeader extends StatelessWidget {
           SizedBox(
             width: isMobile ? double.infinity : 420,
             child: Text(
-              'There are many variations of passages of Lorem Ipsum available,\nbut the majority have suffered alteration in some form.',
+              'A collection of production-grade mobile applications and open-source tools I have built to solve real-world problems.',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                   fontSize: 13.5, color: Colors.black54, height: 1.7),
@@ -280,7 +324,7 @@ class _CaseHeader extends StatelessWidget {
   }
 }
 
-// ─── Dot Grid (left decoration) ───────────────────────────────────────────────
+// ─── Dot Grid ─────────────────────────────────────────────────────────────────
 
 class _DotGrid extends StatelessWidget {
   const _DotGrid();
@@ -304,23 +348,15 @@ class _DotGridPainter extends CustomPainter {
 
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
-        // Fade: top-left dense & dark, bottom-right fades out
         final distFromCenter = sqrt(pow(c - cols / 2, 2) + pow(r - rows / 2, 2));
         final maxDist = sqrt(pow(cols / 2, 2) + pow(rows / 2, 2));
         final opacity = (1.0 - distFromCenter / maxDist).clamp(0.08, 0.75);
         final radius = (2.4 - distFromCenter * 0.18).clamp(0.8, 2.4);
 
-        // Shadow/blur on outer dots
-        final blurSigma = (distFromCenter * 0.3).clamp(0.0, 1.2);
-
         canvas.drawCircle(
           Offset(c * cellW + cellW / 2, r * cellH + cellH / 2),
           radius,
-          Paint()
-            ..color = Colors.black.withValues(alpha: opacity)
-            ..maskFilter = blurSigma > 0.2
-                ? MaskFilter.blur(BlurStyle.normal, blurSigma)
-                : null,
+          Paint()..color = Colors.black.withOpacity(opacity),
         );
       }
     }
@@ -330,15 +366,39 @@ class _DotGridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ─── Sun Icon (shared with experience section) ────────────────────────────────
+// ─── Sun Icon ─────────────────────────────────────────────────────────────────
 
-class _SunIcon extends StatelessWidget {
+class _SunIcon extends StatefulWidget {
   final double size;
-  const _SunIcon({required this.size});
+  const _SunIcon({required this.size, super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      CustomPaint(size: Size(size, size), painter: _SunPainter());
+  State<_SunIcon> createState() => _SunIconState();
+}
+
+class _SunIconState extends State<_SunIcon> with SingleTickerProviderStateMixin {
+  late AnimationController _rotateCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotateCtrl =
+    AnimationController(vsync: this, duration: const Duration(seconds: 12))
+      ..repeat();
+  }
+
+  @override
+  void dispose() {
+    _rotateCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => RotationTransition(
+    turns: _rotateCtrl,
+    child: CustomPaint(
+        size: Size(widget.size, widget.size), painter: _SunPainter()),
+  );
 }
 
 class _SunPainter extends CustomPainter {
@@ -349,8 +409,8 @@ class _SunPainter extends CustomPainter {
       ..color = Colors.black
       ..strokeCap = StrokeCap.round;
 
-    canvas.drawCircle(center, size.width * 0.12,
-        paint..style = PaintingStyle.fill);
+    canvas.drawCircle(
+        center, size.width * 0.12, paint..style = PaintingStyle.fill);
     paint.style = PaintingStyle.stroke;
 
     const rayCount = 16;
@@ -444,24 +504,33 @@ class _CaseImageState extends State<_CaseImage> {
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hov = true),
-      onExit:  (_) => setState(() => _hov = false),
+      onExit: (_) => setState(() => _hov = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
+          duration: const Duration(milliseconds: 250),
           height: h,
+          transform: Matrix4.identity()..translate(0.0, _hov ? -5.0 : 0.0),
           decoration: BoxDecoration(
             color: widget.study.imageColor,
             border: Border.all(
               color: _hov ? Colors.black : Colors.transparent,
               width: 1.5,
             ),
+            boxShadow: _hov
+                ? [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 15,
+                  offset: const Offset(0, 10))
+            ]
+                : [],
           ),
           child: ClipRect(
             child: AnimatedScale(
-              scale: _hov ? 1.03 : 1.0,
-              duration: const Duration(milliseconds: 300),
+              scale: _hov ? 1.05 : 1.0,
+              duration: const Duration(milliseconds: 350),
               curve: Curves.easeOut,
               child: Image.asset(
                 widget.study.imagePath,
@@ -474,11 +543,10 @@ class _CaseImageState extends State<_CaseImage> {
                     child: Text(
                       widget.study.tag,
                       style: GoogleFonts.dmSans(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black38,
-                        letterSpacing: 1.4,
-                      ),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black38,
+                          letterSpacing: 1.4),
                     ),
                   ),
                 ),
@@ -507,10 +575,8 @@ class _CaseContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Tag pill
         Container(
-          padding:
-          const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
           decoration: BoxDecoration(
             color: Colors.black,
             borderRadius: BorderRadius.circular(50),
@@ -518,29 +584,23 @@ class _CaseContent extends StatelessWidget {
           child: Text(
             study.tag,
             style: GoogleFonts.dmSans(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              letterSpacing: 0.8,
-            ),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: 0.8),
           ),
         ),
         const SizedBox(height: 20),
-
-        // Title
         Text(
           study.title,
           style: GoogleFonts.dmSans(
-            fontSize: titleSize,
-            fontWeight: FontWeight.w800,
-            color: Colors.black,
-            height: 1.2,
-            letterSpacing: -0.5,
-          ),
+              fontSize: titleSize,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
+              height: 1.2,
+              letterSpacing: -0.5),
         ),
         const SizedBox(height: 36),
-
-        // See Details button
         _SeeDetailsButton(onTap: onTap),
       ],
     );
@@ -564,7 +624,7 @@ class _SeeDetailsButtonState extends State<_SeeDetailsButton> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hov = true),
-      onExit:  (_) => setState(() => _hov = false),
+      onExit: (_) => setState(() => _hov = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -578,10 +638,9 @@ class _SeeDetailsButtonState extends State<_SeeDetailsButton> {
                 Text(
                   'See Details',
                   style: GoogleFonts.dmSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black),
                 ),
                 const SizedBox(width: 8),
                 AnimatedSlide(
@@ -594,7 +653,6 @@ class _SeeDetailsButtonState extends State<_SeeDetailsButton> {
               ],
             ),
             const SizedBox(height: 6),
-            // Underline — grows on hover
             AnimatedContainer(
               duration: const Duration(milliseconds: 220),
               height: 1.5,
@@ -626,14 +684,13 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hov = true),
-      onExit:  (_) => setState(() => _hov = false),
+      onExit: (_) => setState(() => _hov = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding:
-          const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
             color: _hov ? Colors.black : Colors.transparent,
             border: Border.all(color: Colors.black, width: 1.2),
@@ -659,8 +716,7 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
                 turns: widget.expanded ? 0.5 : 0.0,
                 duration: const Duration(milliseconds: 300),
                 child: Icon(Icons.keyboard_arrow_down_rounded,
-                    size: 18,
-                    color: _hov ? Colors.white : Colors.black),
+                    size: 18, color: _hov ? Colors.white : Colors.black),
               ),
             ],
           ),
@@ -670,7 +726,7 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
   }
 }
 
-// ─── Case Study Modal — Black Liquid Glass ────────────────────────────────────
+// ─── Modal ────────────────────────────────────────────────────────────────────
 
 class _CaseStudyModal extends StatelessWidget {
   final _CaseStudy study;
@@ -683,7 +739,6 @@ class _CaseStudyModal extends StatelessWidget {
     final isMobile = sz.width < 600;
 
     return Stack(children: [
-      // Backdrop — dark blur wash
       Positioned.fill(
         child: GestureDetector(
           onTap: () => Navigator.of(context).pop(),
@@ -691,14 +746,12 @@ class _CaseStudyModal extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
               child: Container(
-                color: const Color(0xFF080808).withValues(alpha: 0.74),
+                color: const Color(0xFF080808).withOpacity(0.74),
               ),
             ),
           ),
         ),
       ),
-
-      // Modal card
       Center(
         child: ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
@@ -711,40 +764,27 @@ class _CaseStudyModal extends StatelessWidget {
               constraints: BoxConstraints(maxHeight: sz.height * 0.88),
               margin: const EdgeInsets.symmetric(vertical: 32),
               decoration: BoxDecoration(
-                // Deep black with slight transparency for liquid depth
-                color: const Color(0xFF0E0E0E).withValues(alpha: 0.93),
+                color: const Color(0xFF0E0E0E).withOpacity(0.93),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.10),
-                  width: 1.0,
-                ),
+                    color: Colors.white.withOpacity(0.10), width: 1.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.75),
-                    blurRadius: 90,
-                    spreadRadius: -6,
-                    offset: const Offset(0, 36),
-                  ),
-                  // Hairline inner highlight along top edge
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.03),
-                    blurRadius: 0,
-                    spreadRadius: -1,
-                    offset: const Offset(0, 1),
-                  ),
+                      color: Colors.black.withOpacity(0.75),
+                      blurRadius: 90,
+                      spreadRadius: -6,
+                      offset: const Offset(0, 36)),
                 ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
                 child: Stack(children: [
-                  // Faint radial glow — top-right corner (liquid glass highlight)
                   Positioned(
                     top: -50,
                     right: -50,
                     child: CustomPaint(
-                      size: const Size(200, 200),
-                      painter: _CornerGlowPainter(),
-                    ),
+                        size: const Size(200, 200),
+                        painter: _CornerGlowPainter()),
                   ),
                   _ModalContent(study: study, isMobile: isMobile),
                 ]),
@@ -757,7 +797,6 @@ class _CaseStudyModal extends StatelessWidget {
   }
 }
 
-// Subtle radial highlight — sells the wet glass surface
 class _CornerGlowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -766,12 +805,10 @@ class _CornerGlowPainter extends CustomPainter {
       center,
       size.width / 2,
       Paint()
-        ..shader = RadialGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.055),
-            Colors.white.withValues(alpha: 0.0),
-          ],
-        ).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
+        ..shader = RadialGradient(colors: [
+          Colors.white.withOpacity(0.055),
+          Colors.white.withOpacity(0.0)
+        ]).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
     );
   }
 
@@ -794,28 +831,24 @@ class _ModalContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Tag + close button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 7),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.07),
+                  color: Colors.white.withOpacity(0.07),
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.14), width: 1),
+                      color: Colors.white.withOpacity(0.14), width: 1),
                 ),
-                child: Text(
-                  study.tag,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white.withValues(alpha: 0.85),
-                    letterSpacing: 1.0,
-                  ),
-                ),
+                child: Text(study.tag,
+                    style: GoogleFonts.dmSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white.withOpacity(0.85),
+                        letterSpacing: 1.0)),
               ),
               GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
@@ -825,10 +858,10 @@ class _ModalContent extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.07),
+                      color: Colors.white.withOpacity(0.07),
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.14), width: 1),
+                          color: Colors.white.withOpacity(0.14), width: 1),
                     ),
                     child: const Icon(Icons.close_rounded,
                         size: 16, color: Colors.white70),
@@ -837,117 +870,68 @@ class _ModalContent extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 22),
-
-          // Image
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Container(
               height: isMobile ? 180 : 240,
               width: double.infinity,
-              color: study.imageColor.withValues(alpha: 0.3),
-              child: Image.asset(
-                study.imagePath,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  color: study.imageColor.withValues(alpha: 0.3),
-                  child: Center(
-                    child: Text(
-                      study.tag,
-                      style: GoogleFonts.dmSans(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white54,
-                          letterSpacing: 1.4),
-                    ),
-                  ),
-                ),
-              ),
+              color: study.imageColor.withOpacity(0.3),
+              child: Image.asset(study.imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(color: Colors.grey)),
             ),
           ),
-
           const SizedBox(height: 24),
-
-          // Title
-          Text(
-            study.title,
-            style: GoogleFonts.dmSans(
-              fontSize: isMobile ? 20 : 26,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              height: 1.2,
-              letterSpacing: -0.3,
-            ),
-          ),
+          Text(study.title,
+              style: GoogleFonts.dmSans(
+                  fontSize: isMobile ? 20 : 26,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  height: 1.2)),
           const SizedBox(height: 8),
-
-          // Client + year row
           Row(children: [
             Text(study.client,
-                style: GoogleFonts.dmSans(
-                    fontSize: 13,
-                    color: Colors.white60,
-                    fontWeight: FontWeight.w500)),
+                style: GoogleFonts.dmSans(fontSize: 13, color: Colors.white60)),
             const SizedBox(width: 14),
             Container(width: 1, height: 13, color: Colors.white24),
             const SizedBox(width: 14),
             Text(study.year,
-                style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white54)),
+                style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white54)),
           ]),
-
           const SizedBox(height: 18),
-          // Gradient divider instead of flat line
           Container(
             height: 1,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.0),
-                  Colors.white.withValues(alpha: 0.18),
-                  Colors.white.withValues(alpha: 0.0),
-                ],
-              ),
-            ),
+                gradient: LinearGradient(colors: [
+                  Colors.white.withOpacity(0.0),
+                  Colors.white.withOpacity(0.18),
+                  Colors.white.withOpacity(0.0)
+                ])),
           ),
           const SizedBox(height: 18),
-
-          // Description
-          Text(
-            study.description,
-            style: GoogleFonts.dmSans(
-              fontSize: isMobile ? 13.5 : 14.5,
-              color: Colors.white.withValues(alpha: 0.82),
-              height: 1.72,
-            ),
-          ),
-
+          Text(study.description,
+              style: GoogleFonts.dmSans(
+                  fontSize: isMobile ? 13.5 : 14.5,
+                  color: Colors.white.withOpacity(0.82),
+                  height: 1.72)),
           const SizedBox(height: 22),
-
-          // Scope label
           Row(children: [
             Container(
-              width: 3,
-              height: 12,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
+                width: 3,
+                height: 12,
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(2))),
             const SizedBox(width: 8),
             Text('SCOPE OF WORK',
                 style: GoogleFonts.dmSans(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white.withValues(alpha: 0.42),
+                    color: Colors.white.withOpacity(0.42),
                     letterSpacing: 1.8)),
           ]),
           const SizedBox(height: 12),
-
-          // Scope chips
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -956,11 +940,10 @@ class _ModalContent extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                   horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.07),
+                color: Colors.white.withOpacity(0.07),
                 borderRadius: BorderRadius.circular(50),
                 border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.14),
-                    width: 1),
+                    color: Colors.white.withOpacity(0.14), width: 1),
               ),
               child: Text(s,
                   style: GoogleFonts.dmSans(
@@ -970,39 +953,32 @@ class _ModalContent extends StatelessWidget {
             ))
                 .toList(),
           ),
-
           const SizedBox(height: 28),
-
-          // Visit button
-          _ModalCloseBtn(url: study.url),
+          _ModalVisitBtn(url: study.url),
         ],
       ),
     );
   }
 }
 
-class _ModalCloseBtn extends StatefulWidget {
+class _ModalVisitBtn extends StatefulWidget {
   final String url;
-  const _ModalCloseBtn({required this.url});
+  const _ModalVisitBtn({required this.url});
   @override
-  State<_ModalCloseBtn> createState() => _ModalCloseBtnState();
+  State<_ModalVisitBtn> createState() => _ModalVisitBtnState();
 }
 
-class _ModalCloseBtnState extends State<_ModalCloseBtn> {
+class _ModalVisitBtnState extends State<_ModalVisitBtn> {
   bool _hov = false;
-
   @override
   Widget build(BuildContext context) => MouseRegion(
     onEnter: (_) => setState(() => _hov = true),
-    onExit:  (_) => setState(() => _hov = false),
+    onExit: (_) => setState(() => _hov = false),
     cursor: SystemMouseCursors.click,
     child: GestureDetector(
       onTap: () async {
-        Navigator.of(context).pop();
-        if (widget.url.isNotEmpty) {
-          final uri = Uri.parse(widget.url);
-          if (await canLaunchUrl(uri)) launchUrl(uri);
-        }
+        final uri = Uri.parse(widget.url);
+        if (await canLaunchUrl(uri)) launchUrl(uri);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -1010,31 +986,28 @@ class _ModalCloseBtnState extends State<_ModalCloseBtn> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: _hov
-              ? Colors.white.withValues(alpha: 0.14)
-              : Colors.white.withValues(alpha: 0.05),
+              ? Colors.white.withOpacity(0.14)
+              : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _hov
-                ? Colors.white.withValues(alpha: 0.24)
-                : Colors.white.withValues(alpha: 0.10),
-            width: 1,
-          ),
+              color: _hov
+                  ? Colors.white.withOpacity(0.24)
+                  : Colors.white.withOpacity(0.10),
+              width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('VISIT',
+            Text('VISIT PROJECT',
                 style: GoogleFonts.dmSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white.withValues(alpha: _hov ? 0.95 : 0.55),
+                    color: Colors.white.withOpacity(_hov ? 0.95 : 0.55),
                     letterSpacing: 1.8)),
             const SizedBox(width: 8),
-            Icon(
-              Icons.arrow_outward_rounded,
-              size: 14,
-              color: Colors.white.withValues(alpha: _hov ? 0.95 : 0.55),
-            ),
+            Icon(Icons.arrow_outward_rounded,
+                size: 14,
+                color: Colors.white.withOpacity(_hov ? 0.95 : 0.55)),
           ],
         ),
       ),

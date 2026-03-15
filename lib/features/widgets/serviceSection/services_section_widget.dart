@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../../../core/constants/responsive_helper.dart';
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -110,24 +111,31 @@ class ServicesSectionWidget extends StatefulWidget {
 }
 
 class _ServicesSectionState extends State<ServicesSectionWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   bool _expanded = false;
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
+  bool _isVisible = false;
+  late AnimationController _expandCtrl;
+  late AnimationController _entranceCtrl;
+  late Animation<double> _expandAnim;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
-    _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic);
+    _expandCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _entranceCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
+    _expandAnim = CurvedAnimation(parent: _expandCtrl, curve: Curves.easeInOutQuart);
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _expandCtrl.dispose();
+    _entranceCtrl.dispose();
+    super.dispose();
+  }
 
   void _toggle() {
     setState(() => _expanded = !_expanded);
-    _expanded ? _ctrl.forward() : _ctrl.reverse();
+    _expanded ? _expandCtrl.forward() : _expandCtrl.reverse();
   }
 
   void _openModal(_Service s) {
@@ -153,16 +161,29 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
     final hPad = ResponsiveHelper.getHorizontalPadding(context);
     final isMobile = ResponsiveHelper.isMobile(context);
 
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.fromLTRB(hPad, 60, hPad, 80),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Header(expanded: _expanded, onToggle: _toggle, isMobile: isMobile),
-          SizedBox(height: isMobile ? 40 : 56),
-          isMobile ? _mobileCards() : _desktopCards(context),
-        ],
+    return VisibilityDetector(
+      key: const Key('services-section'),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction > 0.1 && !_isVisible) {
+          setState(() => _isVisible = true);
+          _entranceCtrl.forward();
+        }
+      },
+      child: Container(
+        color: Colors.white,
+        padding: EdgeInsets.fromLTRB(hPad, 60, hPad, 80),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _AnimatedEntrance(
+              controller: _entranceCtrl,
+              delay: 0.0,
+              child: _Header(expanded: _expanded, onToggle: _toggle, isMobile: isMobile),
+            ),
+            SizedBox(height: isMobile ? 40 : 56),
+            isMobile ? _mobileCards() : _desktopCards(context),
+          ],
+        ),
       ),
     );
   }
@@ -172,7 +193,11 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _ScrollIndicatorColumn(),
+        _AnimatedEntrance(
+          controller: _entranceCtrl,
+          delay: 0.1,
+          child: const _ScrollIndicatorColumn(),
+        ),
         SizedBox(width: isTablet ? 20 : 40),
         Expanded(
           child: LayoutBuilder(builder: (context, c) {
@@ -180,15 +205,17 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
             final cardH = (MediaQuery.of(context).size.height * 0.38).clamp(260.0, 340.0);
             return Column(
               children: [
-                _CardRow(services: _allServices.sublist(0,3), cardW: cardW, cardH: cardH, onTap: _openModal),
-                AnimatedBuilder(
-                  animation: _anim,
-                  builder: (_, child) => ClipRect(
-                    child: Align(heightFactor: _anim.value, alignment: Alignment.topCenter, child: child),
-                  ),
+                _AnimatedEntrance(
+                  controller: _entranceCtrl,
+                  delay: 0.2,
+                  child: _CardRow(services: _allServices.sublist(0,3), cardW: cardW, cardH: cardH, onTap: _openModal),
+                ),
+                SizeTransition(
+                  sizeFactor: _expandAnim,
+                  axisAlignment: -1,
                   child: Column(children: [
                     const SizedBox(height: 16),
-                    _CardRow(services: _allServices.sublist(3,6), cardW: cardW, cardH: cardH, onTap: _openModal, slide: true, anim: _anim),
+                    _CardRow(services: _allServices.sublist(3,6), cardW: cardW, cardH: cardH, onTap: _openModal, slide: true, anim: _expandAnim),
                   ]),
                 ),
               ],
@@ -202,21 +229,49 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
   Widget _mobileCards() {
     return Column(
       children: [
-        ...List.generate(3, (i) => Padding(
-          padding: const EdgeInsets.only(bottom: 14),
-          child: _ServiceCard(service: _allServices[i], width: double.infinity, height: 220, onTap: () => _openModal(_allServices[i])),
-        )),
-        AnimatedBuilder(
-          animation: _anim,
-          builder: (_, child) => ClipRect(
-            child: Align(heightFactor: _anim.value, alignment: Alignment.topCenter, child: child),
+        ...List.generate(3, (i) => _AnimatedEntrance(
+          controller: _entranceCtrl,
+          delay: 0.1 + (i * 0.1),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: _ServiceCard(service: _allServices[i], width: double.infinity, height: 220, onTap: () => _openModal(_allServices[i])),
           ),
+        )),
+        SizeTransition(
+          sizeFactor: _expandAnim,
+          axisAlignment: -1,
           child: Column(children: List.generate(3, (i) => Padding(
             padding: const EdgeInsets.only(bottom: 14),
             child: _ServiceCard(service: _allServices[i+3], width: double.infinity, height: 220, onTap: () => _openModal(_allServices[i+3])),
           ))),
         ),
       ],
+    );
+  }
+}
+
+// ─── Animation Helper ─────────────────────────────────────────────────────────
+
+class _AnimatedEntrance extends StatelessWidget {
+  final Widget child;
+  final AnimationController controller;
+  final double delay;
+
+  const _AnimatedEntrance({required this.child, required this.controller, required this.delay});
+
+  @override
+  Widget build(BuildContext context) {
+    final anim = CurvedAnimation(
+      parent: controller,
+      curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0), curve: Curves.easeOut),
+    );
+
+    return FadeTransition(
+      opacity: anim,
+      child: SlideTransition(
+        position: Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(anim),
+        child: child,
+      ),
     );
   }
 }
@@ -281,8 +336,7 @@ class _CardRow extends StatelessWidget {
       children: List.generate(services.length, (i) {
         Widget card = _ServiceCard(service: services[i], width: cardW, height: cardH, onTap: () => onTap(services[i]));
         if (slide && anim != null) {
-          card = AnimatedBuilder(animation: anim!, builder: (_, child) =>
-              Transform.translate(offset: Offset(0, 28 * (1 - anim!.value)), child: child), child: card);
+          card = FadeTransition(opacity: anim!, child: card);
         }
         return Padding(padding: EdgeInsets.only(right: i < 2 ? 16 : 0), child: card);
       }),
@@ -320,7 +374,7 @@ class _SectionDescription extends StatelessWidget {
   const _SectionDescription();
   @override
   Widget build(BuildContext context) => Text(
-    'I leverage a diverse toolkit to build scalable applications. \nHere is the stack I use to bring digital products',
+    'I leverage a diverse toolkit to build scalable applications. \nHere is the stack I use to bring digital products to life.',
     style: GoogleFonts.dmSans(fontSize: 13.5, fontWeight: FontWeight.w400, color: Colors.black54, height: 1.7),
     maxLines: 3,
   );
@@ -347,7 +401,11 @@ class _AllServicesButtonState extends State<_AllServicesButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-        decoration: BoxDecoration(color: _hov ? const Color(0xFF333333) : Colors.black, borderRadius: BorderRadius.circular(50)),
+        decoration: BoxDecoration(
+          color: _hov ? const Color(0xFF333333) : Colors.black,
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: _hov ? [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4))] : [],
+        ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
           child: Text(
@@ -383,19 +441,37 @@ class _DownArrowBtn extends StatefulWidget {
   const _DownArrowBtn();
   @override State<_DownArrowBtn> createState() => _DownArrowBtnState();
 }
-class _DownArrowBtnState extends State<_DownArrowBtn> {
+class _DownArrowBtnState extends State<_DownArrowBtn> with SingleTickerProviderStateMixin {
+  late AnimationController _bounceCtrl;
   bool _hov = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _bounceCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() { _bounceCtrl.dispose(); super.dispose(); }
+
   @override
   Widget build(BuildContext context) => MouseRegion(
     onEnter: (_) => setState(() => _hov = true),
     onExit: (_) => setState(() => _hov = false),
     cursor: SystemMouseCursors.click,
-    child: GestureDetector(onTap: () {}, child: AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: 44, height: 44,
-      decoration: BoxDecoration(color: _hov ? const Color(0xFF333333) : Colors.black, shape: BoxShape.circle),
-      child: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 22),
-    )),
+    child: AnimatedBuilder(
+      animation: _bounceCtrl,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(0, 5 * _bounceCtrl.value),
+        child: child,
+      ),
+      child: GestureDetector(onTap: () {}, child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 44, height: 44,
+        decoration: BoxDecoration(color: _hov ? const Color(0xFF333333) : Colors.black, shape: BoxShape.circle),
+        child: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 22),
+      )),
+    ),
   );
 }
 
@@ -412,6 +488,7 @@ class _ServiceCard extends StatefulWidget {
 class _ServiceCardState extends State<_ServiceCard> with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _anim;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -426,8 +503,14 @@ class _ServiceCardState extends State<_ServiceCard> with SingleTickerProviderSta
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => _ctrl.forward(),
-      onExit: (_) { if (!widget.service.isHighlighted) _ctrl.reverse(); },
+      onEnter: (_) {
+        setState(() => _isHovered = true);
+        _ctrl.forward();
+      },
+      onExit: (_) {
+        setState(() => _isHovered = false);
+        if (!widget.service.isHighlighted) _ctrl.reverse();
+      },
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -439,10 +522,20 @@ class _ServiceCardState extends State<_ServiceCard> with SingleTickerProviderSta
             final fg   = Color.lerp(Colors.black, Colors.white, v)!;
             final fgs  = Color.lerp(Colors.black54, Colors.white70, v)!;
             final bord = Color.lerp(const Color(0xFFCCCCCC), Colors.black, v)!;
-            return Container(
+
+            // FIX: Using AnimatedContainer instead of undefined AnimatedTransform
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              transform: Matrix4.translationValues(0, _isHovered ? -8 : 0, 0),
               width: widget.width == double.infinity ? null : widget.width,
               height: widget.height,
-              decoration: BoxDecoration(color: bg, border: Border.all(color: bord, width: 1.2)),
+              decoration: BoxDecoration(
+                color: bg,
+                border: Border.all(color: bord, width: 1.2),
+                boxShadow: _isHovered
+                    ? [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 10))]
+                    : [],
+              ),
               padding: const EdgeInsets.all(26),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 FaIcon(widget.service.icon, size: 32, color: fg),
@@ -476,7 +569,6 @@ class _ServiceModal extends StatelessWidget {
     final isMobile = sz.width < 600;
 
     return Stack(children: [
-      // Backdrop — dark blur wash
       Positioned.fill(
         child: GestureDetector(
           onTap: () => Navigator.of(context).pop(),
@@ -484,14 +576,12 @@ class _ServiceModal extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
               child: Container(
-                color: const Color(0xFF080808).withValues(alpha: 0.74),
+                color: const Color(0xFF080808).withOpacity(0.74),
               ),
             ),
           ),
         ),
       ),
-
-      // Modal card
       Center(
         child: ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
@@ -502,40 +592,19 @@ class _ServiceModal extends StatelessWidget {
               constraints: BoxConstraints(maxHeight: sz.height * 0.84),
               margin: const EdgeInsets.symmetric(vertical: 40),
               decoration: BoxDecoration(
-                // Deep black with slight transparency for liquid depth
-                color: const Color(0xFF0E0E0E).withValues(alpha: 0.93),
+                color: const Color(0xFF0E0E0E).withOpacity(0.93),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.10),
-                  width: 1.0,
-                ),
+                border: Border.all(color: Colors.white.withOpacity(0.10), width: 1.0),
                 boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.75),
-                    blurRadius: 90,
-                    spreadRadius: -6,
-                    offset: const Offset(0, 36),
-                  ),
-                  // Hairline inner highlight along top edge
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.03),
-                    blurRadius: 0,
-                    spreadRadius: -1,
-                    offset: const Offset(0, 1),
-                  ),
+                  BoxShadow(color: Colors.black.withOpacity(0.75), blurRadius: 90, spreadRadius: -6, offset: const Offset(0, 36)),
                 ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
                 child: Stack(children: [
-                  // Faint radial glow — top-right corner (liquid glass highlight)
                   Positioned(
-                    top: -50,
-                    right: -50,
-                    child: CustomPaint(
-                      size: const Size(200, 200),
-                      painter: _CornerGlowPainter(),
-                    ),
+                    top: -50, right: -50,
+                    child: CustomPaint(size: const Size(200, 200), painter: _CornerGlowPainter()),
                   ),
                   _ModalContent(service: service, isMobile: isMobile),
                 ]),
@@ -548,7 +617,6 @@ class _ServiceModal extends StatelessWidget {
   }
 }
 
-// Subtle radial highlight — sells the wet glass surface
 class _CornerGlowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -556,17 +624,10 @@ class _CornerGlowPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       size.width / 2,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.055),
-            Colors.white.withValues(alpha: 0.0),
-          ],
-        ).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
+      Paint()..shader = RadialGradient(colors: [Colors.white.withOpacity(0.055), Colors.white.withOpacity(0.0)]).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
     );
   }
-  @override
-  bool shouldRepaint(_) => false;
+  @override bool shouldRepaint(_) => false;
 }
 
 class _ModalContent extends StatelessWidget {
@@ -580,14 +641,13 @@ class _ModalContent extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.all(pad),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-        // Icon + close
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Container(
             width: 52, height: 52,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.07),
+              color: Colors.white.withOpacity(0.07),
               borderRadius: BorderRadius.circular(13),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.14), width: 1),
+              border: Border.all(color: Colors.white.withOpacity(0.14), width: 1),
             ),
             child: Center(child: FaIcon(service.icon, size: 22, color: Colors.white70)),
           ),
@@ -597,86 +657,44 @@ class _ModalContent extends StatelessWidget {
               cursor: SystemMouseCursors.click,
               child: Container(
                 width: 36, height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.07),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.14), width: 1),
-                ),
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.07), shape: BoxShape.circle, border: Border.all(color: Colors.white.withOpacity(0.14), width: 1)),
                 child: const Icon(Icons.close_rounded, size: 16, color: Colors.white70),
               ),
             ),
           ),
         ]),
-
         SizedBox(height: isMobile ? 20 : 26),
-
-        Text(service.modalTitle, style: GoogleFonts.dmSans(
-          fontSize: isMobile ? 21 : 27, fontWeight: FontWeight.w800,
-          color: Colors.white, height: 1.15, letterSpacing: -0.4,
-        )),
+        Text(service.modalTitle, style: GoogleFonts.dmSans(fontSize: isMobile ? 21 : 27, fontWeight: FontWeight.w800, color: Colors.white, height: 1.15, letterSpacing: -0.4)),
         const SizedBox(height: 14),
-
-        // Gradient divider instead of flat line
         Container(
           height: 1,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.white.withValues(alpha: 0.0),
-                Colors.white.withValues(alpha: 0.18),
-                Colors.white.withValues(alpha: 0.0),
-              ],
-            ),
-          ),
+          decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.white.withOpacity(0.0), Colors.white.withOpacity(0.18), Colors.white.withOpacity(0.0)])),
         ),
         const SizedBox(height: 18),
-
-        Text(service.description, style: GoogleFonts.dmSans(
-          fontSize: isMobile ? 13.5 : 14.5,
-          color: Colors.white.withValues(alpha: 0.82), height: 1.72,
-        )),
+        Text(service.description, style: GoogleFonts.dmSans(fontSize: isMobile ? 13.5 : 14.5, color: Colors.white.withOpacity(0.82), height: 1.72)),
         const SizedBox(height: 22),
-
-        // Bullets label
         Row(children: [
-          Container(
-            width: 3, height: 12,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
+          Container(width: 3, height: 12, decoration: BoxDecoration(color: Colors.white.withOpacity(0.5), borderRadius: BorderRadius.circular(2))),
           const SizedBox(width: 8),
-          Text('HIGHLIGHTS', style: GoogleFonts.dmSans(
-            fontSize: 10, fontWeight: FontWeight.w700,
-            color: Colors.white.withValues(alpha: 0.42), letterSpacing: 1.8,
-          )),
+          Text('HIGHLIGHTS', style: GoogleFonts.dmSans(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white.withOpacity(0.42), letterSpacing: 1.8)),
         ]),
         const SizedBox(height: 12),
-
         ...service.bullets.map((b) => Padding(
           padding: const EdgeInsets.only(bottom: 11),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(
-              width: 4, height: 4,
-              margin: const EdgeInsets.only(top: 8, right: 12),
-              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.55), shape: BoxShape.circle),
-            ),
-            Expanded(child: Text(b, style: GoogleFonts.dmSans(
-              fontSize: isMobile ? 13 : 14, fontWeight: FontWeight.w400,
-              color: Colors.white.withValues(alpha: 0.82), height: 1.55,
-            ))),
+            Container(width: 4, height: 4, margin: const EdgeInsets.only(top: 8, right: 12), decoration: BoxDecoration(color: Colors.white.withOpacity(0.55), shape: BoxShape.circle)),
+            Expanded(child: Text(b, style: GoogleFonts.dmSans(fontSize: isMobile ? 13 : 14, fontWeight: FontWeight.w400, color: Colors.white.withOpacity(0.82), height: 1.55))),
           ]),
         )),
-
         const SizedBox(height: 26),
-        _ModalCta(),
+        const _ModalCta(),
       ]),
     );
   }
 }
 
 class _ModalCta extends StatefulWidget {
+  const _ModalCta();
   @override State<_ModalCta> createState() => _ModalCtaState();
 }
 class _ModalCtaState extends State<_ModalCta> {
@@ -692,22 +710,11 @@ class _ModalCtaState extends State<_ModalCta> {
         duration: const Duration(milliseconds: 200),
         width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: _hov
-              ? Colors.white.withValues(alpha: 0.14)
-              : Colors.white.withValues(alpha: 0.05),
+          color: _hov ? Colors.white.withOpacity(0.14) : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: _hov
-                ? Colors.white.withValues(alpha: 0.24)
-                : Colors.white.withValues(alpha: 0.10),
-            width: 1,
-          ),
+          border: Border.all(color: _hov ? Colors.white.withOpacity(0.24) : Colors.white.withOpacity(0.10), width: 1),
         ),
-        child: Center(child: Text('GET IN TOUCH', style: GoogleFonts.dmSans(
-          fontSize: 12, fontWeight: FontWeight.w700,
-          color: Colors.white.withValues(alpha: _hov ? 0.95 : 0.55),
-          letterSpacing: 1.8,
-        ))),
+        child: Center(child: Text('GET IN TOUCH', style: GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white.withOpacity(_hov ? 0.95 : 0.55), letterSpacing: 1.8))),
       ),
     ),
   );
