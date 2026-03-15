@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "460449020290",
+    "project_id": "codepriest-portfolio-92faf",
+    "storage_bucket": "codepriest-portfolio-92faf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460449020290:android:a470fb2019bf04376df79b",
+        "android_client_info": {
+          "package_name": "com.nippoga.codepriest_portfolio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbaURYjIfHXU8PXABCgLvIGSXYdOVl1ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

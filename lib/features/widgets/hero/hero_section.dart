@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/responsive_helper.dart';
-import '../../providers/download_prodiver.dart';
+import '../../providers/download_provider.dart';
 import '../../providers/scroll_provider.dart';
 import 'hero_skills_bar.dart';
 
@@ -768,6 +768,9 @@ class _DownloadCvButtonState extends State<_DownloadCvButton> {
         final isDone = dl.state == DownloadState.done;
         final isError = dl.state == DownloadState.error;
 
+        // Debug print
+        print('Download state: ${dl.state}, progress: ${dl.progress}');
+
         // Label text
         final label = isDone
             ? 'Downloaded!'
@@ -812,10 +815,17 @@ class _DownloadCvButtonState extends State<_DownloadCvButton> {
               : SystemMouseCursors.click,
           child: GestureDetector(
             onTap: () {
+              print('Button tapped - current state: ${dl.state}');
               if (isDone) {
-                // Already downloaded — allow re-download
+                print('Resetting download...');
                 dl.reset();
+                // Small delay to ensure reset completes before new download
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  print('Starting download after reset...');
+                  dl.downloadCv();
+                });
               } else {
+                print('Starting download directly...');
                 dl.downloadCv();
               }
             },

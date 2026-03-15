@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/responsive_helper.dart';
 import '../../../core/utils/emailjs_service.dart';
+import '../../../core/utils/firebase_mail_service.dart';
 
 // ─── Send status ──────────────────────────────────────────────────────────────
 
@@ -43,7 +44,7 @@ class _ContactSectionState extends State<ContactSectionWidget> {
   }
 
   Future<void> _send() async {
-    // Validation
+    // Validation Logic
     if (_nameCtrl.text.trim().isEmpty) {
       setState(() { _status = _SendStatus.error; _errorMsg = 'Please enter your name.'; });
       return;
@@ -60,7 +61,8 @@ class _ContactSectionState extends State<ContactSectionWidget> {
 
     setState(() { _status = _SendStatus.sending; _errorMsg = null; });
 
-    final error = await EmailJSService.send(
+    // UPDATED: Call FirebaseMailService instead of EmailJS
+    final error = await FirebaseMailService.send(
       name:    _nameCtrl.text.trim(),
       email:   _emailCtrl.text.trim(),
       company: _companyCtrl.text.trim(),

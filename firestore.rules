@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // This allows anyone to send you a message via the form
+    match /mail/{document=**} {
+      allow create: if true;
+      // Protects your messages so others can't read or delete them
+      allow read, update, delete: if false;
+    }
+  }
+}

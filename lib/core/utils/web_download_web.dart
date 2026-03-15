@@ -5,20 +5,27 @@
 import 'dart:html' as html;
 
 void triggerWebDownload(List<int> bytes, String fileName) {
-  final blob = html.Blob([bytes], 'application/pdf');
-  final url = html.Url.createObjectUrlFromBlob(blob);
+  try {
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url  = html.Url.createObjectUrlFromBlob(blob);
 
-  // Create a hidden <a download="cv.pdf" href="blob:..."> and click it
-  final anchor = html.AnchorElement(href: url)
-    ..setAttribute('download', fileName)
-    ..style.display = 'none';
+    final anchor = html.document.createElement('a') as html.AnchorElement
+      ..href = url
+      ..setAttribute('download', fileName)
+      ..style.display = 'none';
 
-  html.document.body!.append(anchor);
-  anchor.click();
-  anchor.remove();
+    html.document.body!.append(anchor);
+    anchor.click();
+    anchor.remove();
 
-  // Release the object URL after a short delay
-  Future.delayed(const Duration(seconds: 2), () {
-    html.Url.revokeObjectUrl(url);
-  });
+    Future.delayed(const Duration(seconds: 3), () {
+      html.Url.revokeObjectUrl(url);
+    });
+  } catch (e) {
+    // fallback: open in new tab
+    html.window.open(
+      'assets/files/$fileName',
+      '_blank',
+    );
+  }
 }

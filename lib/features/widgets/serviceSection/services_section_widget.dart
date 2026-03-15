@@ -137,8 +137,8 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
       barrierLabel: 'close',
       barrierColor: Colors.transparent,
       transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (_, _, _) => const SizedBox.shrink(),
-      transitionBuilder: (ctx, anim, _, _) => Material(
+      pageBuilder: (_, __, ___) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim, _, __) => Material(
         type: MaterialType.transparency,
         child: FadeTransition(
           opacity: anim,
@@ -240,7 +240,6 @@ class _Header extends StatelessWidget {
         btn,
       ]);
     }
-    // Desktop: label on top, then title on left | description + button on same row to the right
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const _SectionLabel(),
       const SizedBox(height: 14),
@@ -434,7 +433,7 @@ class _ServiceCardState extends State<_ServiceCard> with SingleTickerProviderSta
         onTap: widget.onTap,
         child: AnimatedBuilder(
           animation: _anim,
-          builder: (_, _) {
+          builder: (_, __) {
             final v = _anim.value;
             final bg   = Color.lerp(Colors.white, Colors.black, v)!;
             final fg   = Color.lerp(Colors.black, Colors.white, v)!;
@@ -464,7 +463,7 @@ class _ServiceCardState extends State<_ServiceCard> with SingleTickerProviderSta
   }
 }
 
-// ─── Glass Modal ──────────────────────────────────────────────────────────────
+// ─── Service Modal — Black Liquid Glass ───────────────────────────────────────
 
 class _ServiceModal extends StatelessWidget {
   final _Service service;
@@ -477,59 +476,69 @@ class _ServiceModal extends StatelessWidget {
     final isMobile = sz.width < 600;
 
     return Stack(children: [
-      // ── Full-screen blur backdrop (same technique as navbar) ──────────────
+      // Backdrop — dark blur wash
       Positioned.fill(
         child: GestureDetector(
           onTap: () => Navigator.of(context).pop(),
           child: ClipRect(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
               child: Container(
-                // Very faint dark tint — content stays visible but blurred, like navbar
-                color: Colors.black.withValues(alpha: 0.22),
+                color: const Color(0xFF080808).withValues(alpha: 0.74),
               ),
             ),
           ),
         ),
       ),
 
-      // ── Centered modal card ───────────────────────────────────────────────
+      // Modal card
       Center(
         child: ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
           child: GestureDetector(
-            onTap: () {}, // prevent backdrop tap bubbling through card
+            onTap: () {},
             child: Container(
               width: isMobile ? sz.width * 0.92 : (sz.width * 0.46).clamp(380.0, 580.0),
               constraints: BoxConstraints(maxHeight: sz.height * 0.84),
               margin: const EdgeInsets.symmetric(vertical: 40),
               decoration: BoxDecoration(
-                // NO white fill — pure frosted panel, content shows through blurred
-                color: Colors.white.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(22),
+                // Deep black with slight transparency for liquid depth
+                color: const Color(0xFF0E0E0E).withValues(alpha: 0.93),
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.22),
+                  color: Colors.white.withValues(alpha: 0.10),
                   width: 1.0,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.25),
-                    blurRadius: 60,
-                    spreadRadius: -8,
-                    offset: const Offset(0, 24),
+                    color: Colors.black.withValues(alpha: 0.75),
+                    blurRadius: 90,
+                    spreadRadius: -6,
+                    offset: const Offset(0, 36),
+                  ),
+                  // Hairline inner highlight along top edge
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.03),
+                    blurRadius: 0,
+                    spreadRadius: -1,
+                    offset: const Offset(0, 1),
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(22),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                  child: Container(
-                    // Second layer: barely-there overlay so text stays readable
-                    color: Colors.white.withValues(alpha: 0.08),
-                    child: _ModalContent(service: service, isMobile: isMobile),
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(children: [
+                  // Faint radial glow — top-right corner (liquid glass highlight)
+                  Positioned(
+                    top: -50,
+                    right: -50,
+                    child: CustomPaint(
+                      size: const Size(200, 200),
+                      painter: _CornerGlowPainter(),
+                    ),
                   ),
-                ),
+                  _ModalContent(service: service, isMobile: isMobile),
+                ]),
               ),
             ),
           ),
@@ -537,6 +546,27 @@ class _ServiceModal extends StatelessWidget {
       ),
     ]);
   }
+}
+
+// Subtle radial highlight — sells the wet glass surface
+class _CornerGlowPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    canvas.drawCircle(
+      center,
+      size.width / 2,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.055),
+            Colors.white.withValues(alpha: 0.0),
+          ],
+        ).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
+    );
+  }
+  @override
+  bool shouldRepaint(_) => false;
 }
 
 class _ModalContent extends StatelessWidget {
@@ -555,11 +585,11 @@ class _ModalContent extends StatelessWidget {
           Container(
             width: 52, height: 52,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
+              color: Colors.white.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(13),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.14), width: 1),
             ),
-            child: Center(child: FaIcon(service.icon, size: 22, color: Colors.white)),
+            child: Center(child: FaIcon(service.icon, size: 22, color: Colors.white70)),
           ),
           GestureDetector(
             onTap: () => Navigator.of(context).pop(),
@@ -568,11 +598,11 @@ class _ModalContent extends StatelessWidget {
               child: Container(
                 width: 36, height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
+                  color: Colors.white.withValues(alpha: 0.07),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.14), width: 1),
                 ),
-                child: const Icon(Icons.close_rounded, size: 17, color: Colors.white),
+                child: const Icon(Icons.close_rounded, size: 16, color: Colors.white70),
               ),
             ),
           ),
@@ -585,7 +615,20 @@ class _ModalContent extends StatelessWidget {
           color: Colors.white, height: 1.15, letterSpacing: -0.4,
         )),
         const SizedBox(height: 14),
-        Container(height: 1, color: Colors.white.withValues(alpha: 0.2)),
+
+        // Gradient divider instead of flat line
+        Container(
+          height: 1,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withValues(alpha: 0.0),
+                Colors.white.withValues(alpha: 0.18),
+                Colors.white.withValues(alpha: 0.0),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(height: 18),
 
         Text(service.description, style: GoogleFonts.dmSans(
@@ -594,17 +637,34 @@ class _ModalContent extends StatelessWidget {
         )),
         const SizedBox(height: 22),
 
+        // Bullets label
+        Row(children: [
+          Container(
+            width: 3, height: 12,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text('HIGHLIGHTS', style: GoogleFonts.dmSans(
+            fontSize: 10, fontWeight: FontWeight.w700,
+            color: Colors.white.withValues(alpha: 0.42), letterSpacing: 1.8,
+          )),
+        ]),
+        const SizedBox(height: 12),
+
         ...service.bullets.map((b) => Padding(
           padding: const EdgeInsets.only(bottom: 11),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Container(
-              width: 5, height: 5,
+              width: 4, height: 4,
               margin: const EdgeInsets.only(top: 8, right: 12),
-              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.55), shape: BoxShape.circle),
             ),
             Expanded(child: Text(b, style: GoogleFonts.dmSans(
-              fontSize: isMobile ? 13 : 14, fontWeight: FontWeight.w500,
-              color: Colors.white.withValues(alpha: 0.88), height: 1.5,
+              fontSize: isMobile ? 13 : 14, fontWeight: FontWeight.w400,
+              color: Colors.white.withValues(alpha: 0.82), height: 1.55,
             ))),
           ]),
         )),
@@ -632,12 +692,21 @@ class _ModalCtaState extends State<_ModalCta> {
         duration: const Duration(milliseconds: 200),
         width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: _hov ? Colors.white.withValues(alpha: 0.25) : Colors.white.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 1),
+          color: _hov
+              ? Colors.white.withValues(alpha: 0.14)
+              : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: _hov
+                ? Colors.white.withValues(alpha: 0.24)
+                : Colors.white.withValues(alpha: 0.10),
+            width: 1,
+          ),
         ),
         child: Center(child: Text('GET IN TOUCH', style: GoogleFonts.dmSans(
-          fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1.2,
+          fontSize: 12, fontWeight: FontWeight.w700,
+          color: Colors.white.withValues(alpha: _hov ? 0.95 : 0.55),
+          letterSpacing: 1.8,
         ))),
       ),
     ),

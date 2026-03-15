@@ -85,7 +85,7 @@ const _extraStudies = [
     imagePath: 'assets/images/4.jpg',
     imageColor: Color(0xFFF5E6D3),
     description:
-    'Finding important files shouldn’t feel like a chore. Shelf is a minimalist, high-speed file access tool designed to help you retrieve your most important files, notes, images, and documents in the least number of steps. Unlike traditional file managers, Shelf doesn’t focus on managing storage—it focuses on instant access to what matters most.',
+    'Finding important files shouldn\'t feel like a chore. Shelf is a minimalist, high-speed file access tool designed to help you retrieve your most important files, notes, images, and documents in the least number of steps. Unlike traditional file managers, Shelf doesn\'t focus on managing storage—it focuses on instant access to what matters most.',
     scope: ['Flutter', 'just_audio', 'bLoc'],
     year: '2026',
     client: 'Credes Technologies',
@@ -150,8 +150,8 @@ class _CaseStudySectionState extends State<CaseStudySectionWidget>
       barrierLabel: 'close',
       barrierColor: Colors.transparent,
       transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (_, _, _) => const SizedBox.shrink(),
-      transitionBuilder: (ctx, anim, _, _) => Material(
+      pageBuilder: (_, __, ___) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim, _, __) => Material(
         type: MaterialType.transparency,
         child: FadeTransition(
           opacity: anim,
@@ -468,7 +468,7 @@ class _CaseImageState extends State<_CaseImage> {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: h,
-                errorBuilder: (_, _, _) => Container(
+                errorBuilder: (_, __, ___) => Container(
                   color: widget.study.imageColor,
                   child: Center(
                     child: Text(
@@ -670,13 +670,12 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
   }
 }
 
-// ─── Case Study Modal ─────────────────────────────────────────────────────────
+// ─── Case Study Modal — Black Liquid Glass ────────────────────────────────────
 
 class _CaseStudyModal extends StatelessWidget {
   final _CaseStudy study;
   final Animation<double> animation;
-  const _CaseStudyModal(
-      {required this.study, required this.animation});
+  const _CaseStudyModal({required this.study, required this.animation});
 
   @override
   Widget build(BuildContext context) {
@@ -684,24 +683,25 @@ class _CaseStudyModal extends StatelessWidget {
     final isMobile = sz.width < 600;
 
     return Stack(children: [
-      // Blurred backdrop
+      // Backdrop — dark blur wash
       Positioned.fill(
         child: GestureDetector(
           onTap: () => Navigator.of(context).pop(),
           child: ClipRect(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-              child: Container(color: Colors.black.withValues(alpha: 0.22)),
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                color: const Color(0xFF080808).withValues(alpha: 0.74),
+              ),
             ),
           ),
         ),
       ),
 
-      // Modal
+      // Modal card
       Center(
         child: ScaleTransition(
-          scale: CurvedAnimation(
-              parent: animation, curve: Curves.easeOutBack),
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
           child: GestureDetector(
             onTap: () {},
             child: Container(
@@ -711,29 +711,43 @@ class _CaseStudyModal extends StatelessWidget {
               constraints: BoxConstraints(maxHeight: sz.height * 0.88),
               margin: const EdgeInsets.symmetric(vertical: 32),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(22),
+                // Deep black with slight transparency for liquid depth
+                color: const Color(0xFF0E0E0E).withValues(alpha: 0.93),
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.22), width: 1.0),
+                  color: Colors.white.withValues(alpha: 0.10),
+                  width: 1.0,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.28),
-                    blurRadius: 60,
-                    spreadRadius: -8,
-                    offset: const Offset(0, 24),
+                    color: Colors.black.withValues(alpha: 0.75),
+                    blurRadius: 90,
+                    spreadRadius: -6,
+                    offset: const Offset(0, 36),
+                  ),
+                  // Hairline inner highlight along top edge
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.03),
+                    blurRadius: 0,
+                    spreadRadius: -1,
+                    offset: const Offset(0, 1),
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(22),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                  child: Container(
-                    color: Colors.white.withValues(alpha: 0.08),
-                    child: _ModalContent(
-                        study: study, isMobile: isMobile),
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(children: [
+                  // Faint radial glow — top-right corner (liquid glass highlight)
+                  Positioned(
+                    top: -50,
+                    right: -50,
+                    child: CustomPaint(
+                      size: const Size(200, 200),
+                      painter: _CornerGlowPainter(),
+                    ),
                   ),
-                ),
+                  _ModalContent(study: study, isMobile: isMobile),
+                ]),
               ),
             ),
           ),
@@ -741,6 +755,28 @@ class _CaseStudyModal extends StatelessWidget {
       ),
     ]);
   }
+}
+
+// Subtle radial highlight — sells the wet glass surface
+class _CornerGlowPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    canvas.drawCircle(
+      center,
+      size.width / 2,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.055),
+            Colors.white.withValues(alpha: 0.0),
+          ],
+        ).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_) => false;
 }
 
 class _ModalContent extends StatelessWidget {
@@ -766,17 +802,17 @@ class _ModalContent extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
+                  color: Colors.white.withValues(alpha: 0.07),
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.3), width: 1),
+                      color: Colors.white.withValues(alpha: 0.14), width: 1),
                 ),
                 child: Text(
                   study.tag,
                   style: GoogleFonts.dmSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: Colors.white.withValues(alpha: 0.85),
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -789,13 +825,13 @@ class _ModalContent extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.12),
+                      color: Colors.white.withValues(alpha: 0.07),
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2), width: 1),
+                          color: Colors.white.withValues(alpha: 0.14), width: 1),
                     ),
                     child: const Icon(Icons.close_rounded,
-                        size: 17, color: Colors.white),
+                        size: 16, color: Colors.white70),
                   ),
                 ),
               ),
@@ -814,7 +850,7 @@ class _ModalContent extends StatelessWidget {
               child: Image.asset(
                 study.imagePath,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
+                errorBuilder: (_, __, ___) => Container(
                   color: study.imageColor.withValues(alpha: 0.3),
                   child: Center(
                     child: Text(
@@ -864,7 +900,19 @@ class _ModalContent extends StatelessWidget {
           ]),
 
           const SizedBox(height: 18),
-          Container(height: 1, color: Colors.white.withValues(alpha: 0.15)),
+          // Gradient divider instead of flat line
+          Container(
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.0),
+                  Colors.white.withValues(alpha: 0.18),
+                  Colors.white.withValues(alpha: 0.0),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 18),
 
           // Description
@@ -880,12 +928,23 @@ class _ModalContent extends StatelessWidget {
           const SizedBox(height: 22),
 
           // Scope label
-          Text('SCOPE OF WORK',
-              style: GoogleFonts.dmSans(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white54,
-                  letterSpacing: 1.6)),
+          Row(children: [
+            Container(
+              width: 3,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text('SCOPE OF WORK',
+                style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white.withValues(alpha: 0.42),
+                    letterSpacing: 1.8)),
+          ]),
           const SizedBox(height: 12),
 
           // Scope chips
@@ -897,10 +956,10 @@ class _ModalContent extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                   horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.10),
+                color: Colors.white.withValues(alpha: 0.07),
                 borderRadius: BorderRadius.circular(50),
                 border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.22),
+                    color: Colors.white.withValues(alpha: 0.14),
                     width: 1),
               ),
               child: Text(s,
@@ -948,23 +1007,34 @@ class _ModalCloseBtnState extends State<_ModalCloseBtn> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 15),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: _hov ? Colors.white.withValues(alpha: 0.22) : Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
+          color: _hov
+              ? Colors.white.withValues(alpha: 0.14)
+              : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: _hov
+                ? Colors.white.withValues(alpha: 0.24)
+                : Colors.white.withValues(alpha: 0.10),
+            width: 1,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('VISIT',
                 style: GoogleFonts.dmSans(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: 1.2)),
+                    color: Colors.white.withValues(alpha: _hov ? 0.95 : 0.55),
+                    letterSpacing: 1.8)),
             const SizedBox(width: 8),
-            const Icon(Icons.arrow_outward_rounded, size: 15, color: Colors.white),
+            Icon(
+              Icons.arrow_outward_rounded,
+              size: 14,
+              color: Colors.white.withValues(alpha: _hov ? 0.95 : 0.55),
+            ),
           ],
         ),
       ),
