@@ -13,7 +13,7 @@ enum DownloadState { idle, downloading, done, error }
 
 class DownloadProvider extends ChangeNotifier {
   static const _prefKey     = 'cv_downloaded';
-  static const _assetPath   = 'files/cv.pdf';
+  static const _assetPath   = 'assets/files/cv.pdf';
   static const _fileName    = 'cv.pdf';
 
   DownloadState _state    = DownloadState.idle;

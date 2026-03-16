@@ -126,27 +126,19 @@ class _HeroTextContentState extends State<_HeroTextContent>
     with TickerProviderStateMixin {
   late AnimationController _ctrl;
   late AnimationController _waveCtrl;
+  late AnimationController _karaokeCtrl;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _waveCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
+    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 8));
+    _waveCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _karaokeCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 5))..repeat();
 
-    // FIX: Use addPostFrameCallback to avoid SchedulerPhase.midFrameMicrotasks error
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _ctrl.forward();
         _waveCtrl.repeat(reverse: true);
-        Future.delayed(const Duration(milliseconds: 2400), () {
-          if (mounted) _waveCtrl.stop();
-        });
       }
     });
   }
@@ -155,21 +147,15 @@ class _HeroTextContentState extends State<_HeroTextContent>
   void dispose() {
     _ctrl.dispose();
     _waveCtrl.dispose();
+    _karaokeCtrl.dispose();
     super.dispose();
   }
 
   Widget _staggeredFade(Widget child, double start, double end) {
     return FadeTransition(
-      opacity: CurvedAnimation(
-        parent: _ctrl,
-        curve: Interval(start, end, curve: Curves.easeOut),
-      ),
+      opacity: CurvedAnimation(parent: _ctrl, curve: Interval(start, end, curve: Curves.easeOut)),
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
-            .animate(CurvedAnimation(
-          parent: _ctrl,
-          curve: Interval(start, end, curve: Curves.easeOutCubic),
-        )),
+        position: Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(CurvedAnimation(parent: _ctrl, curve: Interval(start, end, curve: Curves.easeOutCubic))),
         child: child,
       ),
     );
@@ -181,6 +167,14 @@ class _HeroTextContentState extends State<_HeroTextContent>
     final titleSize = ResponsiveHelper.getHeroTitleFontSize(context);
     final bodySize = ResponsiveHelper.getBodyFontSize(context);
 
+    final List<String> flutterDeveloperItems = [
+      "Expertise in BLoC, Provider, and Clean Architecture",
+      "Scalable Firebase & Supabase Backend Integration",
+      "Optimized performance with Widget Tree refactoring",
+      "Automated CI/CD workflows with GitHub Actions",
+      "Native bridge implementation and Platform Channels",
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -189,7 +183,7 @@ class _HeroTextContentState extends State<_HeroTextContent>
             turns: Tween(begin: -0.05, end: 0.05).animate(_waveCtrl),
             child: Text('✋', style: TextStyle(fontSize: isMobile ? 28 : 36)),
           ),
-          0.0, 0.4,
+          0.0, 0.1,
         ),
         const SizedBox(height: 12),
         _staggeredFade(
@@ -197,32 +191,15 @@ class _HeroTextContentState extends State<_HeroTextContent>
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
             child: RichText(
-              maxLines: 1,
               text: TextSpan(
                 children: [
-                  TextSpan(
-                    text: 'Hello! ',
-                    style: GoogleFonts.dmSans(
-                      fontSize: titleSize,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black,
-                      height: 1.08,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "I'm ${AppConstants.name}",
-                    style: GoogleFonts.dmSans(
-                      fontSize: titleSize,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                      height: 1.08,
-                    ),
-                  ),
+                  TextSpan(text: 'Hello! ', style: GoogleFonts.dmSans(fontSize: titleSize, fontWeight: FontWeight.w300, color: Colors.black)),
+                  TextSpan(text: "I'm ${AppConstants.name}", style: GoogleFonts.dmSans(fontSize: titleSize, fontWeight: FontWeight.w800, color: Colors.black)),
                 ],
               ),
             ),
           ),
-          0.1, 0.5,
+          0.05, 0.15,
         ),
         const SizedBox(height: 16),
         _staggeredFade(
@@ -230,71 +207,50 @@ class _HeroTextContentState extends State<_HeroTextContent>
             children: [
               Container(height: 1.5, width: isMobile ? 40 : 60, color: Colors.black),
               const SizedBox(width: 12),
-              Text(
-                AppConstants.role,
-                style: GoogleFonts.dmSans(
-                  fontSize: isMobile ? 14 : 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black87,
-                  letterSpacing: 0.3,
-                ),
-              ),
+              Text(AppConstants.role, style: GoogleFonts.dmSans(fontSize: isMobile ? 14 : 16, fontWeight: FontWeight.w400, color: Colors.black87)),
               const SizedBox(width: 10),
               const _StarShape(size: 14),
             ],
           ),
-          0.2, 0.6,
+          0.1, 0.2,
         ),
         const SizedBox(height: 20),
         _staggeredFade(
-          RichText(
-            text: TextSpan(
-              style: GoogleFonts.dmSans(
-                fontSize: bodySize,
-                color: Colors.black87,
-                height: 1.65,
-              ),
-              children: [
-                TextSpan(
-                  text: 'Hello! I\'m ${AppConstants.name}. I\'m a ',
-                  style: const TextStyle(fontWeight: FontWeight.w400),
+          AnimatedBuilder(
+            animation: _karaokeCtrl,
+            builder: (context, child) {
+              return ShaderMask(
+                blendMode: BlendMode.srcIn,
+                shaderCallback: (bounds) {
+                  return LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: const [Colors.black, Color(0xFFE1BEE7), Color(0xFFFF80AB), Colors.black],
+                    stops: [_karaokeCtrl.value - 0.1, _karaokeCtrl.value, _karaokeCtrl.value + 0.1, _karaokeCtrl.value + 0.2],
+                    tileMode: TileMode.clamp,
+                  ).createShader(bounds);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.dmSans(fontSize: bodySize, color: Colors.black, height: 1.65),
+                    children: [
+                      TextSpan(text: 'Hello! I\'m ${AppConstants.name}. I\'m a ', style: const TextStyle(fontWeight: FontWeight.w400)),
+                      const TextSpan(text: 'Developer Programmer | Flutter Developer', style: TextStyle(fontWeight: FontWeight.w700)),
+                      const TextSpan(text: ', with 5 years of experience in Software Development and 3 years of professional experience in Mobile Development Flutter.', style: TextStyle(fontWeight: FontWeight.w400)),
+                    ],
+                  ),
                 ),
-                const TextSpan(
-                  text: 'Developer Programmer | Flutter Developer',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                const TextSpan(
-                  text: ', with a 5 years experience in Software Development and 3 years professional experience in Mobile Development Flutter.',
-                  style: TextStyle(fontWeight: FontWeight.w400),
-                ),
-              ],
-            ),
+              );
+            },
           ),
-          0.3, 0.7,
+          0.15, 0.3,
         ),
         SizedBox(height: isMobile ? 20 : 28),
-        ...List.generate(AppConstants.philosophies.length, (index) {
-          return _staggeredFade(
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  const Icon(Icons.check, size: 17, color: Colors.black),
-                  const SizedBox(width: 10),
-                  Text(
-                    AppConstants.philosophies[index],
-                    style: GoogleFonts.dmSans(
-                      fontSize: bodySize,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            0.4 + (index * 0.05), 0.8 + (index * 0.05),
-          );
-        }),
+        _TypewriterItem(text: flutterDeveloperItems[0], controller: _ctrl, start: 0.3, end: 0.45, bodySize: bodySize),
+        _TypewriterItem(text: flutterDeveloperItems[1], controller: _ctrl, start: 0.45, end: 0.6, bodySize: bodySize),
+        _TypewriterItem(text: flutterDeveloperItems[2], controller: _ctrl, start: 0.6, end: 0.75, bodySize: bodySize),
+        _TypewriterItem(text: flutterDeveloperItems[3], controller: _ctrl, start: 0.75, end: 0.9, bodySize: bodySize),
+        _TypewriterItem(text: flutterDeveloperItems[4], controller: _ctrl, start: 0.9, end: 1.0, bodySize: bodySize),
         SizedBox(height: isMobile ? 28 : 36),
         _staggeredFade(
           Wrap(
@@ -302,16 +258,46 @@ class _HeroTextContentState extends State<_HeroTextContent>
             runSpacing: 14,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              _BlackButton(
-                label: "Let's Talk",
-                onTap: () => context.read<ScrollProvider>().scrollToSection('contact'),
-              ),
+              _BlackButton(label: "Let's Talk", onTap: () => context.read<ScrollProvider>().scrollToSection('contact')),
               const _DownloadCvButton(),
             ],
           ),
-          0.6, 1.0,
+          0.8, 1.0,
         ),
       ],
+    );
+  }
+}
+
+class _TypewriterItem extends StatelessWidget {
+  final String text;
+  final AnimationController controller;
+  final double start, end, bodySize;
+  const _TypewriterItem({required this.text, required this.controller, required this.start, required this.end, required this.bodySize});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        final t = (controller.value - start) / (end - start);
+        final currentLength = (text.length * t.clamp(0.0, 1.0)).toInt();
+        final opacity = (t * 10.0).clamp(0.0, 1.0);
+        return Opacity(
+          opacity: opacity,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.check, size: 17, color: Colors.black),
+                const SizedBox(width: 10),
+                Expanded(child: Text(text.substring(0, currentLength), style: GoogleFonts.dmSans(fontSize: bodySize, fontWeight: FontWeight.w400, color: Colors.black87))),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -320,47 +306,31 @@ class _HeroTextContentState extends State<_HeroTextContent>
 
 class _HeroVisualContent extends StatefulWidget {
   const _HeroVisualContent();
-
   @override
   State<_HeroVisualContent> createState() => _HeroVisualContentState();
 }
 
-class _HeroVisualContentState extends State<_HeroVisualContent>
-    with SingleTickerProviderStateMixin {
+class _HeroVisualContentState extends State<_HeroVisualContent> with SingleTickerProviderStateMixin {
   late AnimationController _floatCtrl;
-
   @override
   void initState() {
     super.initState();
-    _floatCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
+    _floatCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 3))..repeat(reverse: true);
   }
-
   @override
-  void dispose() {
-    _floatCtrl.dispose();
-    super.dispose();
-  }
+  void dispose() { _floatCtrl.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
     final screenH = MediaQuery.of(context).size.height;
-
     return LayoutBuilder(builder: (context, constraints) {
       final w = constraints.maxWidth;
       if (w < 600) return _MobileVisual(floatCtrl: _floatCtrl);
-      if (w < 1100) {
-        final imgHeight = (w * 1.05).clamp(0.0, screenH * 0.70);
-        return _TabletVisual(availableWidth: w, imgHeight: imgHeight, floatCtrl: _floatCtrl);
-      }
+      if (w < 1100) return _TabletVisual(availableWidth: w, imgHeight: (w * 1.05).clamp(0.0, screenH * 0.70), floatCtrl: _floatCtrl);
       return _DesktopVisual(imgHeight: screenH * 0.92, floatCtrl: _floatCtrl);
     });
   }
 }
-
-// ─── Desktop visual (≥1100px) ─────────────────────────────────────────────────
 
 class _DesktopVisual extends StatelessWidget {
   final double imgHeight;
@@ -379,6 +349,7 @@ class _DesktopVisual extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          Positioned(left: imgLeft, top: 0, bottom: 0, child: _PersonImage(height: imgHeight, width: imgWidth)),
           AnimatedBuilder(
             animation: floatCtrl,
             builder: (context, child) => Positioned(
@@ -388,32 +359,14 @@ class _DesktopVisual extends StatelessWidget {
             ),
             child: _CrossedCircle(circleSize: circleSize),
           ),
-          Positioned(
-            left: imgLeft,
-            top: 0,
-            bottom: 0,
-            child: _PersonImage(height: imgHeight, width: imgWidth),
-          ),
-          AnimatedBuilder(
-            animation: floatCtrl,
-            builder: (context, child) => Positioned(
-              left: imgLeft + imgWidth - 10,
-              top: (imgHeight * 0.28) - (floatCtrl.value * 10),
-              child: child!,
-            ),
-            child: const _WormLines(),
-          ),
         ],
       ),
     );
   }
 }
 
-// ─── Tablet visual (600–1099px) ───────────────────────────────────────────────
-
 class _TabletVisual extends StatelessWidget {
-  final double availableWidth;
-  final double imgHeight;
+  final double availableWidth, imgHeight;
   final AnimationController floatCtrl;
   const _TabletVisual({required this.availableWidth, required this.imgHeight, required this.floatCtrl});
 
@@ -422,14 +375,14 @@ class _TabletVisual extends StatelessWidget {
     final circleSize = (availableWidth * 0.14).clamp(90.0, 140.0);
     final imgWidth = (availableWidth * 0.62).clamp(300.0, 680.0);
     final imgLeft = (availableWidth - imgWidth) / 2;
-    final circleLeft = imgLeft - circleSize * 0.55;
+    final circleLeft = imgLeft - circleSize * 0.35;
 
     return SizedBox(
-      width: availableWidth,
-      height: imgHeight,
+      width: availableWidth, height: imgHeight,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          Positioned(left: imgLeft, top: 0, bottom: 0, child: _PersonImage(height: imgHeight, width: imgWidth)),
           AnimatedBuilder(
             animation: floatCtrl,
             builder: (context, child) => Positioned(
@@ -439,28 +392,11 @@ class _TabletVisual extends StatelessWidget {
             ),
             child: _CrossedCircle(circleSize: circleSize),
           ),
-          Positioned(
-            left: imgLeft,
-            top: 0,
-            bottom: 0,
-            child: _PersonImage(height: imgHeight, width: imgWidth),
-          ),
-          AnimatedBuilder(
-            animation: floatCtrl,
-            builder: (context, child) => Positioned(
-              left: (imgLeft + imgWidth - 12).clamp(0.0, availableWidth - 30),
-              top: (imgHeight * 0.28) - (floatCtrl.value * 10),
-              child: child!,
-            ),
-            child: const _WormLines(),
-          ),
         ],
       ),
     );
   }
 }
-
-// ─── Mobile visual ────────────────────────────────────────────────────────────
 
 class _MobileVisual extends StatelessWidget {
   final AnimationController floatCtrl;
@@ -469,18 +405,17 @@ class _MobileVisual extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenW = MediaQuery.of(context).size.width;
-    const hMargin = 20.0;
-    final imgWidth = screenW - hMargin * 2;
+    final imgWidth = screenW - 40.0;
     final imgHeight = imgWidth * 1.28;
     const circleSize = 110.0;
-    final circleLeft = hMargin - circleSize * 0.40;
+    final circleLeft = 20.0 + (imgWidth / 2) - (circleSize / 2);
 
     return SizedBox(
-      width: double.infinity,
-      height: imgHeight,
+      width: double.infinity, height: imgHeight,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          Positioned(bottom: 0, left: 20.0, child: _PersonImage(height: imgHeight, width: imgWidth)),
           AnimatedBuilder(
             animation: floatCtrl,
             builder: (context, child) => Positioned(
@@ -490,55 +425,47 @@ class _MobileVisual extends StatelessWidget {
             ),
             child: _CrossedCircle(circleSize: circleSize),
           ),
-          Positioned(
-            bottom: 0,
-            left: hMargin,
-            child: _PersonImage(height: imgHeight, width: imgWidth),
-          ),
-          AnimatedBuilder(
-            animation: floatCtrl,
-            builder: (context, child) => Positioned(
-              right: hMargin - 10,
-              top: (imgHeight * 0.22) - (floatCtrl.value * 8),
-              child: child!,
-            ),
-            child: const _WormLines(),
-          ),
         ],
       ),
     );
   }
 }
 
-class _CrossedCircle extends StatelessWidget {
+class _CrossedCircle extends StatefulWidget {
   final double circleSize;
   const _CrossedCircle({required this.circleSize, super.key});
+  @override State<_CrossedCircle> createState() => _CrossedCircleState();
+}
+
+class _CrossedCircleState extends State<_CrossedCircle> {
+  int _langIndex = 0;
+  final List<String> _hellos = ["Hello", "Bonjour", "Hola", "Hallo", "你好", "こんにちは"];
+
+  @override
+  void initState() {
+    super.initState();
+    _startLanguageLoop();
+  }
+
+  void _startLanguageLoop() async {
+    while (mounted) {
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) setState(() => _langIndex = (_langIndex + 1) % _hellos.length);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: circleSize,
-      height: circleSize,
+      width: widget.circleSize, height: widget.circleSize,
       child: Stack(
         children: [
-          Container(
-            width: circleSize,
-            height: circleSize,
-            decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
-          ),
-          CustomPaint(
-            size: Size(circleSize, circleSize),
-            painter: _SlantedLinePainter(circleSize: circleSize),
-          ),
+          Container(width: widget.circleSize, height: widget.circleSize, decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle)),
           Center(
-            child: Text(
-              'Hello',
-              style: GoogleFonts.dmSans(
-                fontSize: circleSize * 0.21,
-                fontWeight: FontWeight.w400,
-                color: Colors.white,
-                letterSpacing: 0.5,
-              ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: SlideTransition(position: Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(animation), child: child)),
+              child: Text(_hellos[_langIndex], key: ValueKey(_hellos[_langIndex]), textAlign: TextAlign.center, style: GoogleFonts.dmSans(fontSize: widget.circleSize * 0.18, fontWeight: FontWeight.w400, color: Colors.white, letterSpacing: 0.5)),
             ),
           ),
         ],
@@ -547,78 +474,16 @@ class _CrossedCircle extends StatelessWidget {
   }
 }
 
-class _SlantedLinePainter extends CustomPainter {
-  final double circleSize;
-  const _SlantedLinePainter({required this.circleSize});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const topLeft = Offset(0, 0);
-    final bottomRight = Offset(size.width, size.height);
-    canvas.drawLine(topLeft, bottomRight, Paint()..color = Colors.black..strokeWidth = 2.5..strokeCap = StrokeCap.round);
-
-    final circlePath = Path()..addOval(Rect.fromLTWH(0, 0, size.width, size.height));
-    canvas.save();
-    canvas.clipPath(circlePath);
-    canvas.drawLine(topLeft, bottomRight, Paint()..color = Colors.white..strokeWidth = 2.5..strokeCap = StrokeCap.round);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(_SlantedLinePainter old) => old.circleSize != circleSize;
-}
-
 class _PersonImage extends StatelessWidget {
-  final double height;
-  final double width;
+  final double height, width;
   const _PersonImage({required this.height, required this.width});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-      child: Image.asset(
-        'assets/images/profile.png',
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-        alignment: Alignment.topCenter,
-      ),
-    );
-  }
-}
-
-class _WormLines extends StatelessWidget {
-  const _WormLines();
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(width: 20, height: 80, child: CustomPaint(painter: _WormPainter()));
-  }
-}
-
-class _WormPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final path1 = Path()..moveTo(w * 0.20, 0)..cubicTo(w * 1.0, h * 0.15, w * -0.2, h * 0.65, w * 0.20, h);
-    canvas.drawPath(path1, Paint()..color = Colors.black..strokeWidth = 6..style = PaintingStyle.stroke..strokeCap = StrokeCap.round);
-
-    final path2 = Path()..moveTo(w * 0.72, 0)..cubicTo(w * 1.5, h * 0.18, w * 0.30, h * 0.68, w * 0.72, h);
-    canvas.drawPath(path2, Paint()..color = Colors.black..strokeWidth = 8..style = PaintingStyle.stroke..strokeCap = StrokeCap.round);
-    canvas.drawPath(path2, Paint()..color = Colors.white..strokeWidth = 5..style = PaintingStyle.stroke..strokeCap = StrokeCap.round);
-  }
-  @override
-  bool shouldRepaint(_WormPainter _) => false;
+  @override Widget build(BuildContext context) => ClipRRect(borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)), child: Image.asset('assets/images/profile.png', width: width, height: height, fit: BoxFit.cover, alignment: Alignment.topCenter));
 }
 
 class _StarShape extends StatelessWidget {
   final double size;
   const _StarShape({required this.size});
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(width: size, height: size, child: CustomPaint(painter: _StarPainter()));
-  }
+  @override Widget build(BuildContext context) => SizedBox(width: size, height: size, child: CustomPaint(painter: _StarPainter()));
 }
 
 class _StarPainter extends CustomPainter {
@@ -638,104 +503,30 @@ class _StarPainter extends CustomPainter {
     path.close();
     canvas.drawPath(path, paint);
   }
-  @override
-  bool shouldRepaint(_StarPainter _) => false;
+  @override bool shouldRepaint(_) => false;
 }
 
 class _BlackButton extends StatefulWidget {
   final String label;
   final VoidCallback onTap;
   const _BlackButton({required this.label, required this.onTap});
-  @override
-  State<_BlackButton> createState() => _BlackButtonState();
+  @override State<_BlackButton> createState() => _BlackButtonState();
 }
 
 class _BlackButtonState extends State<_BlackButton> {
-  bool _hovered = false;
-  @override
-  Widget build(BuildContext context) {
-    final isMobile = ResponsiveHelper.isMobile(context);
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(horizontal: isMobile ? 22 : 28, vertical: isMobile ? 12 : 15),
-          decoration: BoxDecoration(
-            color: _hovered ? const Color(0xFF333333) : Colors.black,
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Text(
-            widget.label,
-            style: GoogleFonts.dmSans(fontSize: isMobile ? 13 : 14, fontWeight: FontWeight.w600, color: Colors.white, letterSpacing: 0.2),
-          ),
-        ),
-      ),
-    );
-  }
+  bool _h = false;
+  @override Widget build(BuildContext context) => MouseRegion(onEnter: (_) => setState(() => _h = true), onExit: (_) => setState(() => _h = false), child: GestureDetector(onTap: widget.onTap, child: AnimatedContainer(duration: const Duration(milliseconds: 200), padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 15), decoration: BoxDecoration(color: _h ? const Color(0xFF333333) : Colors.black, borderRadius: BorderRadius.circular(50)), child: Text(widget.label, style: GoogleFonts.dmSans(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white, letterSpacing: 0.2)))));
 }
 
 class _DownloadCvButton extends StatefulWidget {
   const _DownloadCvButton();
-  @override
-  State<_DownloadCvButton> createState() => _DownloadCvButtonState();
+  @override State<_DownloadCvButton> createState() => _DownloadCvButtonState();
 }
 
 class _DownloadCvButtonState extends State<_DownloadCvButton> {
-  bool _hovered = false;
-  @override
-  Widget build(BuildContext context) {
-    final isMobile = ResponsiveHelper.isMobile(context);
-    final fontSize = isMobile ? 13.0 : 14.0;
-    return Consumer<DownloadProvider>(
-      builder: (context, dl, _) {
-        final isDownloading = dl.state == DownloadState.downloading;
-        final isDone = dl.state == DownloadState.done;
-        final isError = dl.state == DownloadState.error;
-        final label = isDone ? 'Downloaded!' : isError ? 'Try again' : isDownloading ? '${dl.percent}%' : 'Download CV';
-
-        Widget icon;
-        if (isDone) icon = Icon(Icons.check_circle_rounded, key: const ValueKey('check'), size: fontSize + 2, color: Colors.black);
-        else if (isDownloading) icon = SizedBox(key: const ValueKey('spin'), width: fontSize + 2, height: fontSize + 2, child: CircularProgressIndicator(value: dl.progress, strokeWidth: 1.8, color: Colors.black, backgroundColor: Colors.black12));
-        else if (isError) icon = Icon(Icons.error_outline_rounded, key: const ValueKey('err'), size: fontSize + 2, color: Colors.black54);
-        else icon = Icon(Icons.download_rounded, key: const ValueKey('dl'), size: fontSize + 2, color: _hovered ? Colors.black : Colors.black87);
-
-        return MouseRegion(
-          onEnter: (_) => setState(() => _hovered = true),
-          onExit: (_) => setState(() => _hovered = false),
-          cursor: isDownloading ? SystemMouseCursors.basic : SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () => isDone ? (dl.reset(), Future.delayed(const Duration(milliseconds: 100), () => dl.downloadCv())) : dl.downloadCv(),
-            child: SizedBox(
-              width: 140,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: Text(label, key: ValueKey(label), style: GoogleFonts.dmSans(fontSize: fontSize, fontWeight: FontWeight.w500, color: _hovered || isDownloading ? Colors.black : Colors.black87))),
-                      const SizedBox(width: 6),
-                      AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: icon),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Stack(
-                    children: [
-                      Container(height: 1.5, width: 140, color: _hovered ? Colors.black : Colors.black26),
-                      AnimatedContainer(duration: const Duration(milliseconds: 40), height: 1.5, width: 140 * dl.progress, color: Colors.black),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  bool _h = false;
+  @override Widget build(BuildContext context) => Consumer<DownloadProvider>(builder: (context, dl, _) {
+    final s = dl.state; final isDl = s == DownloadState.downloading;
+    return MouseRegion(onEnter: (_) => setState(() => _h = true), onExit: (_) => setState(() => _h = false), child: GestureDetector(onTap: dl.downloadCv, child: SizedBox(width: 140, child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Row(mainAxisSize: MainAxisSize.min, children: [Text(s == DownloadState.done ? 'Downloaded!' : isDl ? '${dl.percent}%' : 'Download CV', style: GoogleFonts.dmSans(fontSize: 14, fontWeight: FontWeight.w500, color: _h || isDl ? Colors.black : Colors.black87)), const SizedBox(width: 6), if (isDl) const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 1.5, color: Colors.black)) else Icon(Icons.download, size: 16, color: _h ? Colors.black : Colors.black87)]), const SizedBox(height: 4), Stack(children: [Container(height: 1.5, width: 140, color: Colors.black12), AnimatedContainer(duration: const Duration(milliseconds: 50), height: 1.5, width: 140 * dl.progress, color: Colors.black)])]))));
+  });
 }

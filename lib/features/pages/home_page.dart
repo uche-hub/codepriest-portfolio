@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/scroll_provider.dart';
@@ -21,6 +21,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isScrolling = false;
+  Timer? _stopTimer;
+
   @override
   void initState() {
     super.initState();
@@ -32,103 +35,149 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Logic to detect scroll start and stop
+  void _onScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      if (!_isScrolling) {
+        setState(() {
+          _isScrolling = true;
+        });
+      }
+
+      // Reset the timer every time a scroll update happens
+      _stopTimer?.cancel();
+      _stopTimer = Timer(const Duration(milliseconds: 1000), () {
+        if (mounted) {
+          setState(() {
+            _isScrolling = false;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _stopTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final scrollProvider = context.watch<ScrollProvider>();
     final width = MediaQuery.of(context).size.width;
     final isMobileOrTablet = width < 1100;
 
-    // Mobile/tablet: ClampingScrollPhysics = native smooth touch,
-    //   hard-stops at both ends — no endless scroll above navbar or below footer
-    // Desktop: custom spring for nice mouse-wheel feel
     final ScrollPhysics physics = isMobileOrTablet
         ? const ClampingScrollPhysics()
         : const _DesktopSmoothPhysics();
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // Main scrollable content
-          ScrollConfiguration(
-            behavior: _PortfolioScrollBehavior(isMobileOrTablet: isMobileOrTablet),
-            child: CustomScrollView(
-              controller: scrollProvider.scrollController,
-              physics: physics,
-              slivers: [
-                // Transparent space for navbar overlap
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
-
-                // Hero section
-                SliverToBoxAdapter(
-                  key: scrollProvider.heroKey,
-                  child: const HeroSectionWidget(),
-                ),
-
-                // Social bar — sits flush under the hero ticker
-                const SliverToBoxAdapter(
-                  child: SocialBarWidget(),
-                ),
-
-                // Services section
-                SliverToBoxAdapter(
-                  key: scrollProvider.skillKey,
-                  child: const ServicesSectionWidget(),
-                ),
-
-                // Experience section
-                SliverToBoxAdapter(
-                  key: scrollProvider.experienceKey,
-                  child: const ExperienceSectionWidget(),
-                ),
-
-                // Case Study section
-                SliverToBoxAdapter(
-                  key: scrollProvider.projectsKey,
-                  child: const CaseStudySectionWidget(),
-                ),
-
-                // Testimonials
-                // const SliverToBoxAdapter(
-                //   child: TestimonialsSectionWidget(),
-                // ),
-                //
-                // // Stats
-                // const SliverToBoxAdapter(
-                //   child: StatsSectionWidget(),
-                // ),
-
-                // Contact
-                SliverToBoxAdapter(
-                  key: scrollProvider.contactKey,
-                  child: const ContactSectionWidget(),
-                ),
-
-                // Footer
-                const SliverToBoxAdapter(
-                  child: FooterWidget(),
-                ),
-
-                // Hard bottom boundary — footer stays flush, nothing to scroll into
-                const SliverToBoxAdapter(child: SizedBox.shrink()),
-              ],
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          _onScrollNotification(notification);
+          return false;
+        },
+        child: Stack(
+          children: [
+            // 1. Main scrollable content
+            ScrollConfiguration(
+              behavior: _PortfolioScrollBehavior(isMobileOrTablet: isMobileOrTablet),
+              child: CustomScrollView(
+                controller: scrollProvider.scrollController,
+                physics: physics,
+                slivers: [
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                  SliverToBoxAdapter(
+                    key: scrollProvider.heroKey,
+                    child: const HeroSectionWidget(),
+                  ),
+                  const SliverToBoxAdapter(
+                    child: SocialBarWidget(),
+                  ),
+                  SliverToBoxAdapter(
+                    key: scrollProvider.skillKey,
+                    child: const ServicesSectionWidget(),
+                  ),
+                  SliverToBoxAdapter(
+                    key: scrollProvider.experienceKey,
+                    child: const ExperienceSectionWidget(),
+                  ),
+                  SliverToBoxAdapter(
+                    key: scrollProvider.projectsKey,
+                    child: const CaseStudySectionWidget(),
+                  ),
+                  SliverToBoxAdapter(
+                    key: scrollProvider.contactKey,
+                    child: const ContactSectionWidget(),
+                  ),
+                  const SliverToBoxAdapter(
+                    child: FooterWidget(),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox.shrink()),
+                ],
+              ),
             ),
-          ),
 
-          // Sticky Navbar overlaid on top
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: const NavbarWidget(),
-          ),
-        ],
+            // 2. Sticky Navbar
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: const NavbarWidget(),
+            ),
+
+            // 3. Conditional Glass Blur at Bottom
+            _BottomGlassBlur(isVisible: _isScrolling),
+          ],
+        ),
       ),
     );
   }
 }
 
-// ─── Desktop smooth scroll physics (mouse wheel) ──────────────────────────────
+// ─── Animated Bottom Glass Blur Widget ───────────────────────────────────────
+
+class _BottomGlassBlur extends StatelessWidget {
+  final bool isVisible;
+  const _BottomGlassBlur({required this.isVisible});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+      bottom: isVisible ? 0 : -80, // Slide out of view when not visible
+      left: 0,
+      right: 0,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: isVisible ? 1.0 : 0.0,
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+            child: Container(
+              height: 70,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white.withOpacity(0.0),
+                    Colors.white.withOpacity(0.25),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Desktop smooth scroll physics ──────────────────────────────────────────
 
 class _DesktopSmoothPhysics extends ScrollPhysics {
   const _DesktopSmoothPhysics({super.parent});
@@ -176,6 +225,6 @@ class _PortfolioScrollBehavior extends ScrollBehavior {
   @override
   Widget buildScrollbar(
       BuildContext context, Widget child, ScrollableDetails details) {
-    return child; // Hide scrollbar
+    return child;
   }
 }
