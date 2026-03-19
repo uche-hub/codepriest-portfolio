@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // New Import
 import '../../../core/constants/responsive_helper.dart';
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -17,8 +18,12 @@ class _Service {
   final String description;
   final List<String> bullets;
   const _Service({
-    required this.icon, required this.title, required this.isHighlighted,
-    required this.modalTitle, required this.description, required this.bullets,
+    required this.icon,
+    required this.title,
+    required this.isHighlighted,
+    required this.modalTitle,
+    required this.description,
+    required this.bullets,
   });
 }
 
@@ -26,14 +31,15 @@ const _allServices = [
   _Service(
     icon: FontAwesomeIcons.mobileScreenButton,
     title: 'FLUTTER\nDEVELOPMENT',
-    isHighlighted: true,
+    isHighlighted: false,
     modalTitle: 'Mobile App Development',
-    description: 'Building high-performance, cross-platform applications for iOS and Android using Dart. I specialize in scalable architectures and seamless hardware integrations.',
+    description:
+    'Building high-performance, cross-platform applications for iOS and Android using Dart. I specialize in scalable architectures and seamless hardware integrations.',
     bullets: [
       'State Management: BLoC, Provider, and MVVM',
       'Backend: Firebase (Auth, Firestore) & Supabase',
       'Hardware: Google Fit & Health Connect integration',
-      'Payments: Paystack & Stripe API implementation'
+      'Payments: Paystack & Stripe API implementation',
     ],
   ),
   _Service(
@@ -41,12 +47,13 @@ const _allServices = [
     title: 'NEXT.JS\nDEVELOPMENT',
     isHighlighted: false,
     modalTitle: 'Web & Frontend Development',
-    description: 'Crafting responsive, SEO-optimized web applications using Next.js and React. I focus on clean code, fast load times, and bridging the gap between design and engineering.',
+    description:
+    'Crafting responsive, SEO-optimized web applications using Next.js and React. I focus on clean code, fast load times, and bridging the gap between design and engineering.',
     bullets: [
       'ReactJS & Next.js server-side rendering',
       'Responsive UI with Tailwind CSS & JavaScript',
       'REST API integration & Swagger documentation',
-      'Performance optimization & accessibility (a11y)'
+      'Performance optimization & accessibility (a11y)',
     ],
   ),
   _Service(
@@ -54,12 +61,13 @@ const _allServices = [
     title: 'BACKEND &\nFIREBASE',
     isHighlighted: false,
     modalTitle: 'Cloud Infrastructure',
-    description: 'Architecting the "brain" of your application. I set up secure, real-time databases and serverless logic to handle your data at scale.',
+    description:
+    'Architecting the "brain" of your application. I set up secure, real-time databases and serverless logic to handle your data at scale.',
     bullets: [
       'Firebase: Auth, Firestore, & Cloud Functions',
       'Supabase: Postgres & Real-time subscriptions',
       'API Design: RESTful Services & Swagger',
-      'Security: Rules, Roles, & Data Encryption'
+      'Security: Rules, Roles, & Data Encryption',
     ],
   ),
   _Service(
@@ -67,12 +75,13 @@ const _allServices = [
     title: 'DEVOPS &\nAUTOMATION',
     isHighlighted: false,
     modalTitle: 'Continuous Delivery',
-    description: 'Automating the deployment pipeline to ensure every release is tested and stable. I manage the journey from local code to the App Store.',
+    description:
+    'Automating the deployment pipeline to ensure every release is tested and stable. I manage the journey from local code to the App Store.',
     bullets: [
       'CI/CD: GitHub Actions & GitLab Pipelines',
       'Distribution: Firebase App Distribution',
       'Builds: Automated .aab & APK generation',
-      'Version Control: Advanced Git & GitHub Flow'
+      'Version Control: Advanced Git & GitHub Flow',
     ],
   ),
   _Service(
@@ -80,12 +89,13 @@ const _allServices = [
     title: 'TESTING &\nQUALITY',
     isHighlighted: false,
     modalTitle: 'Quality Assurance',
-    description: 'Ensuring software reliability through rigorous testing phases. I focus on catching bugs early to deliver a polished, crash-free user experience.',
+    description:
+    'Ensuring software reliability through rigorous testing phases. I focus on catching bugs early to deliver a polished, crash-free user experience.',
     bullets: [
       'Unit Testing: Logic & business rule validation',
       'Widget Testing: UI component verification',
       'Static Analysis: Linting & code quality',
-      'Debugging: Sentry & crashlytics monitoring'
+      'Debugging: Sentry & crashlytics monitoring',
     ],
   ),
   _Service(
@@ -93,12 +103,13 @@ const _allServices = [
     title: 'PRODUCT\nLEADERSHIP',
     isHighlighted: false,
     modalTitle: 'Agile & Project Strategy',
-    description: 'Managing the development lifecycle using modern methodologies. I help align technical execution with business goals and user needs.',
+    description:
+    'Managing the development lifecycle using modern methodologies. I help align technical execution with business goals and user needs.',
     bullets: [
       'Agile/Scrum: Jira & ClickUp management',
       'Documentation: PRDs & Technical writing',
       'System Design: Clean Architecture planning',
-      'Collaboration: Cross-functional team alignment'
+      'Collaboration: Cross-functional team alignment',
     ],
   ),
 ];
@@ -107,7 +118,8 @@ const _allServices = [
 
 class ServicesSectionWidget extends StatefulWidget {
   const ServicesSectionWidget({super.key});
-  @override State<ServicesSectionWidget> createState() => _ServicesSectionState();
+  @override
+  State<ServicesSectionWidget> createState() => _ServicesSectionState();
 }
 
 class _ServicesSectionState extends State<ServicesSectionWidget>
@@ -115,21 +127,24 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
   bool _expanded = false;
   bool _isVisible = false;
   late AnimationController _expandCtrl;
-  late AnimationController _entranceCtrl;
   late Animation<double> _expandAnim;
 
   @override
   void initState() {
     super.initState();
-    _expandCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
-    _entranceCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
-    _expandAnim = CurvedAnimation(parent: _expandCtrl, curve: Curves.easeInOutQuart);
+    _expandCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _expandAnim = CurvedAnimation(
+      parent: _expandCtrl,
+      curve: Curves.easeInOutQuart,
+    );
   }
 
   @override
   void dispose() {
     _expandCtrl.dispose();
-    _entranceCtrl.dispose();
     super.dispose();
   }
 
@@ -144,14 +159,11 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
       barrierDismissible: true,
       barrierLabel: 'close',
       barrierColor: Colors.transparent,
-      transitionDuration: const Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (_, __, ___) => const SizedBox.shrink(),
       transitionBuilder: (ctx, anim, _, __) => Material(
         type: MaterialType.transparency,
-        child: FadeTransition(
-          opacity: anim,
-          child: _ServiceModal(service: s, animation: anim),
-        ),
+        child: _ServiceModal(service: s, animation: anim),
       ),
     );
   }
@@ -166,7 +178,6 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
       onVisibilityChanged: (info) {
         if (info.visibleFraction > 0.1 && !_isVisible) {
           setState(() => _isVisible = true);
-          _entranceCtrl.forward();
         }
       },
       child: Container(
@@ -175,10 +186,11 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _AnimatedEntrance(
-              controller: _entranceCtrl,
-              delay: 0.0,
-              child: _Header(expanded: _expanded, onToggle: _toggle, isMobile: isMobile),
+            _Header(
+              expanded: _expanded,
+              onToggle: _toggle,
+              isMobile: isMobile,
+              isVisible: _isVisible,
             ),
             SizedBox(height: isMobile ? 40 : 56),
             isMobile ? _mobileCards() : _desktopCards(context),
@@ -193,34 +205,50 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _AnimatedEntrance(
-          controller: _entranceCtrl,
-          delay: 0.1,
-          child: const _ScrollIndicatorColumn(),
-        ),
+        const _ScrollIndicatorColumn()
+            .animate(target: _isVisible ? 1 : 0)
+            .fadeIn(delay: 400.ms)
+            .slideX(begin: -0.2),
         SizedBox(width: isTablet ? 20 : 40),
         Expanded(
-          child: LayoutBuilder(builder: (context, c) {
-            final cardW = (c.maxWidth - 32) / 3;
-            final cardH = (MediaQuery.of(context).size.height * 0.38).clamp(260.0, 340.0);
-            return Column(
-              children: [
-                _AnimatedEntrance(
-                  controller: _entranceCtrl,
-                  delay: 0.2,
-                  child: _CardRow(services: _allServices.sublist(0,3), cardW: cardW, cardH: cardH, onTap: _openModal),
-                ),
-                SizeTransition(
-                  sizeFactor: _expandAnim,
-                  axisAlignment: -1,
-                  child: Column(children: [
-                    const SizedBox(height: 16),
-                    _CardRow(services: _allServices.sublist(3,6), cardW: cardW, cardH: cardH, onTap: _openModal, slide: true, anim: _expandAnim),
-                  ]),
-                ),
-              ],
-            );
-          }),
+          child: LayoutBuilder(
+            builder: (context, c) {
+              final cardW = (c.maxWidth - 32) / 3;
+              final cardH = (MediaQuery.of(context).size.height * 0.38).clamp(
+                260.0,
+                340.0,
+              );
+              return Column(
+                children: [
+                  _CardRow(
+                    services: _allServices.sublist(0, 3),
+                    cardW: cardW,
+                    cardH: cardH,
+                    onTap: _openModal,
+                    isVisible: _isVisible,
+                  ),
+                  SizeTransition(
+                    sizeFactor: _expandAnim,
+                    axisAlignment: -1,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _CardRow(
+                          services: _allServices.sublist(3, 6),
+                          cardW: cardW,
+                          cardH: cardH,
+                          onTap: _openModal,
+                          slide: true,
+                          anim: _expandAnim,
+                          isVisible: true, // Internal row handles its own visibility via expansion
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ],
     );
@@ -229,49 +257,40 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
   Widget _mobileCards() {
     return Column(
       children: [
-        ...List.generate(3, (i) => _AnimatedEntrance(
-          controller: _entranceCtrl,
-          delay: 0.1 + (i * 0.1),
-          child: Padding(
+        ...List.generate(
+          3,
+              (i) => Padding(
             padding: const EdgeInsets.only(bottom: 14),
-            child: _ServiceCard(service: _allServices[i], width: double.infinity, height: 220, onTap: () => _openModal(_allServices[i])),
+            child: _ServiceCard(
+              service: _allServices[i],
+              width: double.infinity,
+              height: 220,
+              onTap: () => _openModal(_allServices[i]),
+            )
+                .animate(target: _isVisible ? 1 : 0)
+                .fadeIn(delay: (200 + (i * 100)).ms)
+                .slideY(begin: 0.1),
           ),
-        )),
+        ),
         SizeTransition(
           sizeFactor: _expandAnim,
           axisAlignment: -1,
-          child: Column(children: List.generate(3, (i) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: _ServiceCard(service: _allServices[i+3], width: double.infinity, height: 220, onTap: () => _openModal(_allServices[i+3])),
-          ))),
+          child: Column(
+            children: List.generate(
+              3,
+                  (i) => Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: _ServiceCard(
+                  service: _allServices[i + 3],
+                  width: double.infinity,
+                  height: 220,
+                  onTap: () => _openModal(_allServices[i + 3]),
+                ),
+              ),
+            ),
+          ),
         ),
       ],
-    );
-  }
-}
-
-// ─── Animation Helper ─────────────────────────────────────────────────────────
-
-class _AnimatedEntrance extends StatelessWidget {
-  final Widget child;
-  final AnimationController controller;
-  final double delay;
-
-  const _AnimatedEntrance({required this.child, required this.controller, required this.delay});
-
-  @override
-  Widget build(BuildContext context) {
-    final anim = CurvedAnimation(
-      parent: controller,
-      curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0), curve: Curves.easeOut),
-    );
-
-    return FadeTransition(
-      opacity: anim,
-      child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(anim),
-        child: child,
-      ),
     );
   }
 }
@@ -282,40 +301,63 @@ class _Header extends StatelessWidget {
   final bool expanded;
   final VoidCallback onToggle;
   final bool isMobile;
-  const _Header({required this.expanded, required this.onToggle, required this.isMobile});
+  final bool isVisible;
+  const _Header({
+    required this.expanded,
+    required this.onToggle,
+    required this.isMobile,
+    required this.isVisible,
+  });
 
   @override
   Widget build(BuildContext context) {
     final btn = _AllServicesButton(expanded: expanded, onTap: onToggle);
+
+    // Animation Wrapper
+    Widget animate(Widget child, int delay) => child
+        .animate(target: isVisible ? 1 : 0)
+        .fadeIn(delay: delay.ms, duration: 600.ms)
+        .blur(begin: const Offset(10, 0), end: Offset.zero)
+        .slideX(begin: 0.05, end: 0);
+
     if (isMobile) {
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const _SectionLabel(), const SizedBox(height: 12),
-        const _SectionTitle(), const SizedBox(height: 24),
-        const _SectionDescription(), const SizedBox(height: 20),
-        btn,
-      ]);
-    }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const _SectionLabel(),
-      const SizedBox(height: 14),
-      Row(
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle(),
-          const SizedBox(width: 48),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Expanded(child: _SectionDescription()),
-                const SizedBox(width: 28),
-                btn,
-              ],
-            ),
-          ),
+          animate(const _SectionLabel(), 0),
+          const SizedBox(height: 12),
+          animate(const _SectionTitle(), 100),
+          const SizedBox(height: 24),
+          animate(const _SectionDescription(), 200),
+          const SizedBox(height: 20),
+          animate(btn, 300),
         ],
-      ),
-    ]);
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        animate(const _SectionLabel(), 0),
+        const SizedBox(height: 14),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            animate(const _SectionTitle(), 100),
+            const SizedBox(width: 48),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: animate(const _SectionDescription(), 200)),
+                  const SizedBox(width: 28),
+                  animate(btn, 300),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
@@ -327,18 +369,43 @@ class _CardRow extends StatelessWidget {
   final void Function(_Service) onTap;
   final bool slide;
   final Animation<double>? anim;
-  const _CardRow({required this.services, required this.cardW, required this.cardH, required this.onTap, this.slide = false, this.anim});
+  final bool isVisible;
+  const _CardRow({
+    required this.services,
+    required this.cardW,
+    required this.cardH,
+    required this.onTap,
+    this.slide = false,
+    this.anim,
+    required this.isVisible,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(services.length, (i) {
-        Widget card = _ServiceCard(service: services[i], width: cardW, height: cardH, onTap: () => onTap(services[i]));
+        Widget card = _ServiceCard(
+          service: services[i],
+          width: cardW,
+          height: cardH,
+          onTap: () => onTap(services[i]),
+        );
+
         if (slide && anim != null) {
           card = FadeTransition(opacity: anim!, child: card);
+        } else {
+          // Entrance animation for first row
+          card = card
+              .animate(target: isVisible ? 1 : 0)
+              .fadeIn(delay: (400 + (i * 100)).ms)
+              .slideY(begin: 0.1, curve: Curves.easeOutCubic);
         }
-        return Padding(padding: EdgeInsets.only(right: i < 2 ? 16 : 0), child: card);
+
+        return Padding(
+          padding: EdgeInsets.only(right: i < 2 ? 16 : 0),
+          child: card,
+        );
       }),
     );
   }
@@ -349,11 +416,22 @@ class _CardRow extends StatelessWidget {
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel();
   @override
-  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
-    Container(width: 28, height: 1.2, color: Colors.black54),
-    const SizedBox(width: 10),
-    Text('MY Skills ?', style: GoogleFonts.dmSans(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87, letterSpacing: 1.8)),
-  ]);
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(width: 28, height: 1.2, color: Colors.black54),
+      const SizedBox(width: 10),
+      Text(
+        'MY SKILLS',
+        style: GoogleFonts.dmSans(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: Colors.black87,
+          letterSpacing: 1.8,
+        ),
+      ),
+    ],
+  );
 }
 
 // ─── Section Title ────────────────────────────────────────────────────────────
@@ -364,7 +442,16 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
     final fs = w < 600 ? 36.0 : w < 900 ? 44.0 : w < 1200 ? 52.0 : 62.0;
-    return Text("WHAT I\nDO", style: GoogleFonts.dmSans(fontSize: fs, fontWeight: FontWeight.w800, color: Colors.black, height: 1.05, letterSpacing: -1.0));
+    return Text(
+      "WHAT I\nDO",
+      style: GoogleFonts.dmSans(
+        fontSize: fs,
+        fontWeight: FontWeight.w800,
+        color: Colors.black,
+        height: 1.05,
+        letterSpacing: -1.0,
+      ),
+    );
   }
 }
 
@@ -375,7 +462,12 @@ class _SectionDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     'I leverage a diverse toolkit to build scalable applications. \nHere is the stack I use to bring digital products to life.',
-    style: GoogleFonts.dmSans(fontSize: 13.5, fontWeight: FontWeight.w400, color: Colors.black54, height: 1.7),
+    style: GoogleFonts.dmSans(
+      fontSize: 13.5,
+      fontWeight: FontWeight.w400,
+      color: Colors.black54,
+      height: 1.7,
+    ),
     maxLines: 3,
   );
 }
@@ -386,7 +478,8 @@ class _AllServicesButton extends StatefulWidget {
   final bool expanded;
   final VoidCallback onTap;
   const _AllServicesButton({required this.expanded, required this.onTap});
-  @override State<_AllServicesButton> createState() => _AllServicesButtonState();
+  @override
+  State<_AllServicesButton> createState() => _AllServicesButtonState();
 }
 
 class _AllServicesButtonState extends State<_AllServicesButton> {
@@ -404,17 +497,34 @@ class _AllServicesButtonState extends State<_AllServicesButton> {
         decoration: BoxDecoration(
           color: _hov ? const Color(0xFF333333) : Colors.black,
           borderRadius: BorderRadius.circular(50),
-          boxShadow: _hov ? [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4))] : [],
+          boxShadow: _hov
+              ? [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ]
+              : [],
         ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
           child: Text(
             widget.expanded ? 'CLOSE SKILLS' : 'ALL SKILLS',
             key: ValueKey(widget.expanded),
-            style: GoogleFonts.dmSans(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1.0),
+            style: GoogleFonts.dmSans(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              letterSpacing: 1.0,
+            ),
           ),
         ),
       ),
+    ).animate(onPlay: (c) => c.repeat()).shimmer(
+      delay: 3.seconds,
+      duration: 1500.ms,
+      color: Colors.white24,
     ),
   );
 }
@@ -426,52 +536,62 @@ class _ScrollIndicatorColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     width: 32,
-    child: Column(mainAxisSize: MainAxisSize.min, children: [
-      RotatedBox(quarterTurns: 1, child: Text('SCROLL DOWN',
-          style: GoogleFonts.dmSans(fontSize: 9, fontWeight: FontWeight.w600, color: Colors.black54, letterSpacing: 2.0))),
-      const SizedBox(height: 12),
-      Container(width: 1, height: 80, color: Colors.black26),
-      const SizedBox(height: 16),
-      const _DownArrowBtn(),
-    ]),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RotatedBox(
+          quarterTurns: 1,
+          child: Text(
+            'SCROLL DOWN',
+            style: GoogleFonts.dmSans(
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              color: Colors.black54,
+              letterSpacing: 2.0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(width: 1, height: 80, color: Colors.black26),
+        const SizedBox(height: 16),
+        const _DownArrowBtn(),
+      ],
+    ),
   );
 }
 
 class _DownArrowBtn extends StatefulWidget {
   const _DownArrowBtn();
-  @override State<_DownArrowBtn> createState() => _DownArrowBtnState();
+  @override
+  State<_DownArrowBtn> createState() => _DownArrowBtnState();
 }
-class _DownArrowBtnState extends State<_DownArrowBtn> with SingleTickerProviderStateMixin {
-  late AnimationController _bounceCtrl;
+
+class _DownArrowBtnState extends State<_DownArrowBtn> {
   bool _hov = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _bounceCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() { _bounceCtrl.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) => MouseRegion(
     onEnter: (_) => setState(() => _hov = true),
     onExit: (_) => setState(() => _hov = false),
     cursor: SystemMouseCursors.click,
-    child: AnimatedBuilder(
-      animation: _bounceCtrl,
-      builder: (context, child) => Transform.translate(
-        offset: Offset(0, 5 * _bounceCtrl.value),
-        child: child,
-      ),
-      child: GestureDetector(onTap: () {}, child: AnimatedContainer(
+    child: GestureDetector(
+      onTap: () {},
+      child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 44, height: 44,
-        decoration: BoxDecoration(color: _hov ? const Color(0xFF333333) : Colors.black, shape: BoxShape.circle),
-        child: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 22),
-      )),
-    ),
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: _hov ? const Color(0xFF333333) : Colors.black,
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          Icons.keyboard_arrow_down_rounded,
+          color: Colors.white,
+          size: 22,
+        ),
+      ),
+    ).animate(onPlay: (c) => c.repeat(reverse: true))
+        .moveY(begin: 0, end: 8, duration: 1000.ms, curve: Curves.easeInOut),
   );
 }
 
@@ -481,82 +601,97 @@ class _ServiceCard extends StatefulWidget {
   final _Service service;
   final double width, height;
   final VoidCallback onTap;
-  const _ServiceCard({required this.service, required this.width, required this.height, required this.onTap});
-  @override State<_ServiceCard> createState() => _ServiceCardState();
+  const _ServiceCard({
+    required this.service,
+    required this.width,
+    required this.height,
+    required this.onTap,
+  });
+  @override
+  State<_ServiceCard> createState() => _ServiceCardState();
 }
 
-class _ServiceCardState extends State<_ServiceCard> with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
+class _ServiceCardState extends State<_ServiceCard> {
   bool _isHovered = false;
 
   @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 280));
-    _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
-    if (widget.service.isHighlighted) _ctrl.value = 1.0;
-  }
-
-  @override void dispose() { _ctrl.dispose(); super.dispose(); }
-
-  @override
   Widget build(BuildContext context) {
+    final isDark = _isHovered || widget.service.isHighlighted;
+    final fg = isDark ? Colors.white : Colors.black;
+    final fgs = isDark ? Colors.white70 : Colors.black54;
+
     return MouseRegion(
-      onEnter: (_) {
-        setState(() => _isHovered = true);
-        _ctrl.forward();
-      },
-      onExit: (_) {
-        setState(() => _isHovered = false);
-        if (!widget.service.isHighlighted) _ctrl.reverse();
-      },
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
-        child: AnimatedBuilder(
-          animation: _anim,
-          builder: (_, __) {
-            final v = _anim.value;
-            final bg   = Color.lerp(Colors.white, Colors.black, v)!;
-            final fg   = Color.lerp(Colors.black, Colors.white, v)!;
-            final fgs  = Color.lerp(Colors.black54, Colors.white70, v)!;
-            final bord = Color.lerp(const Color(0xFFCCCCCC), Colors.black, v)!;
-
-            // FIX: Using AnimatedContainer instead of undefined AnimatedTransform
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              transform: Matrix4.translationValues(0, _isHovered ? -8 : 0, 0),
-              width: widget.width == double.infinity ? null : widget.width,
-              height: widget.height,
-              decoration: BoxDecoration(
-                color: bg,
-                border: Border.all(color: bord, width: 1.2),
-                boxShadow: _isHovered
-                    ? [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 10))]
-                    : [],
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutQuart,
+          transform: Matrix4.translationValues(0, _isHovered ? -12 : 0, 0),
+          width: widget.width == double.infinity ? null : widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            color: isDark ? Colors.black : Colors.white,
+            border: Border.all(
+                color: isDark ? Colors.black : const Color(0xFFCCCCCC),
+                width: 1.2),
+            boxShadow: _isHovered
+                ? [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 30,
+                offset: const Offset(0, 15),
               ),
-              padding: const EdgeInsets.all(26),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                FaIcon(widget.service.icon, size: 32, color: fg),
-                const Spacer(),
-                Text(widget.service.title, style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w700, color: fg, height: 1.25, letterSpacing: 0.2)),
-                const SizedBox(height: 16),
-                Row(children: [
-                  Text('READ MORE', style: GoogleFonts.dmSans(fontSize: 10, fontWeight: FontWeight.w700, color: fgs, letterSpacing: 1.4)),
+            ]
+                : [],
+          ),
+          padding: const EdgeInsets.all(26),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FaIcon(widget.service.icon, size: 32, color: fg)
+                  .animate(target: _isHovered ? 1 : 0)
+                  .scale(end: const Offset(1.2, 1.2))
+                  .rotate(begin: 0, end: 0.05),
+              const Spacer(),
+              Text(
+                widget.service.title,
+                style: GoogleFonts.dmSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: fg,
+                  height: 1.25,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Text(
+                    'READ MORE',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: fgs,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
                   const SizedBox(width: 6),
                   Icon(Icons.arrow_forward_rounded, size: 12, color: fgs),
-                ]),
-              ]),
-            );
-          },
+                ],
+              ).animate(target: _isHovered ? 1 : 0)
+                  .shimmer(duration: 800.ms, color: Colors.white54),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ─── Service Modal — Black Liquid Glass ───────────────────────────────────────
+// ─── Service Modal ────────────────────────────────────────────────────────────
 
 class _ServiceModal extends StatelessWidget {
   final _Service service;
@@ -568,67 +703,42 @@ class _ServiceModal extends StatelessWidget {
     final sz = MediaQuery.of(context).size;
     final isMobile = sz.width < 600;
 
-    return Stack(children: [
-      Positioned.fill(
-        child: GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: ClipRect(
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-              child: Container(
-                color: const Color(0xFF080808).withOpacity(0.74),
-              ),
+              child: Container(color: Colors.black.withOpacity(0.7)),
             ),
-          ),
+          ).animate().fadeIn(),
         ),
-      ),
-      Center(
-        child: ScaleTransition(
-          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-          child: GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: isMobile ? sz.width * 0.92 : (sz.width * 0.46).clamp(380.0, 580.0),
-              constraints: BoxConstraints(maxHeight: sz.height * 0.84),
-              margin: const EdgeInsets.symmetric(vertical: 40),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0E0E0E).withOpacity(0.93),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.10), width: 1.0),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.75), blurRadius: 90, spreadRadius: -6, offset: const Offset(0, 36)),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Stack(children: [
-                  Positioned(
-                    top: -50, right: -50,
-                    child: CustomPaint(size: const Size(200, 200), painter: _CornerGlowPainter()),
-                  ),
-                  _ModalContent(service: service, isMobile: isMobile),
-                ]),
-              ),
+        Center(
+          child: Container(
+            width: isMobile ? sz.width * 0.92 : (sz.width * 0.46).clamp(380.0, 580.0),
+            constraints: BoxConstraints(maxHeight: sz.height * 0.84),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0E0E0E).withOpacity(0.95),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white10),
             ),
-          ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: _ModalContent(service: service, isMobile: isMobile),
+            ),
+          )
+              .animate()
+              .scale(begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack, duration: 400.ms)
+              .blurXY(begin: 20, end: 0)
+              .fadeIn(),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
-class _CornerGlowPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    canvas.drawCircle(
-      center,
-      size.width / 2,
-      Paint()..shader = RadialGradient(colors: [Colors.white.withOpacity(0.055), Colors.white.withOpacity(0.0)]).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
-    );
-  }
-  @override bool shouldRepaint(_) => false;
-}
+// ─── Modal Content Sub-widgets ───────────────────────────────────────────────
 
 class _ModalContent extends StatelessWidget {
   final _Service service;
@@ -640,81 +750,93 @@ class _ModalContent extends StatelessWidget {
     final pad = isMobile ? 24.0 : 40.0;
     return SingleChildScrollView(
       padding: EdgeInsets.all(pad),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Container(
-            width: 52, height: 52,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.07),
-              borderRadius: BorderRadius.circular(13),
-              border: Border.all(color: Colors.white.withOpacity(0.14), width: 1),
-            ),
-            child: Center(child: FaIcon(service.icon, size: 22, color: Colors.white70)),
-          ),
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Container(
-                width: 36, height: 36,
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.07), shape: BoxShape.circle, border: Border.all(color: Colors.white.withOpacity(0.14), width: 1)),
-                child: const Icon(Icons.close_rounded, size: 16, color: Colors.white70),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 52, height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.07),
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: Colors.white12),
+                ),
+                child: Center(child: FaIcon(service.icon, size: 22, color: Colors.white70)),
               ),
-            ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close_rounded, color: Colors.white70),
+              )
+            ],
           ),
-        ]),
-        SizedBox(height: isMobile ? 20 : 26),
-        Text(service.modalTitle, style: GoogleFonts.dmSans(fontSize: isMobile ? 21 : 27, fontWeight: FontWeight.w800, color: Colors.white, height: 1.15, letterSpacing: -0.4)),
-        const SizedBox(height: 14),
-        Container(
-          height: 1,
-          decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.white.withOpacity(0.0), Colors.white.withOpacity(0.18), Colors.white.withOpacity(0.0)])),
-        ),
-        const SizedBox(height: 18),
-        Text(service.description, style: GoogleFonts.dmSans(fontSize: isMobile ? 13.5 : 14.5, color: Colors.white.withOpacity(0.82), height: 1.72)),
-        const SizedBox(height: 22),
-        Row(children: [
-          Container(width: 3, height: 12, decoration: BoxDecoration(color: Colors.white.withOpacity(0.5), borderRadius: BorderRadius.circular(2))),
-          const SizedBox(width: 8),
-          Text('HIGHLIGHTS', style: GoogleFonts.dmSans(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white.withOpacity(0.42), letterSpacing: 1.8)),
-        ]),
-        const SizedBox(height: 12),
-        ...service.bullets.map((b) => Padding(
-          padding: const EdgeInsets.only(bottom: 11),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(width: 4, height: 4, margin: const EdgeInsets.only(top: 8, right: 12), decoration: BoxDecoration(color: Colors.white.withOpacity(0.55), shape: BoxShape.circle)),
-            Expanded(child: Text(b, style: GoogleFonts.dmSans(fontSize: isMobile ? 13 : 14, fontWeight: FontWeight.w400, color: Colors.white.withOpacity(0.82), height: 1.55))),
-          ]),
-        )),
-        const SizedBox(height: 26),
-        const _ModalCta(),
-      ]),
+          const SizedBox(height: 26),
+          Text(
+            service.modalTitle,
+            style: GoogleFonts.dmSans(
+              fontSize: isMobile ? 21 : 27,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ).animate().slideX(begin: 0.1, delay: 100.ms),
+          const SizedBox(height: 18),
+          Text(
+            service.description,
+            style: GoogleFonts.dmSans(
+              fontSize: 14.5,
+              color: Colors.white.withOpacity(0.8),
+              height: 1.7,
+            ),
+          ).animate().fadeIn(delay: 200.ms),
+          const SizedBox(height: 30),
+          ...service.bullets.map((b) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle_outline, size: 16, color: Colors.white38),
+                const SizedBox(width: 12),
+                Expanded(child: Text(b, style: const TextStyle(color: Colors.white70))),
+              ],
+            ),
+          )).toList().animate(interval: 50.ms).fadeIn().slideX(begin: 0.05),
+          const SizedBox(height: 30),
+          const _ModalCta(),
+        ],
+      ),
     );
   }
 }
 
 class _ModalCta extends StatefulWidget {
   const _ModalCta();
-  @override State<_ModalCta> createState() => _ModalCtaState();
+  @override
+  State<_ModalCta> createState() => _ModalCtaState();
 }
+
 class _ModalCtaState extends State<_ModalCta> {
   bool _hov = false;
   @override
   Widget build(BuildContext context) => MouseRegion(
     onEnter: (_) => setState(() => _hov = true),
     onExit: (_) => setState(() => _hov = false),
-    cursor: SystemMouseCursors.click,
-    child: GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: _hov ? Colors.white.withOpacity(0.14) : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _hov ? Colors.white.withOpacity(0.24) : Colors.white.withOpacity(0.10), width: 1),
+    child: AnimatedContainer(
+      duration: 200.ms,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: _hov ? Colors.white : Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Center(
+        child: Text(
+          'GET IN TOUCH',
+          style: TextStyle(
+            color: _hov ? Colors.black : Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
         ),
-        child: Center(child: Text('GET IN TOUCH', style: GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white.withOpacity(_hov ? 0.95 : 0.55), letterSpacing: 1.8))),
       ),
     ),
   );

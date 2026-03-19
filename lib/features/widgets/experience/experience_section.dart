@@ -139,13 +139,18 @@ class _ExperienceSectionWidgetState extends State<ExperienceSectionWidget>
   void initState() {
     super.initState();
     _expandCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500));
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
     _entranceCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1200));
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
     _expandAnim = CurvedAnimation(
-        parent: _expandCtrl,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic);
+      parent: _expandCtrl,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
   }
 
   @override
@@ -166,7 +171,7 @@ class _ExperienceSectionWidgetState extends State<ExperienceSectionWidget>
       barrierDismissible: true,
       barrierLabel: 'close',
       barrierColor: Colors.transparent,
-      transitionDuration: const Duration(milliseconds: 350),
+      transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (_, __, ___) => const SizedBox.shrink(),
       transitionBuilder: (ctx, anim, _, __) => Material(
         type: MaterialType.transparency,
@@ -222,22 +227,25 @@ class _ExperienceSectionWidgetState extends State<ExperienceSectionWidget>
               animation: _expandAnim,
               builder: (_, child) => ClipRect(
                 child: Align(
-                    heightFactor: _expandAnim.value,
-                    alignment: Alignment.topCenter,
-                    child: child),
+                  heightFactor: _expandAnim.value,
+                  alignment: Alignment.topCenter,
+                  child: child,
+                ),
               ),
               child: Column(
                 children: _extraExperiences
-                    .map((exp) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _ExperienceRow(
-                    exp: exp,
-                    isFirst: false,
-                    isMobile: isMobile,
-                    onTap: () => _openModal(exp),
-                    slideAnim: _expandAnim,
+                    .map(
+                      (exp) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _ExperienceRow(
+                      exp: exp,
+                      isFirst: false,
+                      isMobile: isMobile,
+                      onTap: () => _openModal(exp),
+                      slideAnim: _expandAnim,
+                    ),
                   ),
-                ))
+                )
                     .toList(),
               ),
             ),
@@ -261,22 +269,30 @@ class _AnimatedEntrance extends StatelessWidget {
   final AnimationController controller;
   final double delay;
 
-  const _AnimatedEntrance(
-      {required this.child, required this.controller, required this.delay});
+  const _AnimatedEntrance({
+    required this.child,
+    required this.controller,
+    required this.delay,
+  });
 
   @override
   Widget build(BuildContext context) {
     final anim = CurvedAnimation(
       parent: controller,
-      curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0),
-          curve: Curves.easeOutCubic),
+      curve: Interval(
+        delay,
+        (delay + 0.4).clamp(0.0, 1.0),
+        curve: Curves.easeOutCubic,
+      ),
     );
 
     return FadeTransition(
       opacity: anim,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero)
-            .animate(anim),
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.2),
+          end: Offset.zero,
+        ).animate(anim),
         child: child,
       ),
     );
@@ -321,7 +337,10 @@ class _SectionHeader extends StatelessWidget {
                 'A journey through my professional milestones, building production-grade mobile solutions across diverse industries.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
-                    fontSize: 13.5, color: Colors.black54, height: 1.7),
+                  fontSize: 13.5,
+                  color: Colors.black54,
+                  height: 1.7,
+                ),
               ),
             ),
           ],
@@ -341,15 +360,17 @@ class _SunIcon extends StatefulWidget {
   State<_SunIcon> createState() => _SunIconState();
 }
 
-class _SunIconState extends State<_SunIcon> with SingleTickerProviderStateMixin {
+class _SunIconState extends State<_SunIcon>
+    with SingleTickerProviderStateMixin {
   late AnimationController _rotateCtrl;
 
   @override
   void initState() {
     super.initState();
-    _rotateCtrl =
-    AnimationController(vsync: this, duration: const Duration(seconds: 12))
-      ..repeat();
+    _rotateCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 12),
+    )..repeat();
   }
 
   @override
@@ -362,7 +383,9 @@ class _SunIconState extends State<_SunIcon> with SingleTickerProviderStateMixin 
   Widget build(BuildContext context) => RotationTransition(
     turns: _rotateCtrl,
     child: CustomPaint(
-        size: Size(widget.size, widget.size), painter: _SunPainter()),
+      size: Size(widget.size, widget.size),
+      painter: _SunPainter(),
+    ),
   );
 }
 
@@ -377,7 +400,10 @@ class _SunPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(
-        center, size.width * 0.12, paint..style = PaintingStyle.fill);
+      center,
+      size.width * 0.12,
+      paint..style = PaintingStyle.fill,
+    );
     paint.style = PaintingStyle.stroke;
 
     const rayCount = 16;
@@ -386,8 +412,14 @@ class _SunPainter extends CustomPainter {
       final innerR = size.width * (i % 2 == 0 ? 0.22 : 0.28);
       final outerR = size.width * (i % 2 == 0 ? 0.44 : 0.36);
       canvas.drawLine(
-        Offset(center.dx + innerR * cos(angle), center.dy + innerR * sin(angle)),
-        Offset(center.dx + outerR * cos(angle), center.dy + outerR * sin(angle)),
+        Offset(
+          center.dx + innerR * cos(angle),
+          center.dy + innerR * sin(angle),
+        ),
+        Offset(
+          center.dx + outerR * cos(angle),
+          center.dy + outerR * sin(angle),
+        ),
         paint..strokeWidth = i % 2 == 0 ? 1.4 : 0.8,
       );
     }
@@ -413,9 +445,10 @@ class _ScratchLinesState extends State<_ScratchLines>
   @override
   void initState() {
     super.initState();
-    _pulseCtrl =
-    AnimationController(vsync: this, duration: const Duration(seconds: 4))
-      ..repeat(reverse: true);
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
   }
 
   @override
@@ -427,12 +460,9 @@ class _ScratchLinesState extends State<_ScratchLines>
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _pulseCtrl,
-    builder: (context, child) => Opacity(
-      opacity: 0.6 + (_pulseCtrl.value * 0.4),
-      child: child,
-    ),
-    child: CustomPaint(
-        size: const Size(90, 90), painter: _ScratchPainter()),
+    builder: (context, child) =>
+        Opacity(opacity: 0.6 + (_pulseCtrl.value * 0.4), child: child),
+    child: CustomPaint(size: const Size(90, 90), painter: _ScratchPainter()),
   );
 }
 
@@ -490,7 +520,9 @@ class _ExperienceRowState extends State<_ExperienceRow>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 260));
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
     _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
     if (widget.isFirst) _ctrl.value = 1.0;
   }
@@ -530,16 +562,18 @@ class _ExperienceRowState extends State<_ExperienceRow>
               width: double.infinity,
               transform: Matrix4.translationValues(_isHovered ? 8 : 0, 0, 0),
               decoration: BoxDecoration(
-                  color: bg,
-                  border: Border.all(color: bord, width: 1.2),
-                  boxShadow: _isHovered
-                      ? [
-                    BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4))
-                  ]
-                      : []),
+                color: bg,
+                border: Border.all(color: bord, width: 1.2),
+                boxShadow: _isHovered
+                    ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+                    : [],
+              ),
               padding: widget.isMobile
                   ? const EdgeInsets.all(20)
                   : const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
@@ -567,66 +601,96 @@ class _ExperienceRowState extends State<_ExperienceRow>
   }
 
   Widget _desktopContent(Color fg, Color fgs, Color divC) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      _NumberBadge(number: widget.exp.number, fg: fg),
-      const SizedBox(width: 20),
-      Expanded(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(widget.exp.role,
-              style: GoogleFonts.dmSans(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _NumberBadge(number: widget.exp.number, fg: fg),
+        const SizedBox(width: 20),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.exp.role,
+                style: GoogleFonts.dmSans(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
                   color: fg,
-                  height: 1.2)),
-          const SizedBox(height: 4),
-          Text(widget.exp.company,
-              style: GoogleFonts.dmSans(fontSize: 13, color: fgs, height: 1.3)),
-        ]),
-      ),
-      Container(width: 1, height: 36, color: divC),
-      const SizedBox(width: 28),
-      Text(
-        'JOB DURATION -  ${widget.exp.duration}',
-        style: GoogleFonts.dmSans(
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.exp.company,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  color: fgs,
+                  height: 1.3,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(width: 1, height: 36, color: divC),
+        const SizedBox(width: 28),
+        Text(
+          'JOB DURATION -  ${widget.exp.duration}',
+          style: GoogleFonts.dmSans(
             fontSize: 12,
             fontWeight: FontWeight.w700,
             color: fgs,
-            letterSpacing: 0.8),
-      ),
-      const SizedBox(width: 8),
-    ]);
+            letterSpacing: 0.8,
+          ),
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
   }
 
   Widget _mobileContent(Color fg, Color fgs, Color divC) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        _NumberBadge(number: widget.exp.number, fg: fg),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.exp.role,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _NumberBadge(number: widget.exp.number, fg: fg),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.exp.role,
                     style: GoogleFonts.dmSans(
-                        fontSize: 15, fontWeight: FontWeight.w700, color: fg)),
-                const SizedBox(height: 3),
-                Text(widget.exp.company,
-                    style: GoogleFonts.dmSans(fontSize: 12, color: fgs)),
-              ]),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: fg,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    widget.exp.company,
+                    style: GoogleFonts.dmSans(fontSize: 12, color: fgs),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ]),
-      const SizedBox(height: 14),
-      Container(width: double.infinity, height: 1, color: divC),
-      const SizedBox(height: 10),
-      Text(
-        'JOB DURATION -  ${widget.exp.duration}',
-        style: GoogleFonts.dmSans(
+        const SizedBox(height: 14),
+        Container(width: double.infinity, height: 1, color: divC),
+        const SizedBox(height: 10),
+        Text(
+          'JOB DURATION -  ${widget.exp.duration}',
+          style: GoogleFonts.dmSans(
             fontSize: 11,
             fontWeight: FontWeight.w700,
             color: fgs,
-            letterSpacing: 0.8),
-      ),
-    ]);
+            letterSpacing: 0.8,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -648,9 +712,14 @@ class _NumberBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
-        child: Text('$number',
-            style: GoogleFonts.dmSans(
-                fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+        child: Text(
+          '$number',
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
@@ -661,7 +730,11 @@ class _NumberBadge extends StatelessWidget {
 class _ViewMoreButton extends StatefulWidget {
   final bool expanded;
   final VoidCallback onTap;
-  const _ViewMoreButton({required this.expanded, required this.onTap, super.key});
+  const _ViewMoreButton({
+    required this.expanded,
+    required this.onTap,
+    super.key,
+  });
 
   @override
   State<_ViewMoreButton> createState() => _ViewMoreButtonState();
@@ -686,26 +759,33 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
             border: Border.all(color: Colors.black, width: 1.2),
             borderRadius: BorderRadius.circular(50),
           ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 180),
-              child: Text(
-                widget.expanded ? 'Show Less' : 'View More',
-                key: ValueKey(widget.expanded),
-                style: GoogleFonts.dmSans(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                child: Text(
+                  widget.expanded ? 'Show Less' : 'View More',
+                  key: ValueKey(widget.expanded),
+                  style: GoogleFonts.dmSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: _hov ? Colors.white : Colors.black),
+                    color: _hov ? Colors.white : Colors.black,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            AnimatedRotation(
-              turns: widget.expanded ? 0.5 : 0.0,
-              duration: const Duration(milliseconds: 300),
-              child: Icon(Icons.keyboard_arrow_down_rounded,
-                  size: 18, color: _hov ? Colors.white : Colors.black),
-            ),
-          ]),
+              const SizedBox(width: 8),
+              AnimatedRotation(
+                turns: widget.expanded ? 0.5 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 18,
+                  color: _hov ? Colors.white : Colors.black,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -717,73 +797,84 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
 class _ExperienceModal extends StatelessWidget {
   final _Experience experience;
   final Animation<double> animation;
-  const _ExperienceModal({required this.experience, required this.animation, super.key});
+  const _ExperienceModal({
+    required this.experience,
+    required this.animation,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     final sz = MediaQuery.of(context).size;
     final isMobile = sz.width < 600;
 
-    return Stack(children: [
-      Positioned.fill(
-        child: GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-              child: Container(
-                color: const Color(0xFF0A0A0A).withOpacity(0.72),
-              ),
-            ),
-          ),
-        ),
-      ),
-      Center(
-        child: ScaleTransition(
-          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+    return Stack(
+      children: [
+        Positioned.fill(
           child: GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: isMobile
-                  ? sz.width * 0.92
-                  : (sz.width * 0.46).clamp(400.0, 600.0),
-              constraints: BoxConstraints(maxHeight: sz.height * 0.86),
-              margin: const EdgeInsets.symmetric(vertical: 40),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D0D0D).withOpacity(0.95),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.12),
-                  width: 1.0,
+            onTap: () => Navigator.of(context).pop(),
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                child: Container(
+                  color: const Color(0xFF0A0A0A).withOpacity(0.72),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.70),
-                    blurRadius: 80,
-                    spreadRadius: -4,
-                    offset: const Offset(0, 32),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Stack(children: [
-                  Positioned(
-                    top: -60,
-                    right: -60,
-                    child: CustomPaint(
-                      size: const Size(220, 220),
-                      painter: _GlowCirclePainter(),
-                    ),
-                  ),
-                  _ModalContent(experience: experience, isMobile: isMobile),
-                ]),
               ),
             ),
           ),
         ),
-      ),
-    ]);
+        Center(
+          child: ScaleTransition(
+            scale: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutBack, // Corrected Curve
+            ),
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                width: isMobile
+                    ? sz.width * 0.92
+                    : (sz.width * 0.46).clamp(400.0, 600.0),
+                constraints: BoxConstraints(maxHeight: sz.height * 0.86),
+                margin: const EdgeInsets.symmetric(vertical: 40),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D0D0D).withOpacity(0.95),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.12),
+                    width: 1.0,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.70),
+                      blurRadius: 80,
+                      spreadRadius: -4,
+                      offset: const Offset(0, 32),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -60,
+                        right: -60,
+                        child: CustomPaint(
+                          size: const Size(220, 220),
+                          painter: _GlowCirclePainter(),
+                        ),
+                      ),
+                      _ModalContent(experience: experience, isMobile: isMobile),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -793,10 +884,7 @@ class _GlowCirclePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final paint = Paint()
       ..shader = RadialGradient(
-        colors: [
-          Colors.white.withOpacity(0.06),
-          Colors.white.withOpacity(0.0),
-        ],
+        colors: [Colors.white.withOpacity(0.06), Colors.white.withOpacity(0.0)],
       ).createShader(Rect.fromCircle(center: center, radius: size.width / 2));
     canvas.drawCircle(center, size.width / 2, paint);
   }
@@ -808,7 +896,11 @@ class _GlowCirclePainter extends CustomPainter {
 class _ModalContent extends StatelessWidget {
   final _Experience experience;
   final bool isMobile;
-  const _ModalContent({required this.experience, required this.isMobile, super.key});
+  const _ModalContent({
+    required this.experience,
+    required this.isMobile,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -820,72 +912,99 @@ class _ModalContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.07),
-                borderRadius: BorderRadius.circular(10),
-                border:
-                Border.all(color: Colors.white.withOpacity(0.14), width: 1),
-              ),
-              child: Center(
-                child: Text('${experience.number}',
-                    style: GoogleFonts.dmSans(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white)),
-              ),
-            ),
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                        color: Colors.white.withOpacity(0.16), width: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.07),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.14),
+                    width: 1,
                   ),
-                  child: const Icon(Icons.close_rounded,
-                      size: 16, color: Colors.white70),
+                ),
+                child: Center(
+                  child: Text(
+                    '${experience.number}',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ]),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.08),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.16),
+                        width: 1,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      size: 16,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           SizedBox(height: isMobile ? 22 : 28),
-          Text(experience.role,
-              style: GoogleFonts.dmSans(
-                  fontSize: isMobile ? 20 : 26,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  height: 1.2,
-                  letterSpacing: -0.4)),
+          Text(
+            experience.role,
+            style: GoogleFonts.dmSans(
+              fontSize: isMobile ? 20 : 26,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              height: 1.2,
+              letterSpacing: -0.4,
+            ),
+          ),
           const SizedBox(height: 8),
-          Row(children: [
-            Flexible(
-              child: Text(experience.company,
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  experience.company,
                   style: GoogleFonts.dmSans(
-                      fontSize: 13,
-                      color: Colors.white.withOpacity(0.5),
-                      fontWeight: FontWeight.w500)),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Container(
-                  width: 1, height: 13, color: Colors.white.withOpacity(0.2)),
-            ),
-            Text(experience.duration,
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.5),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Container(
+                  width: 1,
+                  height: 13,
+                  color: Colors.white.withOpacity(0.2),
+                ),
+              ),
+              Text(
+                experience.duration,
                 style: GoogleFonts.dmSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white.withOpacity(0.4),
-                    letterSpacing: 0.6)),
-          ]),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white.withOpacity(0.4),
+                  letterSpacing: 0.6,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 22),
           Container(
             height: 1,
@@ -900,31 +1019,42 @@ class _ModalContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
-          Text(experience.description,
-              style: GoogleFonts.dmSans(
-                  fontSize: isMobile ? 13.5 : 14.5,
-                  color: Colors.white.withOpacity(0.75),
-                  height: 1.75)),
+          Text(
+            experience.description,
+            style: GoogleFonts.dmSans(
+              fontSize: isMobile ? 13.5 : 14.5,
+              color: Colors.white.withOpacity(0.75),
+              height: 1.75,
+            ),
+          ),
           const SizedBox(height: 24),
-          Row(children: [
-            Container(
+          Row(
+            children: [
+              Container(
                 width: 3,
                 height: 12,
                 decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(2))),
-            const SizedBox(width: 8),
-            Text('KEY HIGHLIGHTS',
+                  color: Colors.white.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'KEY HIGHLIGHTS',
                 style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white.withOpacity(0.45),
-                    letterSpacing: 1.8)),
-          ]),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white.withOpacity(0.45),
+                  letterSpacing: 1.8,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 14),
-          ...experience.highlights.map((h) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Row(
+          ...experience.highlights.map(
+                (h) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
@@ -933,20 +1063,26 @@ class _ModalContent extends StatelessWidget {
                       width: 4,
                       height: 4,
                       decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.55),
-                          shape: BoxShape.circle),
+                        color: Colors.white.withOpacity(0.55),
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                   Expanded(
-                    child: Text(h,
-                        style: GoogleFonts.dmSans(
-                            fontSize: isMobile ? 13 : 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white.withOpacity(0.82),
-                            height: 1.55)),
+                    child: Text(
+                      h,
+                      style: GoogleFonts.dmSans(
+                        fontSize: isMobile ? 13 : 14,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withOpacity(0.82),
+                        height: 1.55,
+                      ),
+                    ),
                   ),
-                ]),
-          )),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 28),
           const _ModalCloseButton(),
         ],
@@ -989,12 +1125,15 @@ class _ModalCloseButtonState extends State<_ModalCloseButton> {
           ),
         ),
         child: Center(
-          child: Text('CLOSE',
-              style: GoogleFonts.dmSans(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white.withOpacity(_hov ? 0.9 : 0.55),
-                  letterSpacing: 1.8)),
+          child: Text(
+            'CLOSE',
+            style: GoogleFonts.dmSans(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Colors.white.withOpacity(_hov ? 0.9 : 0.55),
+              letterSpacing: 1.8,
+            ),
+          ),
         ),
       ),
     ),

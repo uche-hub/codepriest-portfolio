@@ -21,7 +21,8 @@ class FirebaseMailService {
         'replyTo': email,
         'message': {
           'subject': 'Portfolio Contact: $name',
-          'html': '''
+          'html':
+              '''
             <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
               <h2>New Project Inquiry</h2>
               <p><strong>Name:</strong> $name</p>

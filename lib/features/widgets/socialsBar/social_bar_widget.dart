@@ -52,10 +52,12 @@ class SocialBarWidget extends StatelessWidget {
           const SizedBox(width: 24),
 
           // Social links
-          ..._socials.map((s) => Padding(
-            padding: const EdgeInsets.only(right: 32),
-            child: _SocialLink(item: s),
-          )),
+          ..._socials.map(
+            (s) => Padding(
+              padding: const EdgeInsets.only(right: 32),
+              child: _SocialLink(item: s),
+            ),
+          ),
 
           // Long line after socials — expands to fill remaining space before email
           const SizedBox(width: 8),
@@ -122,7 +124,7 @@ class _SocialLinkState extends State<_SocialLink> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => launchUrl(Uri.parse(widget.item.url)),
@@ -174,7 +176,7 @@ class _EmailLinkState extends State<_EmailLink> {
     final isMobile = ResponsiveHelper.isMobile(context);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => launchUrl(Uri.parse(widget.url)),
@@ -215,11 +217,7 @@ class _Line extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 0.8,
-      width: width,
-      color: const Color(0xFFBBBBBB),
-    );
+    return Container(height: 0.8, width: width, color: const Color(0xFFBBBBBB));
   }
 }
 

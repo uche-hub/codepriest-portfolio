@@ -27,7 +27,9 @@ class BottomGlassBlur extends StatelessWidget {
               ),
               border: Border(
                 top: BorderSide(
-                  color: Colors.black.withOpacity(0.05), // Subtle line at the top
+                  color: Colors.black.withOpacity(
+                    0.05,
+                  ), // Subtle line at the top
                   width: 0.5,
                 ),
               ),

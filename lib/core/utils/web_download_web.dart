@@ -7,7 +7,7 @@ import 'dart:html' as html;
 void triggerWebDownload(List<int> bytes, String fileName) {
   try {
     final blob = html.Blob([bytes], 'application/pdf');
-    final url  = html.Url.createObjectUrlFromBlob(blob);
+    final url = html.Url.createObjectUrlFromBlob(blob);
 
     final anchor = html.document.createElement('a') as html.AnchorElement
       ..href = url
@@ -23,9 +23,6 @@ void triggerWebDownload(List<int> bytes, String fileName) {
     });
   } catch (e) {
     // fallback: open in new tab
-    html.window.open(
-      'assets/files/$fileName',
-      '_blank',
-    );
+    html.window.open('assets/files/$fileName', '_blank');
   }
 }

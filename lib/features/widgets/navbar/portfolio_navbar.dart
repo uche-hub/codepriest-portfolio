@@ -16,7 +16,11 @@ class NavbarWidget extends StatelessWidget {
         final isScrolled = sp.scrollOffset > 60;
         final t = (sp.scrollOffset / 120.0).clamp(0.0, 1.0);
         final screenW = MediaQuery.of(context).size.width;
-        final vPadBase = screenW < 600 ? 16.0 : screenW < 1100 ? 18.0 : 22.0;
+        final vPadBase = screenW < 600
+            ? 16.0
+            : screenW < 1100
+            ? 18.0
+            : 22.0;
         final vPad = lerpDouble(vPadBase, 8, t)!;
         final hPad = ResponsiveHelper.getHorizontalPadding(context);
 
@@ -34,21 +38,30 @@ class NavbarWidget extends StatelessWidget {
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeOut,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: isScrolled ? 0.55 : 0.0),
+                    color: Colors.white.withValues(
+                      alpha: isScrolled ? 0.55 : 0.0,
+                    ),
                     border: Border(
                       bottom: BorderSide(
-                        color: Colors.black.withValues(alpha: isScrolled ? 0.08 : 0.0),
+                        color: Colors.black.withValues(
+                          alpha: isScrolled ? 0.08 : 0.0,
+                        ),
                         width: 1,
                       ),
                     ),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    final w = constraints.maxWidth;
-                    if (w < 600) return _MobileNav(scrollProvider: sp, t: t);
-                    if (w < 1100) return _TabletNav(scrollProvider: sp, t: t);
-                    return _DesktopNav(scrollProvider: sp, t: t);
-                  }),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: hPad,
+                    vertical: vPad,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final w = constraints.maxWidth;
+                      if (w < 600) return _MobileNav(scrollProvider: sp, t: t);
+                      if (w < 1100) return _TabletNav(scrollProvider: sp, t: t);
+                      return _DesktopNav(scrollProvider: sp, t: t);
+                    },
+                  ),
                 ),
               ),
             );
@@ -78,10 +91,7 @@ class _DesktopNav extends StatelessWidget {
         const SizedBox(width: 12),
 
         // Two diagonal lines — fade out on scroll
-        Opacity(
-          opacity: linesOpacity,
-          child: const _DiagonalLines(),
-        ),
+        Opacity(opacity: linesOpacity, child: const _DiagonalLines()),
 
         const Spacer(),
 
@@ -164,7 +174,7 @@ class _CompactNavLinkState extends State<_CompactNavLink> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -210,9 +220,7 @@ class _LogoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveHelper.isMobile(context);
-    final fontSize = isMobile
-        ? lerpDouble(22, 17, t)!
-        : lerpDouble(28, 21, t)!;
+    final fontSize = isMobile ? lerpDouble(22, 17, t)! : lerpDouble(28, 21, t)!;
     final underlineW = isMobile
         ? lerpDouble(66, 51, t)!
         : lerpDouble(84, 63, t)!;
@@ -264,11 +272,7 @@ class _DiagonalLines extends StatelessWidget {
             child: Transform.rotate(
               angle: 0.38,
               alignment: Alignment.topCenter,
-              child: Container(
-                width: 1.5,
-                height: 68,
-                color: Colors.black,
-              ),
+              child: Container(width: 1.5, height: 68, color: Colors.black),
             ),
           ),
           // Line 2 — longer, sits a bit to the right
@@ -278,11 +282,7 @@ class _DiagonalLines extends StatelessWidget {
             child: Transform.rotate(
               angle: 0.38,
               alignment: Alignment.topCenter,
-              child: Container(
-                width: 1.5,
-                height: 96,
-                color: Colors.black,
-              ),
+              child: Container(width: 1.5, height: 96, color: Colors.black),
             ),
           ),
         ],

@@ -32,7 +32,7 @@ class AppConstants {
     " Dart ",
     " Firebase ",
     " CI/CD ",
-    " Git "
+    " Git ",
   ];
 
   // Nav links

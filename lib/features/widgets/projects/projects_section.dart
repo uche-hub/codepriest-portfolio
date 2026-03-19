@@ -44,12 +44,12 @@ const _mainStudies = [
     imagePath: 'assets/images/1.jpg',
     imageColor: Color(0xFFE8E8E8),
     description:
-    'Novelle is a beautifully designed, intuitive app that helps you read better and get the most out of every page. Whether you are a casual reader seeking your next great escape or a dedicated bibliophile ready to delve into a new genre, Novelle transforms your reading journey. Our mission is to make reading a more engaging and interactive experience than ever before.',
+        'Novelle is a beautifully designed, intuitive app that helps you read better and get the most out of every page. Whether you are a casual reader seeking your next great escape or a dedicated bibliophile ready to delve into a new genre, Novelle transforms your reading journey. Our mission is to make reading a more engaging and interactive experience than ever before.',
     scope: ['Google Book API', 'Zen API', 'Flutter', 'Firebase'],
     year: '2025',
     client: 'Apptalic Lab',
     url:
-    'https://play.google.com/store/apps/details?id=com.apptalic.novella&pcampaignid=web_share',
+        'https://play.google.com/store/apps/details?id=com.apptalic.novella&pcampaignid=web_share',
   ),
   _CaseStudy(
     tag: 'Mobile App',
@@ -58,12 +58,12 @@ const _mainStudies = [
     imagePath: 'assets/images/2.jpg',
     imageColor: Color(0xFFF0EDE8),
     description:
-    'Break the "No Experience" Cycle with Internda! Internda helps you find companies that want fresh talent—no "prior experience" needed. Skip the job board stress. Land your dream internship.',
+        'Break the "No Experience" Cycle with Internda! Internda helps you find companies that want fresh talent—no "prior experience" needed. Skip the job board stress. Land your dream internship.',
     scope: ['Flutter', 'LinkedIn API', 'Firebase', 'Google GEOLocation'],
     year: '2025',
     client: 'Apptalic Lab',
     url:
-    'https://play.google.com/store/apps/details?id=com.apptalic.internda.app&pcampaignid=web_share',
+        'https://play.google.com/store/apps/details?id=com.apptalic.internda.app&pcampaignid=web_share',
   ),
 ];
 
@@ -75,19 +75,19 @@ const _extraStudies = [
     imagePath: 'assets/images/3.jpg',
     imageColor: Color(0xFFDEEBFF),
     description:
-    'MAAL Tracker - Walk, Share, and Get Rewarded! Ready to turn your everyday steps into exciting rewards and boost your earnings by sharing your valuable opinions? Welcome to MAAL Tracker, the innovative app that motivates you to stay active and engaged while putting valuable in-app coins right in your pocket!',
+        'MAAL Tracker - Walk, Share, and Get Rewarded! Ready to turn your everyday steps into exciting rewards and boost your earnings by sharing your valuable opinions? Welcome to MAAL Tracker, the innovative app that motivates you to stay active and engaged while putting valuable in-app coins right in your pocket!',
     scope: [
       'Flutter',
       'Firebase',
       'Firestore',
       'GEOLocation',
       'Google Maps API',
-      'Health Connect'
+      'Health Connect',
     ],
     year: '2025',
     client: 'Marketing Analytics Africa',
     url:
-    'https://play.google.com/store/apps/details?id=com.maa.maal_tracker&pcampaignid=web_share',
+        'https://play.google.com/store/apps/details?id=com.maa.maal_tracker&pcampaignid=web_share',
   ),
   _CaseStudy(
     tag: 'Mobile App',
@@ -96,22 +96,22 @@ const _extraStudies = [
     imagePath: 'assets/images/4.jpg',
     imageColor: Color(0xFFF5E6D3),
     description:
-    'Finding important files shouldn\'t feel like a chore. Shelf is a minimalist, high-speed file access tool designed to help you retrieve your most important files, notes, images, and documents in the least number of steps. Unlike traditional file managers, Shelf doesn\'t focus on managing storage—it focuses on instant access to what matters most.',
+        'Finding important files shouldn\'t feel like a chore. Shelf is a minimalist, high-speed file access tool designed to help you retrieve your most important files, notes, images, and documents in the least number of steps. Unlike traditional file managers, Shelf doesn\'t focus on managing storage—it focuses on instant access to what matters most.',
     scope: ['Flutter', 'just_audio', 'bLoc'],
     year: '2026',
     client: 'Credes Technologies',
     url:
-    'https://play.google.com/store/apps/details?id=org.credes.shelf&pcampaignid=web_share',
+        'https://play.google.com/store/apps/details?id=org.credes.shelf&pcampaignid=web_share',
   ),
   _CaseStudy(
     tag: 'pub.dev package',
     title: 'Button Loading FX',
     subtitle:
-    'A Flutter package that provides beautiful, customizable loading animations for buttons.',
-    imagePath: 'assets/images/button_fx.gif',
+        'A Flutter package that provides beautiful, customizable loading animations for buttons.',
+    imagePath: 'images/button-fx.gif',
     imageColor: Color(0xFFF5E6D3),
     description:
-    'A Flutter package that provides beautiful, customizable loading animations for buttons. Transform boring loading states into delightful user experiences with smooth animations and progress indicators!',
+        'A Flutter package that provides beautiful, customizable loading animations for buttons. Transform boring loading states into delightful user experiences with smooth animations and progress indicators!',
     scope: ['Flutter', 'pub.dev', 'MIT License'],
     year: '2026',
     client: 'Uchenna Nduwke',
@@ -140,11 +140,17 @@ class _CaseStudySectionState extends State<CaseStudySectionWidget>
   void initState() {
     super.initState();
     _expandCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 600));
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
     _entranceCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1000));
-    _expandAnim =
-        CurvedAnimation(parent: _expandCtrl, curve: Curves.easeInOutQuart);
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _expandAnim = CurvedAnimation(
+      parent: _expandCtrl,
+      curve: Curves.easeInOutQuart,
+    );
   }
 
   @override
@@ -203,19 +209,21 @@ class _CaseStudySectionState extends State<CaseStudySectionWidget>
             const SizedBox(height: 64),
 
             // Main studies
-            ..._mainStudies.asMap().entries.map((e) => _AnimatedEntrance(
-              controller: _entranceCtrl,
-              delay: 0.2 + (e.key * 0.15),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 60),
-                child: _CaseStudyItem(
-                  study: e.value,
-                  imageLeft: e.key % 2 == 0,
-                  isMobile: isMobile,
-                  onTap: () => _openModal(e.value),
+            ..._mainStudies.asMap().entries.map(
+              (e) => _AnimatedEntrance(
+                controller: _entranceCtrl,
+                delay: 0.2 + (e.key * 0.15),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 60),
+                  child: _CaseStudyItem(
+                    study: e.value,
+                    imageLeft: e.key % 2 == 0,
+                    isMobile: isMobile,
+                    onTap: () => _openModal(e.value),
+                  ),
                 ),
               ),
-            )),
+            ),
 
             // Extra studies
             SizeTransition(
@@ -256,22 +264,30 @@ class _AnimatedEntrance extends StatelessWidget {
   final AnimationController controller;
   final double delay;
 
-  const _AnimatedEntrance(
-      {required this.child, required this.controller, required this.delay});
+  const _AnimatedEntrance({
+    required this.child,
+    required this.controller,
+    required this.delay,
+  });
 
   @override
   Widget build(BuildContext context) {
     final anim = CurvedAnimation(
       parent: controller,
-      curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0),
-          curve: Curves.easeOutCubic),
+      curve: Interval(
+        delay,
+        (delay + 0.4).clamp(0.0, 1.0),
+        curve: Curves.easeOutCubic,
+      ),
     );
 
     return FadeTransition(
       opacity: anim,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
-            .animate(anim),
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.1),
+          end: Offset.zero,
+        ).animate(anim),
         child: child,
       ),
     );
@@ -290,35 +306,36 @@ class _CaseHeader extends StatelessWidget {
       alignment: Alignment.center,
       clipBehavior: Clip.none,
       children: [
-        Positioned(
-          left: isMobile ? -16 : 0,
-          top: -8,
-          child: const _DotGrid(),
-        ),
-        Column(children: [
-          const _SunIcon(size: 34),
-          const SizedBox(height: 14),
-          Text(
-            'My Projects',
-            style: GoogleFonts.dmSans(
-              fontSize: isMobile ? 36 : 56,
-              fontWeight: FontWeight.w800,
-              color: Colors.black,
-              letterSpacing: -1.0,
-              height: 1.0,
-            ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: isMobile ? double.infinity : 420,
-            child: Text(
-              'A collection of production-grade mobile applications and open-source tools I have built to solve real-world problems.',
-              textAlign: TextAlign.center,
+        Positioned(left: isMobile ? -16 : 0, top: -8, child: const _DotGrid()),
+        Column(
+          children: [
+            const _SunIcon(size: 34),
+            const SizedBox(height: 14),
+            Text(
+              'My Projects',
               style: GoogleFonts.dmSans(
-                  fontSize: 13.5, color: Colors.black54, height: 1.7),
+                fontSize: isMobile ? 36 : 56,
+                fontWeight: FontWeight.w800,
+                color: Colors.black,
+                letterSpacing: -1.0,
+                height: 1.0,
+              ),
             ),
-          ),
-        ]),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: isMobile ? double.infinity : 420,
+              child: Text(
+                'A collection of production-grade mobile applications and open-source tools I have built to solve real-world problems.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13.5,
+                  color: Colors.black54,
+                  height: 1.7,
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -331,10 +348,7 @@ class _DotGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size(110, 110),
-      painter: _DotGridPainter(),
-    );
+    return CustomPaint(size: const Size(110, 110), painter: _DotGridPainter());
   }
 }
 
@@ -348,7 +362,9 @@ class _DotGridPainter extends CustomPainter {
 
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
-        final distFromCenter = sqrt(pow(c - cols / 2, 2) + pow(r - rows / 2, 2));
+        final distFromCenter = sqrt(
+          pow(c - cols / 2, 2) + pow(r - rows / 2, 2),
+        );
         final maxDist = sqrt(pow(cols / 2, 2) + pow(rows / 2, 2));
         final opacity = (1.0 - distFromCenter / maxDist).clamp(0.08, 0.75);
         final radius = (2.4 - distFromCenter * 0.18).clamp(0.8, 2.4);
@@ -376,15 +392,17 @@ class _SunIcon extends StatefulWidget {
   State<_SunIcon> createState() => _SunIconState();
 }
 
-class _SunIconState extends State<_SunIcon> with SingleTickerProviderStateMixin {
+class _SunIconState extends State<_SunIcon>
+    with SingleTickerProviderStateMixin {
   late AnimationController _rotateCtrl;
 
   @override
   void initState() {
     super.initState();
-    _rotateCtrl =
-    AnimationController(vsync: this, duration: const Duration(seconds: 12))
-      ..repeat();
+    _rotateCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 12),
+    )..repeat();
   }
 
   @override
@@ -397,7 +415,9 @@ class _SunIconState extends State<_SunIcon> with SingleTickerProviderStateMixin 
   Widget build(BuildContext context) => RotationTransition(
     turns: _rotateCtrl,
     child: CustomPaint(
-        size: Size(widget.size, widget.size), painter: _SunPainter()),
+      size: Size(widget.size, widget.size),
+      painter: _SunPainter(),
+    ),
   );
 }
 
@@ -410,7 +430,10 @@ class _SunPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     canvas.drawCircle(
-        center, size.width * 0.12, paint..style = PaintingStyle.fill);
+      center,
+      size.width * 0.12,
+      paint..style = PaintingStyle.fill,
+    );
     paint.style = PaintingStyle.stroke;
 
     const rayCount = 16;
@@ -459,15 +482,15 @@ class _CaseStudyItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: imageLeft
           ? [
-        Expanded(flex: 55, child: image),
-        const SizedBox(width: 56),
-        Expanded(flex: 45, child: content),
-      ]
+              Expanded(flex: 55, child: image),
+              const SizedBox(width: 56),
+              Expanded(flex: 45, child: content),
+            ]
           : [
-        Expanded(flex: 45, child: content),
-        const SizedBox(width: 56),
-        Expanded(flex: 55, child: image),
-      ],
+              Expanded(flex: 45, child: content),
+              const SizedBox(width: 56),
+              Expanded(flex: 55, child: image),
+            ],
     );
   }
 
@@ -510,7 +533,6 @@ class _CaseImageState extends State<_CaseImage> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
-          height: h,
           transform: Matrix4.identity()..translate(0.0, _hov ? -5.0 : 0.0),
           decoration: BoxDecoration(
             color: widget.study.imageColor,
@@ -520,33 +542,35 @@ class _CaseImageState extends State<_CaseImage> {
             ),
             boxShadow: _hov
                 ? [
-              BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 15,
-                  offset: const Offset(0, 10))
-            ]
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 10),
+                    ),
+                  ]
                 : [],
           ),
           child: ClipRect(
             child: AnimatedScale(
-              scale: _hov ? 1.05 : 1.0,
+              scale: _hov ? 1.03 : 1.0,
               duration: const Duration(milliseconds: 350),
               curve: Curves.easeOut,
               child: Image.asset(
                 widget.study.imagePath,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain, // ← was BoxFit.cover
                 width: double.infinity,
-                height: h,
                 errorBuilder: (_, __, ___) => Container(
+                  height: isMobile ? 240.0 : 380.0,
                   color: widget.study.imageColor,
                   child: Center(
                     child: Text(
                       widget.study.tag,
                       style: GoogleFonts.dmSans(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black38,
-                          letterSpacing: 1.4),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black38,
+                        letterSpacing: 1.4,
+                      ),
                     ),
                   ),
                 ),
@@ -584,21 +608,23 @@ class _CaseContent extends StatelessWidget {
           child: Text(
             study.tag,
             style: GoogleFonts.dmSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                letterSpacing: 0.8),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              letterSpacing: 0.8,
+            ),
           ),
         ),
         const SizedBox(height: 20),
         Text(
           study.title,
           style: GoogleFonts.dmSans(
-              fontSize: titleSize,
-              fontWeight: FontWeight.w800,
-              color: Colors.black,
-              height: 1.2,
-              letterSpacing: -0.5),
+            fontSize: titleSize,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+            height: 1.2,
+            letterSpacing: -0.5,
+          ),
         ),
         const SizedBox(height: 36),
         _SeeDetailsButton(onTap: onTap),
@@ -638,17 +664,21 @@ class _SeeDetailsButtonState extends State<_SeeDetailsButton> {
                 Text(
                   'See Details',
                   style: GoogleFonts.dmSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 AnimatedSlide(
                   offset: _hov ? const Offset(0.15, -0.15) : Offset.zero,
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeOut,
-                  child: const Icon(Icons.arrow_outward_rounded,
-                      size: 18, color: Colors.black),
+                  child: const Icon(
+                    Icons.arrow_outward_rounded,
+                    size: 18,
+                    color: Colors.black,
+                  ),
                 ),
               ],
             ),
@@ -715,8 +745,11 @@ class _ViewMoreButtonState extends State<_ViewMoreButton> {
               AnimatedRotation(
                 turns: widget.expanded ? 0.5 : 0.0,
                 duration: const Duration(milliseconds: 300),
-                child: Icon(Icons.keyboard_arrow_down_rounded,
-                    size: 18, color: _hov ? Colors.white : Colors.black),
+                child: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 18,
+                  color: _hov ? Colors.white : Colors.black,
+                ),
               ),
             ],
           ),
@@ -738,62 +771,73 @@ class _CaseStudyModal extends StatelessWidget {
     final sz = MediaQuery.of(context).size;
     final isMobile = sz.width < 600;
 
-    return Stack(children: [
-      Positioned.fill(
-        child: GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-              child: Container(
-                color: const Color(0xFF080808).withOpacity(0.74),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                child: Container(
+                  color: const Color(0xFF080808).withOpacity(0.74),
+                ),
               ),
             ),
           ),
         ),
-      ),
-      Center(
-        child: ScaleTransition(
-          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-          child: GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: isMobile
-                  ? sz.width * 0.92
-                  : (sz.width * 0.52).clamp(420.0, 640.0),
-              constraints: BoxConstraints(maxHeight: sz.height * 0.88),
-              margin: const EdgeInsets.symmetric(vertical: 32),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0E0E0E).withOpacity(0.93),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                    color: Colors.white.withOpacity(0.10), width: 1.0),
-                boxShadow: [
-                  BoxShadow(
+        Center(
+          child: ScaleTransition(
+            scale: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutBack,
+            ),
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                width: isMobile
+                    ? sz.width * 0.92
+                    : (sz.width * 0.52).clamp(420.0, 640.0),
+                constraints: BoxConstraints(maxHeight: sz.height * 0.88),
+                margin: const EdgeInsets.symmetric(vertical: 32),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0E0E0E).withOpacity(0.93),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.10),
+                    width: 1.0,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
                       color: Colors.black.withOpacity(0.75),
                       blurRadius: 90,
                       spreadRadius: -6,
-                      offset: const Offset(0, 36)),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Stack(children: [
-                  Positioned(
-                    top: -50,
-                    right: -50,
-                    child: CustomPaint(
-                        size: const Size(200, 200),
-                        painter: _CornerGlowPainter()),
+                      offset: const Offset(0, 36),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -50,
+                        right: -50,
+                        child: CustomPaint(
+                          size: const Size(200, 200),
+                          painter: _CornerGlowPainter(),
+                        ),
+                      ),
+                      _ModalContent(study: study, isMobile: isMobile),
+                    ],
                   ),
-                  _ModalContent(study: study, isMobile: isMobile),
-                ]),
+                ),
               ),
             ),
           ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -805,10 +849,12 @@ class _CornerGlowPainter extends CustomPainter {
       center,
       size.width / 2,
       Paint()
-        ..shader = RadialGradient(colors: [
-          Colors.white.withOpacity(0.055),
-          Colors.white.withOpacity(0.0)
-        ]).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
+        ..shader = RadialGradient(
+          colors: [
+            Colors.white.withOpacity(0.055),
+            Colors.white.withOpacity(0.0),
+          ],
+        ).createShader(Rect.fromCircle(center: center, radius: size.width / 2)),
     );
   }
 
@@ -835,20 +881,27 @@ class _ModalContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.07),
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                      color: Colors.white.withOpacity(0.14), width: 1),
+                    color: Colors.white.withOpacity(0.14),
+                    width: 1,
+                  ),
                 ),
-                child: Text(study.tag,
-                    style: GoogleFonts.dmSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white.withOpacity(0.85),
-                        letterSpacing: 1.0)),
+                child: Text(
+                  study.tag,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white.withOpacity(0.85),
+                    letterSpacing: 1.0,
+                  ),
+                ),
               ),
               GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
@@ -861,10 +914,15 @@ class _ModalContent extends StatelessWidget {
                       color: Colors.white.withOpacity(0.07),
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: Colors.white.withOpacity(0.14), width: 1),
+                        color: Colors.white.withOpacity(0.14),
+                        width: 1,
+                      ),
                     ),
-                    child: const Icon(Icons.close_rounded,
-                        size: 16, color: Colors.white70),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      size: 16,
+                      color: Colors.white70,
+                    ),
                   ),
                 ),
               ),
@@ -877,80 +935,113 @@ class _ModalContent extends StatelessWidget {
               height: isMobile ? 180 : 240,
               width: double.infinity,
               color: study.imageColor.withOpacity(0.3),
-              child: Image.asset(study.imagePath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: Colors.grey)),
+              child: Image.asset(
+                study.imagePath,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(color: Colors.grey),
+              ),
             ),
           ),
           const SizedBox(height: 24),
-          Text(study.title,
-              style: GoogleFonts.dmSans(
-                  fontSize: isMobile ? 20 : 26,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  height: 1.2)),
+          Text(
+            study.title,
+            style: GoogleFonts.dmSans(
+              fontSize: isMobile ? 20 : 26,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              height: 1.2,
+            ),
+          ),
           const SizedBox(height: 8),
-          Row(children: [
-            Text(study.client,
-                style: GoogleFonts.dmSans(fontSize: 13, color: Colors.white60)),
-            const SizedBox(width: 14),
-            Container(width: 1, height: 13, color: Colors.white24),
-            const SizedBox(width: 14),
-            Text(study.year,
-                style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white54)),
-          ]),
+          Row(
+            children: [
+              Text(
+                study.client,
+                style: GoogleFonts.dmSans(fontSize: 13, color: Colors.white60),
+              ),
+              const SizedBox(width: 14),
+              Container(width: 1, height: 13, color: Colors.white24),
+              const SizedBox(width: 14),
+              Text(
+                study.year,
+                style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white54),
+              ),
+            ],
+          ),
           const SizedBox(height: 18),
           Container(
             height: 1,
             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
+              gradient: LinearGradient(
+                colors: [
                   Colors.white.withOpacity(0.0),
                   Colors.white.withOpacity(0.18),
-                  Colors.white.withOpacity(0.0)
-                ])),
+                  Colors.white.withOpacity(0.0),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 18),
-          Text(study.description,
-              style: GoogleFonts.dmSans(
-                  fontSize: isMobile ? 13.5 : 14.5,
-                  color: Colors.white.withOpacity(0.82),
-                  height: 1.72)),
+          Text(
+            study.description,
+            style: GoogleFonts.dmSans(
+              fontSize: isMobile ? 13.5 : 14.5,
+              color: Colors.white.withOpacity(0.82),
+              height: 1.72,
+            ),
+          ),
           const SizedBox(height: 22),
-          Row(children: [
-            Container(
+          Row(
+            children: [
+              Container(
                 width: 3,
                 height: 12,
                 decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(2))),
-            const SizedBox(width: 8),
-            Text('SCOPE OF WORK',
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'SCOPE OF WORK',
                 style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white.withOpacity(0.42),
-                    letterSpacing: 1.8)),
-          ]),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white.withOpacity(0.42),
+                  letterSpacing: 1.8,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: study.scope
-                .map((s) => Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.07),
-                borderRadius: BorderRadius.circular(50),
-                border: Border.all(
-                    color: Colors.white.withOpacity(0.14), width: 1),
-              ),
-              child: Text(s,
-                  style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white70)),
-            ))
+                .map(
+                  (s) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.07),
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.14),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      s,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 28),
@@ -990,24 +1081,30 @@ class _ModalVisitBtnState extends State<_ModalVisitBtn> {
               : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-              color: _hov
-                  ? Colors.white.withOpacity(0.24)
-                  : Colors.white.withOpacity(0.10),
-              width: 1),
+            color: _hov
+                ? Colors.white.withOpacity(0.24)
+                : Colors.white.withOpacity(0.10),
+            width: 1,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('VISIT PROJECT',
-                style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white.withOpacity(_hov ? 0.95 : 0.55),
-                    letterSpacing: 1.8)),
+            Text(
+              'VISIT PROJECT',
+              style: GoogleFonts.dmSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Colors.white.withOpacity(_hov ? 0.95 : 0.55),
+                letterSpacing: 1.8,
+              ),
+            ),
             const SizedBox(width: 8),
-            Icon(Icons.arrow_outward_rounded,
-                size: 14,
-                color: Colors.white.withOpacity(_hov ? 0.95 : 0.55)),
+            Icon(
+              Icons.arrow_outward_rounded,
+              size: 14,
+              color: Colors.white.withOpacity(_hov ? 0.95 : 0.55),
+            ),
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+// lib/main.dart
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +10,7 @@ import 'features/providers/download_provider.dart';
 import 'features/providers/scroll_provider.dart';
 import 'firebase_options.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -16,10 +18,9 @@ void main() async{
       statusBarIconBrightness: Brightness.dark,
     ),
   );
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const PortfolioApp());
 }
 
@@ -34,12 +35,11 @@ class PortfolioApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DownloadProvider()),
       ],
       child: MaterialApp.router(
-        title: "Uchenna | Product Designer",
+        title: "Uchenna | Flutter Developer",
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         routerConfig: AppRouter.router,
         builder: (context, child) {
-          // Clamp text scaling to prevent system font size breaking layout
           final mediaQuery = MediaQuery.of(context);
           final clampedTextScale = mediaQuery.textScaler.clamp(
             minScaleFactor: 1.0,

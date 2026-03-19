@@ -8,14 +8,14 @@ class ScrollProvider extends ChangeNotifier {
   bool _isNavScrolled = false;
 
   // Section keys for navigation
-  final GlobalKey heroKey       = GlobalKey();
-  final GlobalKey skillKey      = GlobalKey();
-  final GlobalKey projectsKey   = GlobalKey();
+  final GlobalKey heroKey = GlobalKey();
+  final GlobalKey skillKey = GlobalKey();
+  final GlobalKey projectsKey = GlobalKey();
   final GlobalKey experienceKey = GlobalKey();
-  final GlobalKey contactKey    = GlobalKey();
+  final GlobalKey contactKey = GlobalKey();
 
-  double get scrollOffset  => _scrollOffset;
-  bool   get isNavScrolled => _isNavScrolled;
+  double get scrollOffset => _scrollOffset;
+  bool get isNavScrolled => _isNavScrolled;
 
   ScrollProvider() {
     scrollController.addListener(_onScroll);
@@ -46,7 +46,7 @@ class ScrollProvider extends ChangeNotifier {
         key = contactKey;
         break;
       default:
-      // Scroll to top — clamped at 0, never goes negative
+        // Scroll to top — clamped at 0, never goes negative
         if (scrollController.hasClients) {
           scrollController.animateTo(
             0,

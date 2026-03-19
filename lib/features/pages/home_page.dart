@@ -83,7 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // 1. Main scrollable content
             ScrollConfiguration(
-              behavior: _PortfolioScrollBehavior(isMobileOrTablet: isMobileOrTablet),
+              behavior: _PortfolioScrollBehavior(
+                isMobileOrTablet: isMobileOrTablet,
+              ),
               child: CustomScrollView(
                 controller: scrollProvider.scrollController,
                 physics: physics,
@@ -93,9 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: scrollProvider.heroKey,
                     child: const HeroSectionWidget(),
                   ),
-                  const SliverToBoxAdapter(
-                    child: SocialBarWidget(),
-                  ),
+                  const SliverToBoxAdapter(child: SocialBarWidget()),
                   SliverToBoxAdapter(
                     key: scrollProvider.skillKey,
                     child: const ServicesSectionWidget(),
@@ -112,21 +112,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: scrollProvider.contactKey,
                     child: const ContactSectionWidget(),
                   ),
-                  const SliverToBoxAdapter(
-                    child: FooterWidget(),
-                  ),
+                  const SliverToBoxAdapter(child: FooterWidget()),
                   const SliverToBoxAdapter(child: SizedBox.shrink()),
                 ],
               ),
             ),
 
             // 2. Sticky Navbar
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: const NavbarWidget(),
-            ),
+            Positioned(top: 0, left: 0, right: 0, child: const NavbarWidget()),
 
             // 3. Conditional Glass Blur at Bottom
             _BottomGlassBlur(isVisible: _isScrolling),
@@ -146,26 +139,35 @@ class _BottomGlassBlur extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedPositioned(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-      bottom: isVisible ? 0 : -80, // Slide out of view when not visible
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOutCubic,
+      bottom: isVisible ? 0 : -60, // smaller hide distance
       left: 0,
       right: 0,
+      height: 60, // much shorter → only top edge feel
       child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: isVisible ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 700),
+        opacity: isVisible ? 0.70 : 0.0, // softer max opacity
         child: ClipRect(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+            filter: ImageFilter.blur(
+              sigmaX: 10.0,
+              sigmaY: 10.0,
+            ), // reduced blur intensity
             child: Container(
-              height: 70,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.5, 1.0],
                   colors: [
-                    Colors.white.withOpacity(0.0),
-                    Colors.white.withOpacity(0.25),
+                    Colors.white.withOpacity(
+                      0.0,
+                    ), // fully transparent at very top
+                    Colors.white.withOpacity(0.12), // gentle middle
+                    Colors.white.withOpacity(
+                      0.28,
+                    ), // slightly stronger at bottom
                   ],
                 ),
               ),
@@ -194,11 +196,8 @@ class _DesktopSmoothPhysics extends ScrollPhysics {
   double get maxFlingVelocity => 6000;
 
   @override
-  SpringDescription get spring => const SpringDescription(
-    mass: 30,
-    stiffness: 120,
-    damping: 1,
-  );
+  SpringDescription get spring =>
+      const SpringDescription(mass: 30, stiffness: 120, damping: 1);
 }
 
 // ─── Scroll behavior ──────────────────────────────────────────────────────────
@@ -224,7 +223,10 @@ class _PortfolioScrollBehavior extends ScrollBehavior {
 
   @override
   Widget buildScrollbar(
-      BuildContext context, Widget child, ScrollableDetails details) {
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
     return child;
   }
 }
