@@ -11,6 +11,7 @@ import '../widgets/navbar/portfolio_navbar.dart';
 import '../widgets/projects/projects_section.dart';
 import '../widgets/serviceSection/services_section_widget.dart';
 import '../widgets/socialsBar/social_bar_widget.dart';
+import '../widgets/values/value_proposition_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? initialSection;
@@ -107,6 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   SliverToBoxAdapter(
                     key: scrollProvider.projectsKey,
                     child: const CaseStudySectionWidget(),
+                  ),
+                  SliverToBoxAdapter(
+                    // key: scrollProvider.projectsKey,
+                    child: const ValuePropositionWidget(),
                   ),
                   SliverToBoxAdapter(
                     key: scrollProvider.contactKey,

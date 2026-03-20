@@ -590,6 +590,13 @@ class _CaseContent extends StatelessWidget {
   final VoidCallback onTap;
   const _CaseContent({required this.study, required this.onTap});
 
+  // Truncate description to ~7 words then add ellipsis
+  String _snippet(String desc) {
+    final words = desc.trim().split(RegExp(r'\s+'));
+    if (words.length <= 20) return desc;
+    return '${words.take(20).join(' ')}…';
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveHelper.isMobile(context);
@@ -626,7 +633,71 @@ class _CaseContent extends StatelessWidget {
             letterSpacing: -0.5,
           ),
         ),
+        const SizedBox(height: 16),
+        // ── Short description snippet ─────────────────────────────────────
+        Text(
+          _snippet(study.description),
+          style: GoogleFonts.dmSans(
+            fontSize: isMobile ? 13 : 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black54,
+            height: 1.6,
+          ),
+        ),
         const SizedBox(height: 36),
+        // ── Client · Year ─────────────────────────────────────────────────
+        Row(
+          children: [
+            Text(
+              study.client,
+              style: GoogleFonts.dmSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
+            ),
+            Container(
+              width: 3,
+              height: 3,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: const BoxDecoration(
+                color: Colors.black38,
+                shape: BoxShape.circle,
+              ),
+            ),
+            Text(
+              study.year,
+              style: GoogleFonts.dmSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.black38,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // ── Scope chips ───────────────────────────────────────────────────
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: study.scope.map((s) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black26, width: 1),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Text(
+              s,
+              style: GoogleFonts.dmSans(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
+            ),
+          )).toList(),
+        ),
+        const SizedBox(height: 18),
         _SeeDetailsButton(onTap: onTap),
       ],
     );

@@ -39,17 +39,17 @@ class AppConstants {
   static const List<Map<String, String>> navLinks = [
     {
       'title': 'My Skills',
-      'description': 'See all of nice project i have done.',
+      'description': 'Flutter, Dart, Firebase and the full mobile stack.',
       'route': '/skills',
     },
     {
       'title': 'My Projects',
-      'description': 'See all of nice project i have done.',
+      'description': 'Real apps shipped to iOS and Android — see the work.',
       'route': '/projects',
     },
     {
       'title': 'Experience',
-      'description': 'Learn about myself what i do',
+      'description': '5 years building software, 3 focused on mobile',
       'route': '/experience',
     },
     {
