@@ -614,6 +614,12 @@ class _ServiceCard extends StatefulWidget {
 class _ServiceCardState extends State<_ServiceCard> {
   bool _isHovered = false;
 
+  String _truncateWords(String text, int wordLimit) {
+    final words = text.split(' ');
+    if (words.length <= wordLimit) return text;
+    return '${words.take(wordLimit).join(' ')}...';
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = _isHovered || widget.service.isHighlighted;
@@ -649,42 +655,101 @@ class _ServiceCardState extends State<_ServiceCard> {
           ),
           padding: const EdgeInsets.all(26),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FaIcon(widget.service.icon, size: 32, color: fg)
-                  .animate(target: _isHovered ? 1 : 0)
-                  .scale(end: const Offset(1.2, 1.2))
-                  .rotate(begin: 0, end: 0.05),
-              const Spacer(),
-              Text(
-                widget.service.title,
-                style: GoogleFonts.dmSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: fg,
-                  height: 1.25,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FaIcon(widget.service.icon, size: 32, color: fg)
+                .animate(target: _isHovered ? 1 : 0)
+                .scale(end: const Offset(1.2, 1.2))
+                .rotate(begin: 0, end: 0.05),
+
+            const SizedBox(height: 16),
+
+            // 👇 This takes available space and prevents overflow
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'READ MORE',
+                    widget.service.title,
                     style: GoogleFonts.dmSans(
-                      fontSize: 10,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: fgs,
-                      letterSpacing: 1.4,
+                      color: fg,
+                      height: 1.25,
+                      letterSpacing: 0.2,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Icon(Icons.arrow_forward_rounded, size: 12, color: fgs),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    _truncateWords(widget.service.description, 14),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: fgs,
+                      height: 1.5,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // 👇 Chips will wrap nicely without pushing overflow
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: widget.service.bullets.take(4).map((b) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.08)
+                                  : const Color(0xFFF2F4F7),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              b.split(':').first,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w500,
+                                color: isDark
+                                    ? Colors.white70
+                                    : Colors.black87,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
                 ],
-              ).animate(target: _isHovered ? 1 : 0)
-                  .shimmer(duration: 800.ms, color: Colors.white54),
-            ],
-          ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Row(
+              children: [
+                Text(
+                  'READ MORE',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: fgs,
+                    letterSpacing: 1.4,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(Icons.arrow_forward_rounded, size: 12, color: fgs),
+              ],
+            ).animate(target: _isHovered ? 1 : 0)
+                .shimmer(duration: 800.ms, color: Colors.white54),
+          ],
+        ),
         ),
       ),
     );

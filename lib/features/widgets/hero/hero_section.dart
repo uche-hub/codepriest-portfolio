@@ -1,5 +1,3 @@
-// lib/features/home/widgets/hero_section_widget.dart
-
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -126,51 +124,51 @@ class _HeroTextContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 1. Waving Hand
+        // 1. Waving Hand - FIXED FOR SMOOTHNESS
         Text('✋', style: TextStyle(fontSize: isMobile ? 32 : 42))
             .animate()
             .fadeIn(delay: 300.ms, duration: 700.ms)
             .slideY(begin: 0.4, end: 0, curve: Curves.easeOutBack)
             .scaleXY(begin: 0.85, end: 1.0, curve: Curves.easeOutCubic)
-            .then(delay: 400.ms)
+            .then(delay: 200.ms) // Slight pause after entrance
             .animate(onPlay: (controller) => controller.repeat(reverse: true))
             .rotate(
-              begin: -0.12,
-              end: 0.18,
-              duration: 800.ms,
-              curve: Curves.easeInOutSine,
-            )
-            .shake(hz: 2.5, rotation: 0.15, duration: 900.ms),
+          begin: -0.15,
+          end: 0.15,
+          duration: 1000.ms,
+          curve: Curves.easeInOutSine,
+          alignment: Alignment.bottomCenter, // Pivots from the wrist
+        ),
 
         const SizedBox(height: 12),
 
         // 2. Main Title
         FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Hello! ',
-                      style: GoogleFonts.dmSans(
-                        fontSize: titleSize,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "I'm ${AppConstants.name}",
-                      style: GoogleFonts.dmSans(
-                        fontSize: titleSize,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Hello! ',
+                  style: GoogleFonts.dmSans(
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-            )
+                TextSpan(
+                  text: "I'm ${AppConstants.name}",
+                  style: GoogleFonts.dmSans(
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
             .animate()
             .fadeIn(delay: 550.ms, duration: 900.ms)
             .slideY(begin: 0.35, end: 0)
@@ -180,25 +178,25 @@ class _HeroTextContent extends StatelessWidget {
 
         // 3. Role + Star
         Row(
-              children: [
-                Container(
-                  height: 1.5,
-                  width: isMobile ? 40 : 60,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  AppConstants.role,
-                  style: GoogleFonts.dmSans(
-                    fontSize: isMobile ? 14 : 16,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                const _StarShape(size: 14),
-              ],
-            )
+          children: [
+            Container(
+              height: 1.5,
+              width: isMobile ? 40 : 60,
+              color: Colors.black,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              AppConstants.role,
+              style: GoogleFonts.dmSans(
+                fontSize: isMobile ? 14 : 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(width: 10),
+            const _StarShape(size: 14),
+          ],
+        )
             .animate()
             .fadeIn(delay: 900.ms, duration: 800.ms)
             .slideX(begin: -0.25, end: 0, curve: Curves.easeOutQuad),
@@ -211,49 +209,49 @@ class _HeroTextContent extends StatelessWidget {
         SizedBox(height: isMobile ? 24 : 32),
 
         // 5. Features - Staggered Animation
-        ...features.asMap().entries.map((e) {
-          final idx = e.key;
-          return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.check, size: 18, color: Colors.black),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        e.value,
-                        style: GoogleFonts.dmSans(
-                          fontSize: bodySize,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-              .animate()
-              .fadeIn(delay: (1300 + idx * 220).ms, duration: 750.ms)
-              .slideX(begin: -0.3, end: 0, curve: Curves.easeOutCubic);
-        }),
+        // ...features.asMap().entries.map((e) {
+        //   final idx = e.key;
+        //   return Padding(
+        //     padding: const EdgeInsets.only(bottom: 12),
+        //     child: Row(
+        //       crossAxisAlignment: CrossAxisAlignment.start,
+        //       children: [
+        //         const Icon(Icons.check, size: 18, color: Colors.black),
+        //         const SizedBox(width: 12),
+        //         Expanded(
+        //           child: Text(
+        //             e.value,
+        //             style: GoogleFonts.dmSans(
+        //               fontSize: bodySize,
+        //               fontWeight: FontWeight.w400,
+        //               color: Colors.black87,
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   )
+        //       .animate()
+        //       .fadeIn(delay: (1300 + idx * 220).ms, duration: 750.ms)
+        //       .slideX(begin: -0.3, end: 0, curve: Curves.easeOutCubic);
+        // }),
 
         SizedBox(height: isMobile ? 32 : 40),
 
         // 6. Buttons
         Wrap(
-              spacing: 20,
-              runSpacing: 16,
-              alignment: WrapAlignment.start,
-              children: [
-                _BlackButton(
-                  label: "Let's Talk",
-                  onTap: () =>
-                      context.read<ScrollProvider>().scrollToSection('contact'),
-                ),
-                const _DownloadCvButton(),
-              ],
-            )
+          spacing: 20,
+          runSpacing: 16,
+          alignment: WrapAlignment.start,
+          children: [
+            _BlackButton(
+              label: "Let's Talk",
+              onTap: () =>
+                  context.read<ScrollProvider>().scrollToSection('contact'),
+            ),
+            const _DownloadCvButton(),
+          ],
+        )
             .animate()
             .fadeIn(delay: 2400.ms, duration: 900.ms)
             .scaleXY(begin: 0.88, end: 1.0, curve: Curves.easeOutBack),
@@ -265,10 +263,15 @@ class _HeroTextContent extends StatelessWidget {
 // Bio Shimmer
 class _AnimatedShimmerBio extends StatelessWidget {
   final double bodySize;
-  const _AnimatedShimmerBio({required this.bodySize});
+
+  final bool isMobile;
+  const _AnimatedShimmerBio({required this.bodySize, this.isMobile = false});
+
+
 
   @override
   Widget build(BuildContext context) {
+    final fs = isMobile ? 28.0 : 40.0;
     return Animate(
       onPlay: (controller) => controller.repeat(reverse: true),
       effects: [
@@ -288,27 +291,23 @@ class _AnimatedShimmerBio extends StatelessWidget {
       child: RichText(
         text: TextSpan(
           style: GoogleFonts.dmSans(
-            fontSize: bodySize,
-            color: Colors.black,
-            height: 1.65,
+            fontSize: fs,
+            color: const Color(0xFF0F0F0F),
+            height: 1.2,
           ),
-          children: [
+          children: const [
+            TextSpan(text: 'I build mobile apps that\n'),
             TextSpan(
-              text: 'I\'m a ',
-              style: const TextStyle(fontWeight: FontWeight.w400),
+              text: 'ship fast,',
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                color: Color(0xFF1A4FD6),
+              ),
             ),
-            const TextSpan(
-              text: 'Developer Programmer | Flutter Developer',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const TextSpan(
-              text:
-                  ', with 5 years of experience in Software Development and 3 years of professional experience in Mobile Development Flutter.',
-              style: TextStyle(fontWeight: FontWeight.w400),
-            ),
+            TextSpan(text: ' scale cleanly,\nand feel native.'),
           ],
         ),
-      ),
+      )
     );
   }
 }
@@ -346,12 +345,13 @@ class _HeroVisualContentState extends State<_HeroVisualContent>
       builder: (context, constraints) {
         final w = constraints.maxWidth;
         if (w < 600) return _MobileVisual(floatCtrl: _floatCtrl);
-        if (w < 1100)
+        if (w < 1100) {
           return _TabletVisual(
             availableWidth: w,
             imgHeight: (w * 1.05).clamp(0.0, screenH * 0.70),
             floatCtrl: _floatCtrl,
           );
+        }
         return _DesktopVisual(imgHeight: screenH * 0.92, floatCtrl: _floatCtrl);
       },
     );
@@ -493,7 +493,7 @@ class _MobileVisual extends StatelessWidget {
   }
 }
 
-// ─── Rest of your widgets (unchanged) ───────────────────────────────────────
+// ─── Shared Components ──────────────────────────────────────────────────────
 class _CrossedCircle extends StatefulWidget {
   final double circleSize;
   const _CrossedCircle({required this.circleSize, super.key});

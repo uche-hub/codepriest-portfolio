@@ -97,6 +97,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const HeroSectionWidget(),
                   ),
                   const SliverToBoxAdapter(child: SocialBarWidget()),
+                  const SliverToBoxAdapter(
+                    // key: scrollProvider.projectsKey,
+                    child: const ValuePropositionWidget(),
+                  ),
                   SliverToBoxAdapter(
                     key: scrollProvider.skillKey,
                     child: const ServicesSectionWidget(),
@@ -109,10 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: scrollProvider.projectsKey,
                     child: const CaseStudySectionWidget(),
                   ),
-                  SliverToBoxAdapter(
-                    // key: scrollProvider.projectsKey,
-                    child: const ValuePropositionWidget(),
-                  ),
+
                   SliverToBoxAdapter(
                     key: scrollProvider.contactKey,
                     child: const ContactSectionWidget(),

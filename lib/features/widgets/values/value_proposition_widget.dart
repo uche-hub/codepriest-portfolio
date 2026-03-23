@@ -63,8 +63,8 @@ const _cards = [
 ];
 
 const _stats = [
-  ('5',  'Years in software'),
-  ('3',  'Years Flutter'),
+  ('6',  'Years in software'),
+  ('4',  'Years Flutter'),
   ('2',  'Platforms, one codebase'),
 ];
 
@@ -140,7 +140,7 @@ class _ValuePropositionWidgetState extends State<ValuePropositionWidget>
         }
       },
       child: Container(
-        color: const Color(0xFFFAF9F7),
+        //color: const Color(0xFFFAF9F7),
         padding: EdgeInsets.fromLTRB(hPad, 80, hPad, 80),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 780),
@@ -193,7 +193,7 @@ class _Eyebrow extends StatelessWidget {
         Container(width: 24, height: 1, color: const Color(0xFF1A4FD6)),
         const SizedBox(width: 8),
         Text(
-          'Flutter Developer',
+          'Skill Sets',
           style: GoogleFonts.dmSans(
             fontSize: 11,
             fontWeight: FontWeight.w500,
@@ -223,15 +223,15 @@ class _Headline extends StatelessWidget {
           height: 1.2,
         ),
         children: const [
-          TextSpan(text: 'I build mobile apps that\n'),
+          TextSpan(text: 'I craft mobile experiences that\n'),
           TextSpan(
-            text: 'ship fast,',
+            text: 'launch quickly,',
             style: TextStyle(
               fontStyle: FontStyle.italic,
               color: Color(0xFF1A4FD6),
             ),
           ),
-          TextSpan(text: ' scale cleanly,\nand feel native.'),
+          TextSpan(text: ' scale effortlessly,\nand feel truly native.'),
         ],
       ),
     );
