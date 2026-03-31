@@ -49,7 +49,7 @@ class AppConstants {
     },
     {
       'title': 'Experience',
-      'description': '5 years building software, 3 focused on mobile',
+      'description': '6 years building software, 4 focused on mobile',
       'route': '/experience',
     },
     {

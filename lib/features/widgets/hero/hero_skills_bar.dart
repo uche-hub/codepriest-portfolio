@@ -46,6 +46,7 @@ const _row2 = [
 const _bg         = Color(0xFF0A0A0A);
 const _textMuted  = Color(0xFF6B6B6B);
 const _textBright = Color(0xFFF0EDE8);
+const _titles = Color(0xFFFF9900);
 const _accent     = Color(0xFF4F7DF5);
 const _rule       = Color(0x12FFFFFF);
 
@@ -173,7 +174,7 @@ class _SkillsTickerWidgetState extends State<SkillsTickerWidget>
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.12 * 10,
-                    color: _textBright.withOpacity(0.6),
+                    color: _titles.withOpacity(0.6),
                   ),
                 ),
               ),
@@ -204,13 +205,13 @@ class _SkillsTickerWidgetState extends State<SkillsTickerWidget>
                   border: Border(top: BorderSide(color: _rule)),
                 ),
                 child: Text(
-                  '5 yrs software · 3 yrs Flutter · iOS & Android',
+                  '6 yrs software · 4 yrs Flutter · iOS & Android',
                   textAlign: TextAlign.right,
                   style: GoogleFonts.dmSans(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.12 * 10,
-                    color: _textBright.withOpacity(0.6),
+                    color: _titles.withOpacity(0.6),
                   ),
                 ),
               ),

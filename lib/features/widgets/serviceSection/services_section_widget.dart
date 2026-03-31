@@ -16,7 +16,8 @@ class _Service {
   final bool isHighlighted;
   final String modalTitle;
   final String description;
-  final List<String> bullets;
+  final List<String> bullets; // Detailed info for modal
+  final List<String> tags;    // Max 2 words, max 4 items for card
   const _Service({
     required this.icon,
     required this.title,
@@ -24,6 +25,7 @@ class _Service {
     required this.modalTitle,
     required this.description,
     required this.bullets,
+    required this.tags,
   });
 }
 
@@ -33,84 +35,84 @@ const _allServices = [
     title: 'FLUTTER\nDEVELOPMENT',
     isHighlighted: false,
     modalTitle: 'Mobile App Development',
-    description:
-    'Building high-performance, cross-platform applications for iOS and Android using Dart. I specialize in scalable architectures and seamless hardware integrations.',
+    description: 'Building high-performance, cross-platform applications for iOS and Android. I specialize in scalable architectures.',
     bullets: [
       'State Management: BLoC, Provider, and MVVM',
-      'Backend: Firebase (Auth, Firestore) & Supabase',
-      'Hardware: Google Fit & Health Connect integration',
-      'Payments: Paystack & Stripe API implementation',
+      'Backend: Firebase & Supabase',
+      'Hardware: Google Fit & Health Connect',
+      'Payments: Paystack & Stripe API',
     ],
+    tags: ['Dart', 'BLoC', 'Firebase', 'iOS/Android'], // Clean tags
   ),
   _Service(
     icon: FontAwesomeIcons.code,
     title: 'NEXT.JS\nDEVELOPMENT',
     isHighlighted: false,
     modalTitle: 'Web & Frontend Development',
-    description:
-    'Crafting responsive, SEO-optimized web applications using Next.js and React. I focus on clean code, fast load times, and bridging the gap between design and engineering.',
+    description: 'Crafting responsive, SEO-optimized web applications. I focus on clean code and fast load times.',
     bullets: [
-      'ReactJS & Next.js server-side rendering',
-      'Responsive UI with Tailwind CSS & JavaScript',
-      'REST API integration & Swagger documentation',
-      'Performance optimization & accessibility (a11y)',
+      'ReactJS & Next.js SSR',
+      'Tailwind CSS UI',
+      'REST API & Swagger',
+      'Performance Optimization',
     ],
+    tags: ['Next.js', 'React', 'TypeScript', 'Tailwind'],
   ),
   _Service(
     icon: FontAwesomeIcons.cloud,
     title: 'BACKEND &\nFIREBASE',
     isHighlighted: false,
     modalTitle: 'Cloud Infrastructure',
-    description:
-    'Architecting the "brain" of your application. I set up secure, real-time databases and serverless logic to handle your data at scale.',
+    description: 'Architecting secure, real-time databases and serverless logic to handle your data at scale.',
     bullets: [
-      'Firebase: Auth, Firestore, & Cloud Functions',
-      'Supabase: Postgres & Real-time subscriptions',
-      'API Design: RESTful Services & Swagger',
-      'Security: Rules, Roles, & Data Encryption',
+      'Firebase Auth & Firestore',
+      'Supabase Postgres',
+      'RESTful API Design',
+      'Security Rules & Roles',
     ],
+    tags: ['Node.js', 'PostgreSQL', 'Serverless', 'APIs'],
   ),
   _Service(
     icon: FontAwesomeIcons.gears,
     title: 'DEVOPS &\nAUTOMATION',
     isHighlighted: false,
     modalTitle: 'Continuous Delivery',
-    description:
-    'Automating the deployment pipeline to ensure every release is tested and stable. I manage the journey from local code to the App Store.',
+    description: 'Automating deployment pipelines to ensure every release is tested and stable.',
     bullets: [
-      'CI/CD: GitHub Actions & GitLab Pipelines',
-      'Distribution: Firebase App Distribution',
-      'Builds: Automated .aab & APK generation',
-      'Version Control: Advanced Git & GitHub Flow',
+      'CI/CD: GitHub Actions',
+      'Firebase App Distribution',
+      'Automated Builds',
+      'Advanced Git Flow',
     ],
+    tags: ['CI/CD', 'GitHub', 'Automation', 'Docker'],
   ),
   _Service(
     icon: FontAwesomeIcons.vial,
     title: 'TESTING &\nQUALITY',
     isHighlighted: false,
     modalTitle: 'Quality Assurance',
-    description:
-    'Ensuring software reliability through rigorous testing phases. I focus on catching bugs early to deliver a polished, crash-free user experience.',
+    description: 'Ensuring software reliability through rigorous testing to deliver a polished user experience.',
     bullets: [
-      'Unit Testing: Logic & business rule validation',
-      'Widget Testing: UI component verification',
-      'Static Analysis: Linting & code quality',
-      'Debugging: Sentry & crashlytics monitoring',
+      'Unit & Logic Testing',
+      'Widget UI Testing',
+      'Static Analysis',
+      'Sentry & Crashlytics',
     ],
+    tags: ['Unit Test', 'QA', 'Sentry', 'Code Review'],
   ),
   _Service(
     icon: FontAwesomeIcons.usersGear,
     title: 'PRODUCT\nLEADERSHIP',
     isHighlighted: false,
     modalTitle: 'Agile & Project Strategy',
-    description:
-    'Managing the development lifecycle using modern methodologies. I help align technical execution with business goals and user needs.',
+    description: 'Managing the development lifecycle. I help align technical execution with business goals.',
     bullets: [
-      'Agile/Scrum: Jira & ClickUp management',
-      'Documentation: PRDs & Technical writing',
-      'System Design: Clean Architecture planning',
-      'Collaboration: Cross-functional team alignment',
+      'Agile/Scrum (Jira)',
+      'Technical Documentation',
+      'System Design',
+      'Cross-functional Alignment',
     ],
+    tags: ['Agile', 'Strategy', 'Scrum', 'Mentoring'],
   ),
 ];
 
@@ -457,19 +459,61 @@ class _SectionTitle extends StatelessWidget {
 
 // ─── Section Description ──────────────────────────────────────────────────────
 
+// Text(
+// 'I leverage a diverse toolkit to build scalable applications. \nHere is the stack I use to bring digital products to life.',
+// style: GoogleFonts.dmSans(
+// fontSize: 13.5,
+// fontWeight: FontWeight.w400,
+// color: Colors.black54,
+// height: 1.7,
+// ),
+// maxLines: 3,
+// );
+
 class _SectionDescription extends StatelessWidget {
+
   const _SectionDescription();
   @override
-  Widget build(BuildContext context) => Text(
-    'I leverage a diverse toolkit to build scalable applications. \nHere is the stack I use to bring digital products to life.',
-    style: GoogleFonts.dmSans(
-      fontSize: 13.5,
-      fontWeight: FontWeight.w400,
-      color: Colors.black54,
-      height: 1.7,
-    ),
-    maxLines: 3,
-  );
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        style: GoogleFonts.dmSans(
+          fontSize: 13.5,
+          color: const Color(0xFF0F0F0F),
+          height: 1.2,
+        ),
+        children: const [
+          TextSpan(text: 'I craft mobile experiences that '),
+          TextSpan(
+            text: 'launch quickly,',
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF1A4FD6),
+            ),
+          ),
+          TextSpan(text: ' scale effortlessly, and feel truly native.'),
+          // , I deliver iOS and Android apps with real-time backends, smooth performance, and the reliability .
+          TextSpan(text: ' From a single codebase, I deliver iOS and Android apps with real-time '),
+          TextSpan(
+            text: 'backends, smooth performance,',
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF1A4FD6),
+            ),
+          ),
+          TextSpan(text: ' and the'),
+          TextSpan(
+            text: ' reliability',
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF1A4FD6),
+            ),
+          ),
+          TextSpan(text: ' that keeps users coming back — and engineering teams sane'),
+        ],
+      ),
+    );
+  }
 }
 
 // ─── All Services Button ──────────────────────────────────────────────────────
@@ -680,10 +724,10 @@ class _ServiceCardState extends State<_ServiceCard> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
 
                   Text(
-                    _truncateWords(widget.service.description, 14),
+                    _truncateWords(widget.service.description, 10),
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -694,38 +738,33 @@ class _ServiceCardState extends State<_ServiceCard> {
 
                   const SizedBox(height: 10),
 
-                  // 👇 Chips will wrap nicely without pushing overflow
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: widget.service.bullets.take(4).map((b) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? Colors.white.withOpacity(0.08)
-                                  : const Color(0xFFF2F4F7),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              b.split(':').first,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w500,
-                                color: isDark
-                                    ? Colors.white70
-                                    : Colors.black87,
-                              ),
-                            ),
-                          );
-                        }).toList(),
+              Expanded(
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: widget.service.tags.map((tag) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white.withOpacity(0.1) : const Color(0xFFF5F7F9),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : Colors.black.withOpacity(0.05),
+                        ),
                       ),
-                    ),
-                  ),
+                      child: Text(
+                        tag.toUpperCase(),
+                        style: GoogleFonts.dmSans(
+                          fontSize: 8.5,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
                 ],
               ),
             ),

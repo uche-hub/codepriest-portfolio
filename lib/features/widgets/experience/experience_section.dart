@@ -634,7 +634,7 @@ class _ExperienceRowState extends State<_ExperienceRow>
         Container(width: 1, height: 36, color: divC),
         const SizedBox(width: 28),
         Text(
-          'JOB DURATION -  ${widget.exp.duration}',
+          widget.exp.duration,
           style: GoogleFonts.dmSans(
             fontSize: 12,
             fontWeight: FontWeight.w700,

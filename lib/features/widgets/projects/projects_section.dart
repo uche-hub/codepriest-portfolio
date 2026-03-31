@@ -2,6 +2,7 @@
 
 import 'dart:math';
 import 'dart:ui';
+import 'package:codepriest_portfolio/features/widgets/projects/widget/button_loading_fx_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -555,7 +556,9 @@ class _CaseImageState extends State<_CaseImage> {
               scale: _hov ? 1.03 : 1.0,
               duration: const Duration(milliseconds: 350),
               curve: Curves.easeOut,
-              child: Image.asset(
+              child: widget.study.title == 'Button Loading FX'
+                  ? const ButtonLoadingFXPreview()
+                  :Image.asset(
                 widget.study.imagePath,
                 fit: BoxFit.contain, // ← was BoxFit.cover
                 width: double.infinity,

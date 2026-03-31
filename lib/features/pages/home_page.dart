@@ -91,16 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 controller: scrollProvider.scrollController,
                 physics: physics,
                 slivers: [
-                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 20)),
                   SliverToBoxAdapter(
                     key: scrollProvider.heroKey,
                     child: const HeroSectionWidget(),
                   ),
                   const SliverToBoxAdapter(child: SocialBarWidget()),
-                  const SliverToBoxAdapter(
-                    // key: scrollProvider.projectsKey,
-                    child: const ValuePropositionWidget(),
-                  ),
+                  // const SliverToBoxAdapter(
+                  //   // key: scrollProvider.projectsKey,
+                  //   child: const ValuePropositionWidget(),
+                  // ),
                   SliverToBoxAdapter(
                     key: scrollProvider.skillKey,
                     child: const ServicesSectionWidget(),
