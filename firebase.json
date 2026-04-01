@@ -1,0 +1,31 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "codepriest-portfolio-92faf",
+          "appId": "1:460449020290:android:a470fb2019bf04376df79b",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "codepriest-portfolio-92faf",
+          "configurations": {
+            "android": "1:460449020290:android:a470fb2019bf04376df79b",
+            "ios": "1:460449020290:ios:f92751d66a8b621e6df79b",
+            "macos": "1:460449020290:ios:f92751d66a8b621e6df79b",
+            "web": "1:460449020290:web:120fbbe84fcd51af6df79b",
+            "windows": "1:460449020290:web:5d9d6ed26cebe83c6df79b"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "extensions": {
+    "firestore-send-email": "firebase/firestore-send-email@0.2.6"
+  }
+}

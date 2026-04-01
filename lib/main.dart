@@ -1,42 +1,55 @@
-import 'package:codepriest_portfolio/features/presentation/controllers/navigation_controllers.dart';
-import 'package:codepriest_portfolio/features/presentation/providers/download_provider.dart';
+// lib/main.dart
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'core/constants/app_colors.dart';
 import 'core/router/app_router.dart';
-import 'core/utils/app_logger.dart';
+import 'core/theme/app_theme.dart';
+import 'features/providers/download_provider.dart';
+import 'features/providers/scroll_provider.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
 
-  appLogger.info('Starting Portfolio Website');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(const MyApp());
+  runApp(const PortfolioApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class PortfolioApp extends StatelessWidget {
+  const PortfolioApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ScrollProvider()),
         ChangeNotifierProvider(create: (_) => DownloadProvider()),
-        ChangeNotifierProvider(create: (_) => NavigationController()),
       ],
       child: MaterialApp.router(
-        title: 'Uchenna Ndukwe - Flutter Developer',
+        title: "Uchenna | Flutter Developer",
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColors.accentPurple,
-            brightness: Brightness.dark,
-          ),
-          scaffoldBackgroundColor: AppColors.primaryDark,
-          useMaterial3: true,
-          fontFamily: 'Poppins',
-        ),
+        theme: AppTheme.lightTheme,
         routerConfig: AppRouter.router,
+        builder: (context, child) {
+          final mediaQuery = MediaQuery.of(context);
+          final clampedTextScale = mediaQuery.textScaler.clamp(
+            minScaleFactor: 1.0,
+            maxScaleFactor: 1.15,
+          );
+          return MediaQuery(
+            data: mediaQuery.copyWith(textScaler: clampedTextScale),
+            child: child!,
+          );
+        },
       ),
     );
   }
