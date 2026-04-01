@@ -30,6 +30,20 @@ class _Experience {
 const _mainExperiences = [
   _Experience(
     number: 1,
+    role: 'Flutter Developer (Contract)',
+    company: 'Apptalic Lab · Remote',
+    duration: 'JAN 2025 – PRESENT',
+    description:
+    'Specialized in app performance optimization and complex content rendering engines for published market-ready applications.',
+    highlights: [
+      'Optimized app performance by 70% via widget tree refactoring',
+      'Built native-like PDF and EPUB reading engines',
+      'Integrated Google Books API for dynamic content sourcing',
+      'Shipped Internda & Novelle to Play Store & App Store',
+    ],
+  ),
+  _Experience(
+    number: 2,
     role: 'Team Lead | Flutter Developer',
     company: 'Shop Online New York · USA (Remote)',
     duration: 'AUG 2025 – PRESENT',
@@ -43,7 +57,7 @@ const _mainExperiences = [
     ],
   ),
   _Experience(
-    number: 2,
+    number: 3,
     role: 'Team Lead | Flutter Developer',
     company: 'Nexoris Technologies · Nigeria',
     duration: 'APR 2025 – JAN 2026',
@@ -57,7 +71,7 @@ const _mainExperiences = [
     ],
   ),
   _Experience(
-    number: 3,
+    number: 4,
     role: 'Flutter Developer (Contract)',
     company: 'Credes · Remote',
     duration: 'DEC 2025 – JAN 2026',
@@ -68,20 +82,6 @@ const _mainExperiences = [
       'Overhauled audio engine for 40% better playback stability',
       'Implemented automated quality gates (Analysis & Formatting)',
       'Engineered cross-platform media notification system',
-    ],
-  ),
-  _Experience(
-    number: 4,
-    role: 'Flutter Developer (Contract)',
-    company: 'Apptalic Lab · Remote',
-    duration: 'JAN 2025 – PRESENT',
-    description:
-    'Specialized in app performance optimization and complex content rendering engines for published market-ready applications.',
-    highlights: [
-      'Optimized app performance by 70% via widget tree refactoring',
-      'Built native-like PDF and EPUB reading engines',
-      'Integrated Google Books API for dynamic content sourcing',
-      'Shipped Internda & Novelle to Play Store & App Store',
     ],
   ),
 ];

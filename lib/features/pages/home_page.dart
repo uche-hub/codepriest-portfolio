@@ -69,6 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final width = MediaQuery.of(context).size.width;
     final isMobileOrTablet = width < 1100;
 
+    final _contactKey = GlobalKey();
+
     final ScrollPhysics physics = isMobileOrTablet
         ? const ClampingScrollPhysics()
         : const _DesktopSmoothPhysics();
@@ -103,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // ),
                   SliverToBoxAdapter(
                     key: scrollProvider.skillKey,
-                    child: const ServicesSectionWidget(),
+                    child: ServicesSectionWidget(contactSectionKey: scrollProvider.contactKey),
                   ),
                   SliverToBoxAdapter(
                     key: scrollProvider.experienceKey,

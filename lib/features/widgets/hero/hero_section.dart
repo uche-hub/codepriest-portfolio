@@ -583,7 +583,7 @@ class _PersonImage extends StatelessWidget {
       topRight: Radius.circular(8),
     ),
     child: Image.asset(
-      'assets/images/profile3.png',
+      'assets/images/profile4.png',
       width: width,
       height: height,
       fit: BoxFit.cover,

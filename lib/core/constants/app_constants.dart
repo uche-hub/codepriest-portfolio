@@ -15,7 +15,7 @@ class AppConstants {
 
   // Strings
   static const String name = "Uchenna";
-  static const String role = "Developer Programmer | Flutter Developer";
+  static const String role = "Mobile Developer · Flutter | Next.js";
   static const String email = "ucj.justice@gmail.com";
   static const String shortBio =
       "Developer Programmer | Flutter Developer with a 5 years experience in Software Development and 3 years professional experience in Mobile Development Flutter. Reliable and a hard worker. A fast learner, ready to work with others. Proven ability to collaborate in remote Agile teams, write clean scalable code, and deliver production-ready mobile solutions.";

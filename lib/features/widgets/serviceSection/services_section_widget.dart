@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:flutter_animate/flutter_animate.dart'; // New Import
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/constants/responsive_helper.dart';
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -16,8 +16,8 @@ class _Service {
   final bool isHighlighted;
   final String modalTitle;
   final String description;
-  final List<String> bullets; // Detailed info for modal
-  final List<String> tags;    // Max 2 words, max 4 items for card
+  final List<String> bullets;
+  final List<String> tags;
   const _Service({
     required this.icon,
     required this.title,
@@ -35,21 +35,23 @@ const _allServices = [
     title: 'FLUTTER\nDEVELOPMENT',
     isHighlighted: false,
     modalTitle: 'Mobile App Development',
-    description: 'Building high-performance, cross-platform applications for iOS and Android. I specialize in scalable architectures.',
+    description:
+    'Building high-performance, cross-platform applications for iOS and Android. I specialize in scalable architectures.',
     bullets: [
       'State Management: BLoC, Provider, and MVVM',
       'Backend: Firebase & Supabase',
       'Hardware: Google Fit & Health Connect',
       'Payments: Paystack & Stripe API',
     ],
-    tags: ['Dart', 'BLoC', 'Firebase', 'iOS/Android'], // Clean tags
+    tags: ['Dart', 'BLoC', 'Firebase', 'iOS/Android'],
   ),
   _Service(
     icon: FontAwesomeIcons.code,
     title: 'NEXT.JS\nDEVELOPMENT',
     isHighlighted: false,
     modalTitle: 'Web & Frontend Development',
-    description: 'Crafting responsive, SEO-optimized web applications. I focus on clean code and fast load times.',
+    description:
+    'Crafting responsive, SEO-optimized web applications. I focus on clean code and fast load times.',
     bullets: [
       'ReactJS & Next.js SSR',
       'Tailwind CSS UI',
@@ -63,7 +65,8 @@ const _allServices = [
     title: 'BACKEND &\nFIREBASE',
     isHighlighted: false,
     modalTitle: 'Cloud Infrastructure',
-    description: 'Architecting secure, real-time databases and serverless logic to handle your data at scale.',
+    description:
+    'Architecting secure, real-time databases and serverless logic to handle your data at scale.',
     bullets: [
       'Firebase Auth & Firestore',
       'Supabase Postgres',
@@ -77,7 +80,8 @@ const _allServices = [
     title: 'DEVOPS &\nAUTOMATION',
     isHighlighted: false,
     modalTitle: 'Continuous Delivery',
-    description: 'Automating deployment pipelines to ensure every release is tested and stable.',
+    description:
+    'Automating deployment pipelines to ensure every release is tested and stable.',
     bullets: [
       'CI/CD: GitHub Actions',
       'Firebase App Distribution',
@@ -91,7 +95,8 @@ const _allServices = [
     title: 'TESTING &\nQUALITY',
     isHighlighted: false,
     modalTitle: 'Quality Assurance',
-    description: 'Ensuring software reliability through rigorous testing to deliver a polished user experience.',
+    description:
+    'Ensuring software reliability through rigorous testing to deliver a polished user experience.',
     bullets: [
       'Unit & Logic Testing',
       'Widget UI Testing',
@@ -105,7 +110,8 @@ const _allServices = [
     title: 'PRODUCT\nLEADERSHIP',
     isHighlighted: false,
     modalTitle: 'Agile & Project Strategy',
-    description: 'Managing the development lifecycle. I help align technical execution with business goals.',
+    description:
+    'Managing the development lifecycle. I help align technical execution with business goals.',
     bullets: [
       'Agile/Scrum (Jira)',
       'Technical Documentation',
@@ -119,7 +125,11 @@ const _allServices = [
 // ─── Main Section ─────────────────────────────────────────────────────────────
 
 class ServicesSectionWidget extends StatefulWidget {
-  const ServicesSectionWidget({super.key});
+  /// Pass the GlobalKey of your contact section so the modal CTA can scroll to it.
+  final GlobalKey contactSectionKey;
+
+  const ServicesSectionWidget({super.key, required this.contactSectionKey});
+
   @override
   State<ServicesSectionWidget> createState() => _ServicesSectionState();
 }
@@ -165,7 +175,24 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
       pageBuilder: (_, __, ___) => const SizedBox.shrink(),
       transitionBuilder: (ctx, anim, _, __) => Material(
         type: MaterialType.transparency,
-        child: _ServiceModal(service: s, animation: anim),
+        child: _ServiceModal(
+          service: s,
+          animation: anim,
+          onGetInTouch: () {
+            // Close modal first, then scroll to contact section
+            Navigator.of(ctx).pop();
+            Future.delayed(const Duration(milliseconds: 300), () {
+              final context = widget.contactSectionKey.currentContext;
+              if (context != null) {
+                Scrollable.ensureVisible(
+                  context,
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeInOutCubic,
+                );
+              }
+            });
+          },
+        ),
       ),
     );
   }
@@ -242,7 +269,7 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
                           onTap: _openModal,
                           slide: true,
                           anim: _expandAnim,
-                          isVisible: true, // Internal row handles its own visibility via expansion
+                          isVisible: true,
                         ),
                       ],
                     ),
@@ -266,7 +293,7 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
             child: _ServiceCard(
               service: _allServices[i],
               width: double.infinity,
-              height: 220,
+              height: null,
               onTap: () => _openModal(_allServices[i]),
             )
                 .animate(target: _isVisible ? 1 : 0)
@@ -285,7 +312,7 @@ class _ServicesSectionState extends State<ServicesSectionWidget>
                 child: _ServiceCard(
                   service: _allServices[i + 3],
                   width: double.infinity,
-                  height: 220,
+                  height: null,
                   onTap: () => _openModal(_allServices[i + 3]),
                 ),
               ),
@@ -315,7 +342,6 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final btn = _AllServicesButton(expanded: expanded, onTap: onToggle);
 
-    // Animation Wrapper
     Widget animate(Widget child, int delay) => child
         .animate(target: isVisible ? 1 : 0)
         .fadeIn(delay: delay.ms, duration: 600.ms)
@@ -397,7 +423,6 @@ class _CardRow extends StatelessWidget {
         if (slide && anim != null) {
           card = FadeTransition(opacity: anim!, child: card);
         } else {
-          // Entrance animation for first row
           card = card
               .animate(target: isVisible ? 1 : 0)
               .fadeIn(delay: (400 + (i * 100)).ms)
@@ -459,59 +484,44 @@ class _SectionTitle extends StatelessWidget {
 
 // ─── Section Description ──────────────────────────────────────────────────────
 
-// Text(
-// 'I leverage a diverse toolkit to build scalable applications. \nHere is the stack I use to bring digital products to life.',
-// style: GoogleFonts.dmSans(
-// fontSize: 13.5,
-// fontWeight: FontWeight.w400,
-// color: Colors.black54,
-// height: 1.7,
-// ),
-// maxLines: 3,
-// );
-
 class _SectionDescription extends StatelessWidget {
-
   const _SectionDescription();
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        style: GoogleFonts.dmSans(
-          fontSize: 13.5,
-          color: const Color(0xFF0F0F0F),
-          height: 1.2,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            style: GoogleFonts.dmSans(
+              fontSize: 28.0,
+              color: const Color(0xFF0F0F0F),
+              height: 1.2,
+            ),
+            children: const [
+              TextSpan(text: 'I craft mobile experiences that\n'),
+              TextSpan(
+                text: 'launch quickly,',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Color(0xFF1A4FD6),
+                ),
+              ),
+              TextSpan(text: ' scale effortlessly,\nand feel truly native.'),
+            ],
+          ),
         ),
-        children: const [
-          TextSpan(text: 'I craft mobile experiences that '),
-          TextSpan(
-            text: 'launch quickly,',
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Color(0xFF1A4FD6),
-            ),
+        const SizedBox(height: 16),
+        Text(
+          'From a single codebase, I deliver iOS and Android apps with real-time backends, smooth performance, and the reliability that keeps users coming back — and engineering teams sane.',
+          style: GoogleFonts.dmSans(
+            fontSize: 16,
+            fontWeight: FontWeight.w300,
+            color: const Color(0xFF4A4A4A),
+            height: 1.8,
           ),
-          TextSpan(text: ' scale effortlessly, and feel truly native.'),
-          // , I deliver iOS and Android apps with real-time backends, smooth performance, and the reliability .
-          TextSpan(text: ' From a single codebase, I deliver iOS and Android apps with real-time '),
-          TextSpan(
-            text: 'backends, smooth performance,',
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Color(0xFF1A4FD6),
-            ),
-          ),
-          TextSpan(text: ' and the'),
-          TextSpan(
-            text: ' reliability',
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Color(0xFF1A4FD6),
-            ),
-          ),
-          TextSpan(text: ' that keeps users coming back — and engineering teams sane'),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -537,7 +547,8 @@ class _AllServicesButtonState extends State<_AllServicesButton> {
       onTap: widget.onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+        padding:
+        const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
         decoration: BoxDecoration(
           color: _hov ? const Color(0xFF333333) : Colors.black,
           borderRadius: BorderRadius.circular(50),
@@ -564,11 +575,11 @@ class _AllServicesButtonState extends State<_AllServicesButton> {
             ),
           ),
         ),
+      ).animate(onPlay: (c) => c.repeat()).shimmer(
+        delay: 3.seconds,
+        duration: 1500.ms,
+        color: Colors.white24,
       ),
-    ).animate(onPlay: (c) => c.repeat()).shimmer(
-      delay: 3.seconds,
-      duration: 1500.ms,
-      color: Colors.white24,
     ),
   );
 }
@@ -634,8 +645,12 @@ class _DownArrowBtnState extends State<_DownArrowBtn> {
           size: 22,
         ),
       ),
-    ).animate(onPlay: (c) => c.repeat(reverse: true))
-        .moveY(begin: 0, end: 8, duration: 1000.ms, curve: Curves.easeInOut),
+    ).animate(onPlay: (c) => c.repeat(reverse: true)).moveY(
+      begin: 0,
+      end: 8,
+      duration: 1000.ms,
+      curve: Curves.easeInOut,
+    ),
   );
 }
 
@@ -643,7 +658,8 @@ class _DownArrowBtnState extends State<_DownArrowBtn> {
 
 class _ServiceCard extends StatefulWidget {
   final _Service service;
-  final double width, height;
+  final double width;
+  final double? height; // nullable — null = wrap content (mobile)
   final VoidCallback onTap;
   const _ServiceCard({
     required this.service,
@@ -670,6 +686,10 @@ class _ServiceCardState extends State<_ServiceCard> {
     final fg = isDark ? Colors.white : Colors.black;
     final fgs = isDark ? Colors.white70 : Colors.black54;
 
+    final tags = widget.service.tags;
+    final shownTags = tags.length > 3 ? tags.sublist(0, 3) : tags;
+    final overflowCount = tags.length > 3 ? tags.length - 3 : 0;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -685,8 +705,9 @@ class _ServiceCardState extends State<_ServiceCard> {
           decoration: BoxDecoration(
             color: isDark ? Colors.black : Colors.white,
             border: Border.all(
-                color: isDark ? Colors.black : const Color(0xFFCCCCCC),
-                width: 1.2),
+              color: isDark ? Colors.black : const Color(0xFFCCCCCC),
+              width: 1.2,
+            ),
             boxShadow: _isHovered
                 ? [
               BoxShadow(
@@ -699,96 +720,116 @@ class _ServiceCardState extends State<_ServiceCard> {
           ),
           padding: const EdgeInsets.all(26),
           child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FaIcon(widget.service.icon, size: 32, color: fg)
-                .animate(target: _isHovered ? 1 : 0)
-                .scale(end: const Offset(1.2, 1.2))
-                .rotate(begin: 0, end: 0.05),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, // shrink-wrap on mobile
+            children: [
+              FaIcon(widget.service.icon, size: 32, color: fg)
+                  .animate(target: _isHovered ? 1 : 0)
+                  .scale(end: const Offset(1.2, 1.2))
+                  .rotate(begin: 0, end: 0.05),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // 👇 This takes available space and prevents overflow
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Text(
+                widget.service.title,
+                style: GoogleFonts.dmSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: fg,
+                  height: 1.25,
+                  letterSpacing: 0.2,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                _truncateWords(widget.service.description, 10),
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: fgs,
+                  height: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Tags — max 3 shown + overflow chip
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
                 children: [
-                  Text(
-                    widget.service.title,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: fg,
-                      height: 1.25,
-                      letterSpacing: 0.2,
+                  ...shownTags.map((tag) => Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : const Color(0xFFF5F7F9),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white10
+                            : Colors.black.withOpacity(0.05),
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    _truncateWords(widget.service.description, 10),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: fgs,
-                      height: 1.5,
+                    child: Text(
+                      tag.toUpperCase(),
+                      style: GoogleFonts.dmSans(
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w700,
+                        color:
+                        isDark ? Colors.white70 : Colors.black87,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-              Expanded(
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: widget.service.tags.map((tag) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  )),
+                  if (overflowCount > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withOpacity(0.1) : const Color(0xFFF5F7F9),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.06)
+                            : const Color(0xFFEEEEEE),
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.black.withOpacity(0.05),
-                        ),
                       ),
                       child: Text(
-                        tag.toUpperCase(),
+                        '+$overflowCount',
                         style: GoogleFonts.dmSans(
                           fontSize: 8.5,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white70 : Colors.black87,
+                          color:
+                          isDark ? Colors.white38 : Colors.black45,
                           letterSpacing: 0.5,
                         ),
                       ),
-                    );
-                  }).toList(),
-                ),
-              ),
+                    ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 20),
 
-            Row(
-              children: [
-                Text(
-                  'READ MORE',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: fgs,
-                    letterSpacing: 1.4,
+              // READ MORE
+              Row(
+                children: [
+                  Text(
+                    'READ MORE',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: fgs,
+                      letterSpacing: 1.4,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                Icon(Icons.arrow_forward_rounded, size: 12, color: fgs),
-              ],
-            ).animate(target: _isHovered ? 1 : 0)
-                .shimmer(duration: 800.ms, color: Colors.white54),
-          ],
-        ),
+                  const SizedBox(width: 6),
+                  Icon(Icons.arrow_forward_rounded, size: 12, color: fgs),
+                ],
+              ).animate(target: _isHovered ? 1 : 0)
+                  .shimmer(duration: 800.ms, color: Colors.white54),
+            ],
+          ),
         ),
       ),
     );
@@ -800,7 +841,12 @@ class _ServiceCardState extends State<_ServiceCard> {
 class _ServiceModal extends StatelessWidget {
   final _Service service;
   final Animation<double> animation;
-  const _ServiceModal({required this.service, required this.animation});
+  final VoidCallback onGetInTouch;
+  const _ServiceModal({
+    required this.service,
+    required this.animation,
+    required this.onGetInTouch,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -820,7 +866,9 @@ class _ServiceModal extends StatelessWidget {
         ),
         Center(
           child: Container(
-            width: isMobile ? sz.width * 0.92 : (sz.width * 0.46).clamp(380.0, 580.0),
+            width: isMobile
+                ? sz.width * 0.92
+                : (sz.width * 0.46).clamp(380.0, 580.0),
             constraints: BoxConstraints(maxHeight: sz.height * 0.84),
             decoration: BoxDecoration(
               color: const Color(0xFF0E0E0E).withOpacity(0.95),
@@ -829,11 +877,19 @@ class _ServiceModal extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-              child: _ModalContent(service: service, isMobile: isMobile),
+              child: _ModalContent(
+                service: service,
+                isMobile: isMobile,
+                onGetInTouch: onGetInTouch,
+              ),
             ),
           )
               .animate()
-              .scale(begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack, duration: 400.ms)
+              .scale(
+            begin: const Offset(0.8, 0.8),
+            curve: Curves.easeOutBack,
+            duration: 400.ms,
+          )
               .blurXY(begin: 20, end: 0)
               .fadeIn(),
         ),
@@ -842,12 +898,17 @@ class _ServiceModal extends StatelessWidget {
   }
 }
 
-// ─── Modal Content Sub-widgets ───────────────────────────────────────────────
+// ─── Modal Content ────────────────────────────────────────────────────────────
 
 class _ModalContent extends StatelessWidget {
   final _Service service;
   final bool isMobile;
-  const _ModalContent({required this.service, required this.isMobile});
+  final VoidCallback onGetInTouch;
+  const _ModalContent({
+    required this.service,
+    required this.isMobile,
+    required this.onGetInTouch,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -857,25 +918,32 @@ class _ModalContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header row — icon + close
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                width: 52, height: 52,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.07),
                   borderRadius: BorderRadius.circular(13),
                   border: Border.all(color: Colors.white12),
                 ),
-                child: Center(child: FaIcon(service.icon, size: 22, color: Colors.white70)),
+                child: Center(
+                  child: FaIcon(service.icon, size: 22, color: Colors.white70),
+                ),
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close_rounded, color: Colors.white70),
-              )
+                icon:
+                const Icon(Icons.close_rounded, color: Colors.white70),
+              ),
             ],
           ),
+
           const SizedBox(height: 26),
+
           Text(
             service.modalTitle,
             style: GoogleFonts.dmSans(
@@ -884,7 +952,9 @@ class _ModalContent extends StatelessWidget {
               color: Colors.white,
             ),
           ).animate().slideX(begin: 0.1, delay: 100.ms),
+
           const SizedBox(height: 18),
+
           Text(
             service.description,
             style: GoogleFonts.dmSans(
@@ -893,27 +963,80 @@ class _ModalContent extends StatelessWidget {
               height: 1.7,
             ),
           ).animate().fadeIn(delay: 200.ms),
+
           const SizedBox(height: 30),
-          ...service.bullets.map((b) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                const Icon(Icons.check_circle_outline, size: 16, color: Colors.white38),
-                const SizedBox(width: 12),
-                Expanded(child: Text(b, style: const TextStyle(color: Colors.white70))),
-              ],
+
+          // Bullets
+          ...service.bullets
+              .map(
+                (b) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle_outline,
+                      size: 16, color: Colors.white38),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      b,
+                      style:
+                      const TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          )).toList().animate(interval: 50.ms).fadeIn().slideX(begin: 0.05),
+          )
+              .toList()
+              .animate(interval: 50.ms)
+              .fadeIn()
+              .slideX(begin: 0.05),
+
+          const SizedBox(height: 20),
+
+          // All tags
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: service.tags
+                .map(
+                  (tag) => Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.07),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.white12),
+                ),
+                child: Text(
+                  tag.toUpperCase(),
+                  style: GoogleFonts.dmSans(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white60,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+            )
+                .toList(),
+          ).animate().fadeIn(delay: 300.ms),
+
           const SizedBox(height: 30),
-          const _ModalCta(),
+
+          // CTA
+          _ModalCta(onTap: onGetInTouch),
         ],
       ),
     );
   }
 }
 
+// ─── Modal CTA ────────────────────────────────────────────────────────────────
+
 class _ModalCta extends StatefulWidget {
-  const _ModalCta();
+  final VoidCallback onTap;
+  const _ModalCta({required this.onTap});
   @override
   State<_ModalCta> createState() => _ModalCtaState();
 }
@@ -924,21 +1047,26 @@ class _ModalCtaState extends State<_ModalCta> {
   Widget build(BuildContext context) => MouseRegion(
     onEnter: (_) => setState(() => _hov = true),
     onExit: (_) => setState(() => _hov = false),
-    child: AnimatedContainer(
-      duration: 200.ms,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: _hov ? Colors.white : Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Center(
-        child: Text(
-          'GET IN TOUCH',
-          style: TextStyle(
-            color: _hov ? Colors.black : Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
+    cursor: SystemMouseCursors.click,
+    child: GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedContainer(
+        duration: 200.ms,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color:
+          _hov ? Colors.white : Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Center(
+          child: Text(
+            'GET IN TOUCH',
+            style: TextStyle(
+              color: _hov ? Colors.black : Colors.white,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
           ),
         ),
       ),
